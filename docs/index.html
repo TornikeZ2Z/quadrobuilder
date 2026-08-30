@@ -157,14 +157,24 @@ th.sortable{cursor:pointer; user-select:none}
 th.sortable:hover{color:var(--ink)}
 th .arrow{opacity:.35; font-size:10px; margin-left:2px}
 th[aria-sort] .arrow{opacity:1; color:var(--brand)}
-td{padding:10px 0 10px 15px; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
+td{padding:9px 0 9px 15px; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
   font-variant-numeric:tabular-nums; white-space:nowrap}
-td:first-child{text-align:left; white-space:normal; padding-left:0; padding-right:15px; line-height:1.35}
+td:first-child{text-align:left; white-space:nowrap; padding-left:0; padding-right:15px; line-height:1.3}
 tbody tr:hover{background:var(--hover)}
 tbody tr:last-child td{border-bottom:none}
+/* Names are long and Georgian: clip to one line and put the full string in the
+   title, so every row is the same height and the table stays scannable. */
+.pname,.pmeta,.tcell{display:block; max-width:var(--namew,330px); overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap}
 .pname{font-weight:500}
-.pmeta{display:block; font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+.pmeta{font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; margin-top:1px}
 :lang(ka) .pmeta{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px}
+.tcell{font-size:13px; color:var(--ink-2); max-width:var(--supw,168px)}
+td.namecell{max-width:var(--namew,330px)}
+#t-prod,#t-order,#t-decide,#t-over,#t-dead{--namew:300px}
+#t-cat{--namew:420px}
+@media (min-width:1500px){#t-prod,#t-over,#t-dead{--namew:420px}
+  #t-order,#t-decide{--namew:330px}}
 .empty{color:var(--ink-3); font-size:14.5px; padding:24px 0; text-align:center}
 tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; padding-top:11px; color:var(--ink)}
 
@@ -421,7 +431,7 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
 
 <script>
 /* QuadroBuilder reporting — string catalogue.
-   Georgian wording follows Optimo's own vocabulary (შემოსავალი, ფასნამატი,
+   Georgian wording follows Optimo’s own vocabulary (შემოსავალი, ფასნამატი,
    ნაშთი, მომწოდებელი, ქვითარი) so the terms match what the shop already reads. */
 const DICT = {
   /* chrome */
@@ -659,7 +669,7 @@ const DICT = {
   nd_passthrough_t:   ['Everything received went straight out; the ledger closes at zero with no capital. Buy against a confirmed job, not a rule.',
                        'ყველაფერი, რაც შემოვიდა, პირდაპირ გავიდა; ჟურნალი ნულზე იხურება კაპიტალის გარეშე. შეიძინეთ დადასტურებული შეკვეთით, არა წესით.'],
   nd_oneoff:          ['sold once',                      'ერთხელ გაიყიდა'],
-  nd_oneoff_t:        ['One sale day in the shop\'s entire history. One sale is not a demand rate.',
+  nd_oneoff_t:        ['One sale day in the shop’s entire history. One sale is not a demand rate.',
                        'მაღაზიის მთელ ისტორიაში ერთი გაყიდვის დღე. ერთი გაყიდვა მოთხოვნის ტემპი არ არის.'],
   nd_count:           ['count it',                       'გადათვალეთ'],
   nd_count_t:         ['Book quantity is negative, so the real quantity is unknown. Count it before ordering.',
@@ -695,9 +705,9 @@ const DICT = {
                        'Optimo-დან ხუთი Excel ექსპორტი ჩაიტვირთა DuckDB-ში, შემდეგ ჩაშენდა ჩანაწერების დონეზე, ასე რომ ყველა ფილტრი ბრაუზერში ითვლება.'],
   m_2:                ['<b>Revenue matches Optimo exactly</b> — 29,944.80 ₾ over the full period, difference 0.00. Revenue counts retail lines excluding those flagged returned, plus B2B lines excluding those flagged cancelled. Cancelled B2B lines are dropped at load and appear nowhere on this page.',
                        '<b>შემოსავალი ზუსტად ემთხვევა Optimo-ს</b> — 29,944.80 ₾ მთელ პერიოდზე, სხვაობა 0.00. შემოსავალში შედის საცალო ჩანაწერები დაბრუნებულების გარეშე, პლუს ი/პ ჩანაწერები გაუქმებულების გარეშე. გაუქმებული ი/პ ჩანაწერები ჩატვირთვისას ამოღებულია და გვერდზე არსად ჩანს.'],
-  m_3:                ['<b>Margin is approximate.</b> Optimo\'s exports carry no cost-at-time-of-sale, so margin uses each product\'s <em>current</em> purchase price, and will differ from Optimo\'s own markup figure. 7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.',
+  m_3:                ['<b>Margin is approximate.</b> Optimo’s exports carry no cost-at-time-of-sale, so margin uses each product’s <em>current</em> purchase price, and will differ from Optimo’s own markup figure. 7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.',
                        '<b>ფასნამატი მიახლოებითია.</b> Optimo-ს ექსპორტში არ არის გაყიდვის მომენტის თვითღირებულება, ამიტომ ფასნამატი იყენებს პროდუქტის <em>მიმდინარე</em> შესყიდვის ფასს და განსხვავდება Optimo-ს ფასნამატისგან. 7 ი/პ ჩანაწერს (269 ₾) საერთოდ არ აქვს თვითღირებულება და სუფთა ფასნამატად ითვლება, რაც ჯამს ოდნავ ამშვენებს.'],
-  m_5:                ['<b>Peak held</b> is the highest running balance in Optimo's movement ledger, not opening plus receipts. Receipts also accumulate the restock from every cancelled sale, which overstated 177 of 915 products — the KUMTEL freezer read 36 when it never held more than 6. The ledger's closing balance ties exactly to stock on hand for 910 of 915 products.',
+  m_5:                ['<b>Peak held</b> is the highest running balance in Optimo’s movement ledger, not opening plus receipts. Receipts also accumulate the restock from every cancelled sale, which overstated 177 of 915 products — the KUMTEL freezer read 36 when it never held more than 6. The ledger’s closing balance ties exactly to stock on hand for 910 of 915 products.',
                        '<b>მაქს. ნაშთი</b> არის უმაღლესი მიმდინარე ნაშთი Optimo-ს მოძრაობის ჟურნალში, და არა საწყისი პლუს შემოსვლები. შემოსვლებში ასევე ჯამდება ყოველი გაუქმებული გაყიდვის დაბრუნება, რამაც 915 პროდუქტიდან 177-ს გაზრდილი მაჩვენებელი მისცა — KUMTEL-ის საყინულეს ეწერა 36, მაშინ როცა 6-ზე მეტი არასდროს ჰქონია. ჟურნალის დამხურავი ნაშთი ზუსტად ემთხვევა ნაშთს 915-დან 910 პროდუქტზე.'],
   m_4:                ['Demand for ordering uses a fixed trailing 30 days regardless of the period filter — what to buy is a decision about now. Cover, turns and overstock follow the same 30-day demand.',
                        'შეკვეთისთვის მოთხოვნა ითვლება ბოლო 30 დღეზე, პერიოდის ფილტრის მიუხედავად — რა შევიძინოთ ეს დღევანდელი გადაწყვეტილებაა. მარაგის ვადა, ბრუნვა და ჭარბი მარაგი იმავე 30 დღეს ეყრდნობა.'],
@@ -1161,7 +1171,7 @@ function render(){
     {l:T('c_sales'),k:'txns'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct',w:'110px'},
     {l:T('c_onhand'),k:'on_hand'}],'prod')+
     (iP.slice.length?`<tbody>${iP.slice.map(r=>`<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+      <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${F(r.units,0)}</td><td class="mono">${r.txns}</td>
       <td class="mono">${F(r.margin,0)} ₾</td>
       <td><span class="mono" style="font-size:13px${r.mpct<0?';color:var(--crit)':''}">${F(r.mpct,1)}%</span>
@@ -1241,8 +1251,8 @@ function render(){
       {l:T('c_atrisk'),k:'atRisk',w:'118px'},{l:T('c_perlari'),k:'perGel'},{l:T('c_cumcash')}],'order')+
     `<tbody>${iOrd.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
       return `<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.sup)}</td>
+      <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
+      <td><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
       <td class="mono">${F(r.nocc,0)}</td>
       <td class="mono">${F(r.on_hand,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
@@ -1283,9 +1293,9 @@ function render(){
       {l:T('c_onhand'),k:'on_hand'},{l:T('c_units30'),k:'u30'},{l:T('c_unitcost'),k:'unit_cost'}],'decide')+
     `<tbody>${iDec.slice.map(r=>{const R=RSN[r.reason];
       return `<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+      <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
       <td><span class="chip ${R[2]}" title="${esc(T(R[1]))}"><span class="dot"></span>${T(R[0])}</span></td>
-      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.sup)}</td>
+      <td><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
       <td class="mono">${F(r.nocc,0)}</td>
       <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
       <td class="mono">${F(r.u30,0)}</td>
@@ -1303,7 +1313,7 @@ function render(){
       {l:T('c_perrev'),k:'periodRev'},{l:T('c_permargin'),k:'periodMargin'},
       {l:T('c_cover'),k:'cover'},{l:T('c_turns'),k:'turn'}],'over')+
     `<tbody>${iO.slice.map(r=>`<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} · ${esc(r.sup)}</span></td>
+      <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)} · ${esc(r.sup)}">${esc(r.c)} · ${esc(r.sup)}</span></td>
       <td class="mono">${F(r.on_hand,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
       <td class="mono" style="font-weight:600">${F(r.capital,0)} ₾</td>
@@ -1346,8 +1356,8 @@ function render(){
     headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_qty')},{l:T('c_maxheld')},
       {l:T('c_unitcost')},{l:T('c_capital')}])+
     `<tbody>${iD.slice.map(r=>`<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.s)}</td>
+      <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
+      <td><span class="tcell" title="${esc(r.s)}">${esc(r.s)}</span></td>
       <td class="mono">${F(r.q,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.mx,0)}</td>
       <td class="mono">${F(r.u,2)}</td>
@@ -1365,7 +1375,7 @@ function render(){
     {l:T('c_products'),k:'skus'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct'},
     {l:T('c_share'),k:'share',w:'112px'}],'cat')+
     (iC.slice.length?`<tbody>${iC.slice.map(r=>`<tr>
-      <td class="pname">${esc(r.cat)}</td>
+      <td><span class="pname" title="${esc(r.cat)}">${esc(r.cat)}</span></td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${F(r.units,0)}</td><td class="mono">${r.skus}</td>
       <td class="mono">${F(r.margin,0)} ₾</td>
       <td class="mono"${r.mpct<20?' style="color:var(--brand-deep)"':''}>${F(r.mpct,1)}%</td>

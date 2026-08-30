@@ -1,5 +1,5 @@
 /* QuadroBuilder reporting — string catalogue.
-   Georgian wording follows Optimo's own vocabulary (შემოსავალი, ფასნამატი,
+   Georgian wording follows Optimo’s own vocabulary (შემოსავალი, ფასნამატი,
    ნაშთი, მომწოდებელი, ქვითარი) so the terms match what the shop already reads. */
 const DICT = {
   /* chrome */
@@ -237,7 +237,7 @@ const DICT = {
   nd_passthrough_t:   ['Everything received went straight out; the ledger closes at zero with no capital. Buy against a confirmed job, not a rule.',
                        'ყველაფერი, რაც შემოვიდა, პირდაპირ გავიდა; ჟურნალი ნულზე იხურება კაპიტალის გარეშე. შეიძინეთ დადასტურებული შეკვეთით, არა წესით.'],
   nd_oneoff:          ['sold once',                      'ერთხელ გაიყიდა'],
-  nd_oneoff_t:        ['One sale day in the shop\'s entire history. One sale is not a demand rate.',
+  nd_oneoff_t:        ['One sale day in the shop’s entire history. One sale is not a demand rate.',
                        'მაღაზიის მთელ ისტორიაში ერთი გაყიდვის დღე. ერთი გაყიდვა მოთხოვნის ტემპი არ არის.'],
   nd_count:           ['count it',                       'გადათვალეთ'],
   nd_count_t:         ['Book quantity is negative, so the real quantity is unknown. Count it before ordering.',
@@ -273,9 +273,9 @@ const DICT = {
                        'Optimo-დან ხუთი Excel ექსპორტი ჩაიტვირთა DuckDB-ში, შემდეგ ჩაშენდა ჩანაწერების დონეზე, ასე რომ ყველა ფილტრი ბრაუზერში ითვლება.'],
   m_2:                ['<b>Revenue matches Optimo exactly</b> — 29,944.80 ₾ over the full period, difference 0.00. Revenue counts retail lines excluding those flagged returned, plus B2B lines excluding those flagged cancelled. Cancelled B2B lines are dropped at load and appear nowhere on this page.',
                        '<b>შემოსავალი ზუსტად ემთხვევა Optimo-ს</b> — 29,944.80 ₾ მთელ პერიოდზე, სხვაობა 0.00. შემოსავალში შედის საცალო ჩანაწერები დაბრუნებულების გარეშე, პლუს ი/პ ჩანაწერები გაუქმებულების გარეშე. გაუქმებული ი/პ ჩანაწერები ჩატვირთვისას ამოღებულია და გვერდზე არსად ჩანს.'],
-  m_3:                ['<b>Margin is approximate.</b> Optimo\'s exports carry no cost-at-time-of-sale, so margin uses each product\'s <em>current</em> purchase price, and will differ from Optimo\'s own markup figure. 7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.',
+  m_3:                ['<b>Margin is approximate.</b> Optimo’s exports carry no cost-at-time-of-sale, so margin uses each product’s <em>current</em> purchase price, and will differ from Optimo’s own markup figure. 7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.',
                        '<b>ფასნამატი მიახლოებითია.</b> Optimo-ს ექსპორტში არ არის გაყიდვის მომენტის თვითღირებულება, ამიტომ ფასნამატი იყენებს პროდუქტის <em>მიმდინარე</em> შესყიდვის ფასს და განსხვავდება Optimo-ს ფასნამატისგან. 7 ი/პ ჩანაწერს (269 ₾) საერთოდ არ აქვს თვითღირებულება და სუფთა ფასნამატად ითვლება, რაც ჯამს ოდნავ ამშვენებს.'],
-  m_5:                ['<b>Peak held</b> is the highest running balance in Optimo's movement ledger, not opening plus receipts. Receipts also accumulate the restock from every cancelled sale, which overstated 177 of 915 products — the KUMTEL freezer read 36 when it never held more than 6. The ledger's closing balance ties exactly to stock on hand for 910 of 915 products.',
+  m_5:                ['<b>Peak held</b> is the highest running balance in Optimo’s movement ledger, not opening plus receipts. Receipts also accumulate the restock from every cancelled sale, which overstated 177 of 915 products — the KUMTEL freezer read 36 when it never held more than 6. The ledger’s closing balance ties exactly to stock on hand for 910 of 915 products.',
                        '<b>მაქს. ნაშთი</b> არის უმაღლესი მიმდინარე ნაშთი Optimo-ს მოძრაობის ჟურნალში, და არა საწყისი პლუს შემოსვლები. შემოსვლებში ასევე ჯამდება ყოველი გაუქმებული გაყიდვის დაბრუნება, რამაც 915 პროდუქტიდან 177-ს გაზრდილი მაჩვენებელი მისცა — KUMTEL-ის საყინულეს ეწერა 36, მაშინ როცა 6-ზე მეტი არასდროს ჰქონია. ჟურნალის დამხურავი ნაშთი ზუსტად ემთხვევა ნაშთს 915-დან 910 პროდუქტზე.'],
   m_4:                ['Demand for ordering uses a fixed trailing 30 days regardless of the period filter — what to buy is a decision about now. Cover, turns and overstock follow the same 30-day demand.',
                        'შეკვეთისთვის მოთხოვნა ითვლება ბოლო 30 დღეზე, პერიოდის ფილტრის მიუხედავად — რა შევიძინოთ ეს დღევანდელი გადაწყვეტილებაა. მარაგის ვადა, ბრუნვა და ჭარბი მარაგი იმავე 30 დღეს ეყრდნობა.'],
