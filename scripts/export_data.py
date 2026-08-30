@@ -34,7 +34,9 @@ SELECT st.barcode AS b, st.product AS p, COALESCE(st.category,'—') AS c,
        ROUND(st.unit_cost,4) AS u, ROUND(st.total_cost,2) AS t,
        -- opening + everything ever received: the most that can ever have sat on the
        -- shelf, since Optimo's export carries no dated goods receipts.
-       COALESCE(m.open_qty,0) + COALESCE(m.qty_in,0) AS mx,
+       -- true peak shelf level from the movement ledger's running balance
+       COALESCE(lg.peak, COALESCE(m.open_qty,0)+COALESCE(m.qty_in,0)) AS mx,
+       COALESCE(lg.net_purchased,0) AS npur,
        COALESCE(m.qty_in,0) AS rin, COALESCE(m.qty_out,0) AS rout,
        -- Never actually stocked: everything received went straight out and the
        -- ledger closes at zero with no capital. These are buy-to-order lines,
@@ -46,6 +48,10 @@ SELECT st.barcode AS b, st.product AS p, COALESCE(st.category,'—') AS c,
        COALESCE(o.units_life,0) AS ulife
 FROM stock st
 LEFT JOIN movement m USING(barcode)
+LEFT JOIN (SELECT barcode, MAX(balance) AS peak,
+                  SUM(CASE WHEN status='შესყიდვა' THEN delta
+                           WHEN status='გაუქმებული შესყიდვა' THEN delta ELSE 0 END) AS net_purchased
+           FROM ledger GROUP BY 1) lg USING(barcode)
 LEFT JOIN (SELECT barcode, COUNT(DISTINCT date::DATE) AS n_occ, SUM(rev_qty) AS units_life
            FROM sales WHERE rev_qty>0 GROUP BY 1) o USING(barcode)""").df()
 

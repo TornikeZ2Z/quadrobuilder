@@ -13,6 +13,9 @@ Published at <https://reporting.quadrobuilder.ge>.
    - `stock_on_hand.xlsx` — ნაშთები
    - `stock_movement.xlsx` — მარაგების მოძრაობა
    - `daily_statistics.xlsx` — სტატისტიკა → ზოგადი
+   - `supplies_ledger.xlsx` — რეპორტები → მარაგები (per-movement ledger with a
+     running balance; this is what gives the TRUE peak shelf level, since
+     movement.qty_in also accumulates the restock from every cancelled sale)
 2. `python scripts/build_warehouse.py` — loads into DuckDB
 3. `python scripts/export_data.py` — row-level JSON
 4. `python scripts/render.py` — writes `dashboard.html`

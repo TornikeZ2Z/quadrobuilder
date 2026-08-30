@@ -68,6 +68,27 @@ for name, df in [("sales", sales), ("stock", s), ("movement", m)]:
     con.register("t", df); con.execute(f"CREATE TABLE {name} AS SELECT * FROM t"); con.unregister("t")
     print(f"  {name:<10} {len(df):>6,} rows")
 
+# ---- per-movement stock ledger -------------------------------------------
+# Carries a running balance per movement, so the TRUE peak shelf level is
+# max(balance). movement.qty_in cannot give this: it also accumulates the
+# restock from every cancelled sale, which is why the KUMTEL freezer read 36
+# when it never held more than 6.
+lg = pd.read_excel(f"{RAW}/supplies_ledger.xlsx")
+lg.columns = ["barcode","product","supplier","category","status","qty_before",
+              "delta","balance","recv_date","post_date"]
+lg["barcode"] = nb(lg["barcode"])
+lg["post"] = pd.to_datetime(lg["post_date"], format="%m/%d/%Y %H:%M:%S %z", utc=True)
+lg = lg.sort_values("post")
+con.execute("DROP TABLE IF EXISTS ledger")
+con.register("t", lg); con.execute("CREATE TABLE ledger AS SELECT * FROM t"); con.unregister("t")
+print(f"  {'ledger':<10} {len(lg):>6,} rows")
+print("    ledger tie-out to stock on hand:")
+print(con.execute("""
+  SELECT COUNT(*) AS skus,
+         SUM(CASE WHEN ABS(l.last_bal - st.qty_on_hand) < 0.001 THEN 1 ELSE 0 END) AS ties
+  FROM (SELECT barcode, LAST(balance ORDER BY post) AS last_bal FROM ledger GROUP BY 1) l
+  JOIN stock st USING(barcode)""").df().to_string(index=False))
+
 xl = pd.ExcelFile(f"{RAW}/daily_statistics.xlsx")
 mp = {"შემოსავალი":"revenue","ფასნამატი":"markup","ტრანზაქციები":"txns","საშუალო ქვითარი":"avg_receipt"}
 d = None

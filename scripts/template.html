@@ -493,7 +493,7 @@ function paintStatic(){
   el('leg-trend').innerHTML=
     `<span><i style="background:var(--brand)"></i> ${T('leg_margin')}</span>`+
     `<span><i style="background:var(--cost)"></i> ${T('leg_cost')}</span>`;
-  el('m-list').innerHTML=['m_1','m_2','m_3','m_4'].map(k=>`<li>${T(k)}</li>`).join('');
+  el('m-list').innerHTML=['m_1','m_2','m_3','m_4','m_5'].map(k=>`<li>${T(k)}</li>`).join('');
   const full=d=>`${d.getDate()} ${T('mon_'+(d.getMonth()+1))} ${d.getFullYear()}`;
   el('s-first').textContent=full(new Date(FIRST_REV+'T12:00:00'));
   el('s-weeks').textContent=((ASOF-new Date(FIRST_REV+'T12:00:00'))/6048e5).toFixed(1);
