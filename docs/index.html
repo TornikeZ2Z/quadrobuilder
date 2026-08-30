@@ -17,7 +17,7 @@
   --crit:#B3302F; --crit-bg:#FBEBEA;
   --warn:#8A6100; --warn-bg:#FAF1DC;
   --good:#1B7A57; --good-bg:#E7F4EF;
-  --side:220px;
+  --side:224px;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--ground); color:var(--ink);
@@ -50,12 +50,12 @@ a{color:var(--brand-deep)}
 .sidefoot b{color:var(--ink); font-weight:500}
 
 .main{min-width:0; padding:0 0 90px}
-.inner{max-width:1080px; margin:0 auto; padding:26px 30px 0; display:flex; flex-direction:column; gap:34px}
+.inner{max-width:none; margin:0; padding:26px 34px 0; display:flex; flex-direction:column; gap:34px}
 
 /* ---------- filters ---------- */
 .filters{position:sticky; top:0; z-index:30; background:var(--ground);
   border-bottom:1px solid var(--line); padding:12px 0}
-.filters-inner{max-width:1080px; margin:0 auto; padding:0 30px; display:flex; flex-wrap:wrap;
+.filters-inner{max-width:none; margin:0; padding:0 34px; display:flex; flex-wrap:wrap;
   gap:9px 16px; align-items:center}
 .fgroup{display:flex; align-items:center; gap:7px}
 .flab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
@@ -66,6 +66,42 @@ a{color:var(--brand-deep)}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .seg button:hover:not([aria-pressed="true"]){background:var(--hover)}
+.daterange{display:none; align-items:center; gap:6px}
+.daterange.on{display:flex}
+.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:4px 7px}
+.daterange input[type=date]:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
+.daterange span{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:11px}
+/* searchable category combobox */
+.combo{position:relative}
+.combo-btn{display:inline-flex; align-items:center; gap:8px; background:var(--panel);
+  border:1px solid var(--line); border-radius:6px; padding:5px 10px; cursor:pointer;
+  font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px; color:var(--ink); max-width:290px}
+.combo-btn:hover{border-color:var(--ink-3)}
+.combo-btn .lbl{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.combo-btn .cnt{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3)}
+.combo-btn .car{margin-left:auto; color:var(--ink-3); font-size:9px}
+.combo-btn[aria-expanded="true"]{border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
+.combo-panel{position:absolute; top:calc(100% + 6px); left:0; width:340px; background:var(--panel);
+  border:1px solid var(--line); border-radius:9px; box-shadow:0 8px 28px rgba(44,51,58,.14);
+  z-index:60; display:none; overflow:hidden}
+.combo-panel.open{display:block}
+.combo-search{width:100%; border:0; border-bottom:1px solid var(--line); border-radius:0;
+  padding:9px 12px; font-size:13px; max-width:none; background:var(--panel)}
+.combo-search:focus{outline:none; border-bottom-color:var(--brand)}
+.combo-list{max-height:300px; overflow-y:auto; padding:4px}
+.combo-opt{display:grid; grid-template-columns:1fr auto; gap:3px 10px; align-items:center;
+  padding:7px 9px; border-radius:6px; cursor:pointer}
+.combo-opt:hover,.combo-opt.active{background:var(--hover)}
+.combo-opt[aria-selected="true"]{background:var(--ink)}
+.combo-opt[aria-selected="true"] .cname,.combo-opt[aria-selected="true"] .crev{color:#fff}
+.combo-opt[aria-selected="true"] .cbar i{background:var(--brand)}
+.cname{font-size:12.5px; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.crev{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2); white-space:nowrap}
+.cbar{grid-column:1/-1; height:3px; border-radius:2px; background:var(--sunken); overflow:hidden}
+.cbar i{display:block; height:100%; background:var(--cost); border-radius:2px}
+.combo-none{padding:14px; text-align:center; color:var(--ink-3); font-size:12px;
+  font-family:"IBM Plex Mono",monospace}
 select,input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px; color:var(--ink);
   background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:5px 8px; max-width:200px}
 input[type=search]{width:160px}
@@ -80,7 +116,7 @@ input[type=search]{width:160px}
 section > h2{font-size:19px; font-weight:600; margin-bottom:5px}
 section > .lede{color:var(--ink-2); font-size:14px; max-width:78ch; margin:0 0 18px}
 .panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px 22px}
-.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(410px,1fr)); gap:18px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(460px,1fr)); gap:18px}
 .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
 
 .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(162px,1fr));
@@ -219,7 +255,9 @@ footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:
       <a href="#rhythm"><span class="dot"></span>Trading rhythm</a>
       <a href="#products"><span class="dot"></span>Products</a>
       <a href="#margin"><span class="dot"></span>Margin &amp; mix</a>
-      <a href="#stock"><span class="dot"></span>Stock health</a>
+      <a href="#order"><span class="dot"></span>What to order</a>
+      <a href="#stock"><span class="dot"></span>Understocked</a>
+      <a href="#overstock"><span class="dot"></span>Overstocked</a>
       <a href="#dead"><span class="dot"></span>Dead stock</a>
       <a href="#categories"><span class="dot"></span>Categories</a>
       <a href="#patterns"><span class="dot"></span>Patterns</a>
@@ -235,9 +273,20 @@ footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:
   <main class="main">
     <div class="filters"><div class="filters-inner" role="group" aria-label="Filters">
       <div class="fgroup"><span class="flab">Period</span><span class="seg" id="f-period"></span></div>
+      <div class="fgroup daterange" id="f-range">
+        <input type="date" id="f-from" aria-label="From date">
+        <span>to</span>
+        <input type="date" id="f-to" aria-label="To date"></div>
       <div class="fgroup"><span class="flab">Group by</span><span class="seg" id="f-gran"></span></div>
       <div class="fgroup"><span class="flab">Channel</span><span class="seg" id="f-chan"></span></div>
-      <div class="fgroup"><select id="f-cat" aria-label="Category"></select></div>
+      <div class="fgroup"><div class="combo" id="cat-combo">
+        <button class="combo-btn" id="cat-btn" type="button" aria-expanded="false" aria-haspopup="listbox">
+          <span class="lbl" id="cat-lbl">All categories</span>
+          <span class="cnt" id="cat-cnt"></span><span class="car">▼</span></button>
+        <div class="combo-panel" id="cat-panel" role="listbox" aria-label="Category">
+          <input class="combo-search" id="cat-search" type="search" placeholder="filter categories" autocomplete="off">
+          <div class="combo-list" id="cat-list"></div>
+        </div></div></div>
       <div class="fgroup"><input type="search" id="f-q" placeholder="search product" aria-label="Search product"></div>
       <button class="reset" id="f-reset" type="button">reset</button>
       <span class="scope" id="f-scope"></span>
@@ -297,28 +346,51 @@ footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:
         </section>
       </div>
 
-      <div class="grid2" id="stock">
-        <section class="panel">
-          <span class="eyebrow">Act on this</span>
-          <h2>Running out</h2>
-          <p class="lede">Moving at least 1 unit a week with under 21 days of stock left.</p>
-          <div class="tw"><table id="t-reorder"></table></div>
-          <div class="pager" id="p-reorder"></div>
-          <p class="note" id="neg-note"></p>
-        </section>
-        <section class="panel">
-          <div class="head-row">
-            <div><span class="eyebrow">Capital sitting still</span><h2>Overstocked</h2></div>
-            <button class="btn" id="x-over" type="button">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-              Export CSV</button>
-          </div>
-          <p class="lede">Products that do sell, but hold over a year of cover at the current pace.</p>
-          <div class="tw"><table id="t-over"></table></div>
-          <div class="pager" id="p-over"></div>
-        </section>
-      </div>
+      <section id="order" class="panel">
+        <div class="head-row">
+          <div><span class="eyebrow">Ranked by gross margin you lose each week it stays unavailable</span>
+            <h2>What to order</h2></div>
+          <button class="btn" id="x-order" type="button">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
+            Export CSV</button>
+        </div>
+        <p class="lede">Everything still selling that will not last <b>21 days</b>, most costly first. Demand is the
+          last 30 days. Suggested quantity refills to 30 days of cover; order value prices that at current cost.</p>
+        <div class="stats" id="order-stats" style="margin:0 0 18px"></div>
+        <div class="tw"><table id="t-order"></table></div>
+        <div class="pager" id="p-order"></div>
+        <p class="note" id="neg-note"></p>
+      </section>
+
+      <section id="stock" class="panel">
+        <div class="head-row">
+          <div><span class="eyebrow">Below a healthy 30 days of cover</span><h2>Understocked</h2></div>
+          <button class="btn" id="x-under" type="button">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
+            Export CSV</button>
+        </div>
+        <p class="lede">The diagnostic view — every thin line with its stock value, recent demand and what it earned
+          in the selected period. Sortable.</p>
+        <div class="tw"><table id="t-under"></table></div>
+        <div class="pager" id="p-under"></div>
+      </section>
+
+      <section id="overstock" class="panel">
+        <div class="head-row">
+          <div><span class="eyebrow">Capital sitting still</span><h2>Overstocked</h2></div>
+          <button class="btn" id="x-over" type="button">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
+            Export CSV</button>
+        </div>
+        <p class="lede">Products that do sell, but hold over a year of cover at the current pace. Sorted by the
+          capital they tie up. Sortable.</p>
+        <div class="stats" id="over-stats" style="margin:0 0 18px"></div>
+        <div class="tw"><table id="t-over"></table></div>
+        <div class="pager" id="p-over"></div>
+      </section>
 
       <section id="dead" class="callout">
         <div class="head-row">
@@ -387,16 +459,24 @@ const SVGNS='http://www.w3.org/2000/svg';
 const mk=(t,a={})=>{const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
 const STOCK_BY=Object.fromEntries(STOCK.map(s=>[s.b,s]));
 const FIRST=LINES[0].d, TOTAL_STOCK=STOCK.reduce((a,s)=>a+s.t,0);
+// trailing 30 days from the as-of date, independent of the period filter
+const L30=(()=>{const d=new Date(ASOF); d.setDate(d.getDate()-29);
+  const from=d.toISOString().slice(0,10), m={};
+  for(const l of LINES){ if(l.d<from) continue;
+    const o=m[l.b]||(m[l.b]={u:0,rev:0,cogs:0});
+    o.u+=l.q; o.rev+=l.v; o.cogs+=l.q*l.u; }
+  return m;})();
 // Feb 2026 contains five lines, all of them returns, and March none at all:
 // the shop's first revenue-earning day is the honest start date.
 const FIRST_REV=(LINES.find(l=>l.v>0)||LINES[0]).d;
 
-const PERIODS=[{k:'all',l:'All'},{k:'180',l:'6 mo'},{k:'90',l:'90 d'},{k:'30',l:'30 d'}];
-const GRANS=[{k:'W',l:'Week'},{k:'M',l:'Month'},{k:'Q',l:'Quarter'}];
+const PERIODS=[{k:'all',l:'All'},{k:'180',l:'6 mo'},{k:'90',l:'90 d'},{k:'30',l:'30 d'},{k:'custom',l:'Custom'}];
+const GRANS=[{k:'D',l:'Day'},{k:'W',l:'Week'},{k:'M',l:'Month'},{k:'Q',l:'Quarter'}];
 const CHANS=[{k:'',l:'All'},{k:'retail',l:'Retail'},{k:'entity',l:'B2B'}];
-const state={period:'all',gran:'M',chan:'',cat:'',q:'',
-  page:{prod:1,dead:1,cat:1,reorder:1,over:1},
-  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1}}};
+const ASOF_S=D.as_of;
+const state={period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null,
+  page:{prod:1,dead:1,cat:1,order:1,under:1,over:1},
+  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1},order:{k:'atRisk',dir:-1},under:{k:'atRisk',dir:-1},over:{k:'capital',dir:-1}}};
 let LAST={};
 
 function seg(id,items,key){
@@ -406,31 +486,95 @@ function seg(id,items,key){
 }
 const resetPages=()=>{for(const k in state.page) state.page[k]=1;};
 seg('f-period',PERIODS,'period'); seg('f-gran',GRANS,'gran'); seg('f-chan',CHANS,'chan');
-const cats=[...new Set(LINES.map(l=>l.c))].sort((a,b)=>a.localeCompare(b,'ka'));
-el('f-cat').innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-el('f-cat').addEventListener('change',e=>{state.cat=e.target.value;resetPages();apply();});
+/* searchable category combobox, ranked by revenue in the current period/channel */
+function catStats(){
+  const [cf,ct]=winRange(), m=new Map();
+  for(const l of LINES){
+    if(l.d<cf||l.d>ct) continue;
+    if(state.chan&&l.ch!==state.chan) continue;
+    if(state.q&&!(l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q))) continue;
+    m.set(l.c,(m.get(l.c)||0)+l.v);
+  }
+  const rows=[...m.entries()].map(([c,rev])=>({c,rev})).sort((a,b)=>b.rev-a.rev);
+  const max=Math.max(...rows.map(r=>r.rev),1);
+  return {rows,max,total:rows.reduce((a,r)=>a+r.rev,0)};
+}
+let comboOpen=false, comboIdx=-1;
+function renderCombo(){
+  const {rows,max,total}=catStats();
+  const f=(el('cat-search').value||'').trim().toLowerCase();
+  const shown=rows.filter(r=>!f||r.c.toLowerCase().includes(f));
+  const opts=[{c:'',rev:total,all:true},...shown];
+  el('cat-list').innerHTML=opts.length?opts.map((r,i)=>`
+    <div class="combo-opt" role="option" data-v="${esc(r.c)}" data-i="${i}"
+         aria-selected="${r.c===state.cat}">
+      <span class="cname">${r.all?'All categories':esc(r.c)}</span>
+      <span class="crev">${F(r.rev,0)} ₾</span>
+      <span class="cbar"><i style="width:${r.all?100:Math.max(2,(r.rev/max)*100)}%"></i></span>
+    </div>`).join(''):'<div class="combo-none">no category matches</div>';
+  el('cat-lbl').textContent=state.cat||'All categories';
+  el('cat-cnt').textContent=state.cat?'':`${rows.length}`;
+}
+function openCombo(o){comboOpen=o; comboIdx=-1;
+  el('cat-panel').classList.toggle('open',o);
+  el('cat-btn').setAttribute('aria-expanded',o);
+  if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();}}
+el('f-from').min=el('f-to').min=FIRST; el('f-from').max=el('f-to').max=ASOF_S;
+function syncRange(){
+  const on=state.period==='custom';
+  el('f-range').classList.toggle('on',on);
+  if(on&&!state.from){state.from=FIRST; state.to=ASOF_S;
+    el('f-from').value=state.from; el('f-to').value=state.to;}}
+el('f-from').addEventListener('change',e=>{state.from=e.target.value||FIRST;
+  if(state.to&&state.from>state.to){state.to=state.from; el('f-to').value=state.to;}
+  state.period='custom'; resetPages(); apply();});
+el('f-to').addEventListener('change',e=>{state.to=e.target.value||ASOF_S;
+  if(state.from&&state.to<state.from){state.from=state.to; el('f-from').value=state.from;}
+  state.period='custom'; resetPages(); apply();});
+el('cat-btn').addEventListener('click',()=>openCombo(!comboOpen));
+el('cat-search').addEventListener('input',()=>{comboIdx=-1; renderCombo();});
+el('cat-list').addEventListener('click',e=>{const o=e.target.closest('.combo-opt'); if(!o)return;
+  state.cat=o.dataset.v; resetPages(); openCombo(false); apply();});
+el('cat-panel').addEventListener('keydown',e=>{
+  const opts=[...el('cat-list').children].filter(n=>n.classList.contains('combo-opt'));
+  if(e.key==='Escape'){openCombo(false); el('cat-btn').focus(); return;}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();
+    comboIdx=Math.max(0,Math.min(opts.length-1,comboIdx+(e.key==='ArrowDown'?1:-1)));
+    opts.forEach((n,i)=>n.classList.toggle('active',i===comboIdx));
+    opts[comboIdx]?.scrollIntoView({block:'nearest'});}
+  if(e.key==='Enter'&&opts[comboIdx]){e.preventDefault();
+    state.cat=opts[comboIdx].dataset.v; resetPages(); openCombo(false); apply();}});
+document.addEventListener('click',e=>{if(comboOpen&&!e.target.closest('#cat-combo')) openCombo(false);});
 let qt; el('f-q').addEventListener('input',e=>{clearTimeout(qt);
   qt=setTimeout(()=>{state.q=e.target.value.trim().toLowerCase();resetPages();apply();},160);});
-el('f-reset').addEventListener('click',()=>{Object.assign(state,{period:'all',gran:'M',chan:'',cat:'',q:''});
-  el('f-cat').value='';el('f-q').value='';resetPages();apply();});
+el('f-reset').addEventListener('click',()=>{Object.assign(state,{period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null});
+  el('f-q').value='';resetPages();apply();});
 
-function winStart(){if(state.period==='all')return FIRST;
-  const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.period)+1); return d.toISOString().slice(0,10);}
+function winRange(){
+  if(state.period==='custom') return [state.from||FIRST, state.to||ASOF_S];
+  if(state.period==='all')    return [FIRST, ASOF_S];
+  const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.period)+1);
+  return [d.toISOString().slice(0,10), ASOF_S];}
+const winStart=()=>winRange()[0];
+const dayDiff=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
 const matches=(l,from,to)=>l.d>=from&&(!to||l.d<=to)&&(!state.chan||l.ch===state.chan)&&
   (!state.cat||l.c===state.cat)&&(!state.q||l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q));
-const activeLines=()=>LINES.filter(l=>matches(l,winStart()));
-function prevLines(){if(state.period==='all')return null;
-  const n=Number(state.period), end=new Date(winStart()+'T12:00:00'); end.setDate(end.getDate()-1);
+const activeLines=()=>{const [f,t]=winRange(); return LINES.filter(l=>matches(l,f,t));};
+function prevLines(){
+  if(state.period==='all') return null;
+  const [f,t]=winRange(), n=dayDiff(f,t)+1;
+  const end=new Date(f+'T12:00:00'); end.setDate(end.getDate()-1);
   const st=new Date(end); st.setDate(st.getDate()-n+1);
   return LINES.filter(l=>matches(l,st.toISOString().slice(0,10),end.toISOString().slice(0,10)));}
-const periodDays=()=>state.period==='all'
-  ? Math.round((ASOF-new Date(FIRST+'T12:00:00'))/864e5)+1 : Number(state.period);
+const periodDays=()=>{const [f,t]=winRange(); return Math.max(1,dayDiff(f,t)+1);};
 
 function bucket(ds){const d=new Date(ds+'T12:00:00');
+  if(state.gran==='D') return ds;
   if(state.gran==='W'){const o=(d.getDay()+6)%7; d.setDate(d.getDate()-o); return d.toISOString().slice(0,10);}
   if(state.gran==='M') return ds.slice(0,7);
   return d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);}
 function bucketLabel(k){
+  if(state.gran==='D') return new Date(k+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   if(state.gran==='W') return new Date(k+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   if(state.gran==='M') return new Date(k+'-01T12:00:00').toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
   return k.replace('-',' ');}
@@ -466,9 +610,26 @@ el('x-dead').onclick=()=>download(`quadrobuilder-dead-stock-${stamp()}.csv`,
   toCSV(LAST.dead||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'s'},
     {l:'Qty on hand',v:'q'},{l:'Unit cost',v:'u'},{l:'Capital tied (GEL)',v:'t'}]));
 el('x-over').onclick=()=>download(`quadrobuilder-overstock-${stamp()}.csv`,
-  toCSV(LAST.over||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Capital (GEL)',v:'capital'},
-    {l:'Units per week',v:r=>r.upw.toFixed(2)},{l:'Days cover',v:r=>Math.round(r.cover)}]));
+  toCSV(LAST.over||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
+    {l:'Qty on hand',v:'on_hand'},{l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},
+    {l:'Units 30d',v:'u30'},{l:'Period units',v:'periodUnits'},
+    {l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
+    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},
+    {l:'Days cover',v:r=>r.cover==null?'':Math.round(r.cover)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
+el('x-order').onclick=()=>download(`quadrobuilder-what-to-order-${stamp()}.csv`,
+  toCSV(LAST.order||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
+    {l:'Qty on hand',v:'on_hand'},{l:'Units sold 30d',v:'u30'},{l:'Units per week',v:r=>r.perWeek.toFixed(2)},
+    {l:'Days cover',v:r=>Math.round(r.cover)},{l:'Suggested order qty',v:'suggest'},
+    {l:'Unit cost (GEL)',v:r=>r.unit_cost.toFixed(2)},
+    {l:'Order value (GEL)',v:r=>r.orderValue.toFixed(2)},
+    {l:'Margin at risk per week (GEL)',v:r=>r.atRisk.toFixed(2)}]));
+el('x-under').onclick=()=>download(`quadrobuilder-understocked-${stamp()}.csv`,
+  toCSV(LAST.under||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
+    {l:'Qty on hand',v:'on_hand'},{l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},
+    {l:'Units 30d',v:'u30'},{l:'Revenue 30d (GEL)',v:r=>r.rev30.toFixed(2)},
+    {l:'Units per week',v:r=>r.perWeek.toFixed(2)},{l:'Days cover',v:r=>Math.round(r.cover)},
+    {l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
+    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
 el('x-prod').onclick=()=>download(`quadrobuilder-products-${stamp()}.csv`,
   toCSV(LAST.prods||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},
     {l:'Revenue (GEL)',v:r=>r.rev.toFixed(2)},{l:'Units',v:'units'},{l:'Sales',v:'txns'},
@@ -518,8 +679,13 @@ function wireTip(host,tipEl,nodes,html){nodes.forEach((n,i)=>{n.style.cursor='cr
 
 function drawTrend(bk){const host=el('trend'); host.innerHTML='';
   if(!bk.length){host.innerHTML='<p class="empty">no sales in this selection</p>';return;}
-  const W=940,PL=52,PR=14,PT=26,PB=42,H=258;
-  const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length, bw=Math.max(8,Math.min(56,step-14));
+  const W=1180,PL=54,PR=14,PT=26,PB=46,H=270;
+  const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length;
+  const bw=Math.max(1.5,Math.min(58,step-Math.min(14,step*0.28)));
+  // Day grouping can put 150 columns on screen: thin the labels rather than
+  // overprinting them, and drop per-column values once they cannot fit.
+  const every=Math.max(1,Math.ceil(bk.length/26));
+  const showVals=bk.length<=34, rot=step<34;
   const max=Math.max(...bk.map(b=>Math.max(b.rev,b.cogs)))*1.16||1;
   const y=v=>PT+ih-(v/max)*ih;
   const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Revenue split into cost and gross margin'});
@@ -534,18 +700,25 @@ function drawTrend(bk){const host=el('trend'); host.innerHTML='';
     if(marg>0) svg.appendChild(mk('rect',{x,y:y(cogs+marg),width:bw,height:Math.max(0,y(cogs)-y(cogs+marg)-2),
       fill:'var(--brand)'}));
     if(b.margin<0) svg.appendChild(mk('rect',{x,y:y(cogs),width:bw,height:6,fill:'var(--crit)'}));
-    const v=mk('text',{x:x+bw/2,y:y(cogs+marg)-8,'text-anchor':'middle',fill:'var(--ink)','font-size':10,
-      'font-weight':600,'font-family':'IBM Plex Mono, monospace'}); v.textContent=KF(b.rev); svg.appendChild(v);
-    const t=mk('text',{x:x+bw/2,y:PT+ih+15,'text-anchor':'middle',fill:'var(--ink-3)','font-size':10,
-      'font-family':'IBM Plex Mono, monospace'}); t.textContent=bucketLabel(b.k); svg.appendChild(t);
+    if(showVals){const v=mk('text',{x:x+bw/2,y:y(cogs+marg)-8,'text-anchor':'middle',fill:'var(--ink)',
+      'font-size':10,'font-weight':600,'font-family':'IBM Plex Mono, monospace'});
+      v.textContent=KF(b.rev); svg.appendChild(v);}
+    const isLast=i===bk.length-1;
+    if(i%every===0||(isLast&&(bk.length-1)%every>every/2)){
+      const lx=x+bw/2, ly=PT+ih+(rot?12:15);
+      const t=mk('text',{x:lx,y:ly,'text-anchor':rot?'end':'middle',fill:'var(--ink-3)','font-size':9.5,
+        'font-family':'IBM Plex Mono, monospace'});
+      if(rot) t.setAttribute('transform',`rotate(-45 ${lx} ${ly})`);
+      t.textContent=bucketLabel(b.k); svg.appendChild(t);}
     const h=mk('rect',{x,y:PT,width:bw,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
   host.appendChild(svg);
   wireTip(host.parentNode,el('trend-tip'),hit,i=>{const b=bk[i];
     return `<b>${bucketLabel(b.k)}</b><br>revenue ${F(b.rev,2)} ₾<br>cost ${F(b.cogs,2)} ₾<br>margin ${F(b.margin,2)} ₾ (${F(b.mpct,1)}%)<br>${b.receipts} receipts`;});}
 
 function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)return;
-  const W=940,PL=52,PR=14,PT=16,PB=16,H=80;
+  const W=1180,PL=54,PR=14,PT=16,PB=16,H=84;
   const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length;
+  const dense=bk.length>34;
   const vals=bk.map(b=>b.mpct), hi=Math.max(...vals,0)*1.25||1, lo=Math.min(...vals,0);
   const y=v=>PT+ih-((v-lo)/((hi-lo)||1))*ih;
   const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Gross margin percent by period'});
@@ -557,9 +730,10 @@ function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)re
     stroke:'var(--ink)','stroke-width':2,'stroke-linejoin':'round'}));
   const hit=[];
   bk.forEach((b,i)=>{const [x,yy]=pts[i];
-    svg.appendChild(mk('circle',{cx:x,cy:yy,r:3.2,fill:'var(--ink)',stroke:'var(--panel)','stroke-width':1.6}));
-    const t=mk('text',{x,y:yy-9,'text-anchor':'middle',fill:'var(--ink-2)','font-size':9.5,
-      'font-family':'IBM Plex Mono, monospace'}); t.textContent=F(b.mpct,0)+'%'; svg.appendChild(t);
+    if(!dense){
+      svg.appendChild(mk('circle',{cx:x,cy:yy,r:3.2,fill:'var(--ink)',stroke:'var(--panel)','stroke-width':1.6}));
+      const t=mk('text',{x,y:yy-9,'text-anchor':'middle',fill:'var(--ink-2)','font-size':9.5,
+        'font-family':'IBM Plex Mono, monospace'}); t.textContent=F(b.mpct,0)+'%'; svg.appendChild(t);}
     const h=mk('rect',{x:x-step/2,y:PT,width:step,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
   host.appendChild(svg);
   wireTip(host.parentNode,el('mpct-tip'),hit,i=>`<b>${bucketLabel(bk[i].k)}</b><br>margin ${F(bk[i].mpct,1)}%`);}
@@ -571,6 +745,7 @@ function render(){
   ['period','gran','chan'].forEach((key,i)=>{const id=['f-period','f-gran','f-chan'][i];
     [...el(id).children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===state[key]));});
   const rows=activeLines(), prev=prevLines(), T=totals(rows), P=prev?totals(prev):null, days=periodDays();
+  syncRange(); renderCombo();
   el('f-scope').innerHTML=`<b>${F(rows.length)}</b> lines · <b>${F(T.receipts)}</b> receipts · <b>${F(days)}</b> days`;
 
   const dl=(c,p)=>{if(P===null||!p)return'';
@@ -587,7 +762,7 @@ function render(){
     <span class="val num">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</span>
     <span class="ctx">${k.ctx}</span></div>`).join('');
 
-  const from=winStart(), opt=OPTIMO.filter(o=>o.d>=from).reduce((a,o)=>a+o.rev,0);
+  const [rf,rt]=winRange(), opt=OPTIMO.filter(o=>o.d>=rf&&o.d<=rt).reduce((a,o)=>a+o.rev,0);
   el('recon').innerHTML=(!state.chan&&!state.cat&&!state.q)
     ? `<b>Reconciled to Optimo.</b> Optimo reports <span class="mono">${F(opt,2)} ₾</span> for this period;
        this page computes <span class="mono">${F(T.rev,2)} ₾</span> — difference
@@ -603,7 +778,7 @@ function render(){
   const worst=bk.reduce((a,b)=>b.rev<a.rev?b:a,bk[0]||{rev:0});
   const growth=bk.length>1&&bk[0].rev>0?100*(bk[bk.length-1].rev-bk[0].rev)/bk[0].rev:null;
   const turn=TOTAL_STOCK>0?(T.cogs/(days/365))/TOTAL_STOCK:0;
-  const g={W:'week',M:'month',Q:'quarter'}[state.gran];
+  const g={D:'day',W:'week',M:'month',Q:'quarter'}[state.gran];
   el('rhythm-stats').innerHTML=[
     {lab:`Best ${g}`,val:GEL(best.rev||0),sub:best.k?bucketLabel(best.k):'—'},
     {lab:`Weakest ${g}`,val:GEL(worst.rev||0),sub:worst.k?bucketLabel(worst.k):'—'},
@@ -659,44 +834,138 @@ function render(){
         <td><span class="mono" style="font-size:11.5px">${F(s,1)}%</span>
         <span class="bar"><i style="width:${Math.min(100,s)}%;background:${b.l==='Negative'?'var(--crit)':'var(--brand)'}"></i></span></td></tr>`;}).join('')}</tbody>`;
 
-  /* reorder */
-  const reorder=prods.filter(p=>p.txns>=3&&p.upw>=1&&p.cover!=null&&p.cover<21).sort((a,b)=>b.rev-a.rev);
-  const iR=paginate(reorder,'reorder');
-  el('t-reorder').innerHTML=iR.slice.length?
-    headers([{l:'Product'},{l:'On hand'},{l:'Per week'},{l:'Cover'}])+
-    `<tbody>${iR.slice.map(r=>{const dc=r.cover,sev=dc<=3?'crit':dc<=10?'warn':'good';
-      return `<tr><td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
-      <td class="mono">${F(r.upw,1)}</td>
-      <td><span class="chip ${sev}"><span class="dot"></span>${dc<1?'out':F(dc,0)+'d'}</span></td></tr>`;}).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">nothing moving 1+/week is running low</td></tr></tbody>`;
-  drawPager('p-reorder',iR,'reorder');
-
-  const scopeStock=STOCK.filter(s=>(!state.cat||s.c===state.cat)&&
-    (!state.q||s.p.toLowerCase().includes(state.q)||String(s.b).includes(state.q)));
-  const neg=scopeStock.filter(s=>s.q<0);
+  /* ---- stock health: what to order / understocked / overstocked ---- */
+  const scopeStock=STOCK.filter(st=>(!state.cat||st.c===state.cat)&&
+    (!state.q||st.p.toLowerCase().includes(state.q)||String(st.b).includes(state.q)));
+  const neg=scopeStock.filter(st=>st.q<0);
   el('neg-note').innerHTML=neg.length?`<b>${neg.length} products show negative stock</b>
-    (${F(neg.reduce((a,s)=>a+s.q,0),1)} units). Optimo let these sell without a matching goods receipt, so their
-    cover figures cannot be trusted until recounted.`:'';
+    (${F(neg.reduce((a,st)=>a+st.q,0),1)} units). Optimo let these sell without a matching goods receipt, so their
+    cover and suggested quantities cannot be trusted until recounted.`:'';
 
-  /* overstock */
-  LAST.over=prods.filter(p=>p.cover!=null&&p.cover>365&&p.capital>0).sort((a,b)=>b.capital-a.capital);
-  const iO=paginate(LAST.over,'over');
-  el('t-over').innerHTML=iO.slice.length?
-    headers([{l:'Product'},{l:'On hand'},{l:'Capital'},{l:'Cover'}])+
-    `<tbody>${iO.slice.map(r=>`<tr>
+  // Demand for ordering is measured over a FIXED trailing 30 days regardless of the
+  // period filter: what to buy is a decision about now, not about the window being viewed.
+  const prodBy=Object.fromEntries(prods.map(x=>[x.b,x]));
+  const health=scopeStock.map(st=>{
+    const r=L30[st.b]||{u:0,rev:0,cogs:0}, pr=prodBy[st.b];
+    const perDay=r.u/30, perWeek=perDay*7;
+    const unitMargin=r.u>0?(r.rev-r.cogs)/r.u:(pr&&pr.units>0?pr.margin/pr.units:0);
+    const cover=perDay>0?st.q/perDay:null;
+    const target=Math.ceil(perDay*30);
+    const suggest=Math.max(0,target-st.q);
+    return {b:st.b,p:st.p,c:st.c,sup:st.s,on_hand:st.q,unit_cost:st.u,capital:st.t,
+      u30:r.u,rev30:r.rev,margin30:r.rev-r.cogs,perWeek,cover,suggest,
+      orderValue:suggest*st.u,unitMargin,
+      turn:st.t>0?(r.cogs*12.1667)/st.t:0,
+      periodRev:pr?pr.rev:0,periodMargin:pr?pr.margin:0,periodUnits:pr?pr.units:0,
+      atRisk:perDay>0?perWeek*Math.max(0,unitMargin)*Math.max(0,Math.min(1,1-(st.q/perDay)/21)):0};
+  });
+
+  /* what to order */
+  const order=sortRows(health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<21),'order');
+  LAST.order=order;
+  const iOrd=paginate(order,'order');
+  el('t-order').innerHTML=order.length?
+    headers([{l:'Product'},{l:'Supplier'},{l:'On hand',k:'on_hand'},{l:'Units 30d',k:'u30'},
+      {l:'Per week',k:'perWeek'},{l:'Cover',k:'cover'},{l:'Order qty',k:'suggest'},
+      {l:'Order value',k:'orderValue'},{l:'Margin at risk / wk',k:'atRisk',w:'128px'}],'order')+
+    `<tbody>${iOrd.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
+      return `<tr>
       <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td class="mono">${F(r.on_hand,0)}</td><td class="mono">${F(r.capital,0)} ₾</td>
-      <td><span class="chip warn"><span class="dot"></span>${r.cover>3650?'10y+':F(r.cover/365,1)+'y'}</span></td></tr>`).join('')}</tbody>
-      <tfoot><tr><td>${LAST.over.length} products</td><td></td>
-      <td class="mono">${F(LAST.over.reduce((a,p)=>a+p.capital,0),0)} ₾</td><td></td></tr></tfoot>`
+      <td style="text-align:left;white-space:normal;font-size:12px;color:var(--ink-2)">${esc(r.sup)}</td>
+      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
+      <td class="mono">${F(r.u30,0)}</td>
+      <td class="mono">${F(r.perWeek,1)}</td>
+      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?'out':F(r.cover,0)+'d'}</span></td>
+      <td class="mono" style="font-weight:600">${F(r.suggest,0)}</td>
+      <td class="mono">${F(r.orderValue,0)} \u20BE</td>
+      <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} \u20BE</td></tr>`;}).join('')}</tbody>
+      <tfoot><tr><td>${order.length} to order</td><td></td><td></td><td></td><td></td><td></td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.suggest,0),0)}</td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} \u20BE</td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} \u20BE</td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">nothing needs ordering \u2014 everything selling has 21+ days of cover</td></tr></tbody>`;
+  drawPager('p-order',iOrd,'order'); wireSort('t-order','order');
+
+  const outNow=order.filter(r=>r.on_hand<=0);
+  const supN=new Set(order.map(r=>r.sup)).size;
+  el('order-stats').innerHTML=[
+    {lab:'Lines to order',val:F(order.length),sub:`across ${supN} supplier${supN===1?'':'s'}`},
+    {lab:'Already out',val:F(outNow.length),sub:'selling with zero or negative stock'},
+    {lab:'Order value',val:GEL(order.reduce((a,r)=>a+r.orderValue,0)),sub:'at current purchase cost'},
+    {lab:'Margin at risk',val:GEL(order.reduce((a,r)=>a+r.atRisk,0))+' /wk',sub:'forfeited while unavailable'},
+  ].map(x=>`<div class="stat"><span class="lab">${x.lab}</span><span class="val">${x.val}</span>
+    <span class="sub">${x.sub}</span></div>`).join('');
+
+  /* understocked */
+  const under=sortRows(health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<30),'under');
+  LAST.under=under;
+  const iU=paginate(under,'under');
+  el('t-under').innerHTML=under.length?
+    headers([{l:'Product'},{l:'On hand',k:'on_hand'},{l:'Stock value',k:'capital'},{l:'Units 30d',k:'u30'},
+      {l:'Revenue 30d',k:'rev30'},{l:'Per week',k:'perWeek'},{l:'Cover',k:'cover'},
+      {l:'Period revenue',k:'periodRev'},{l:'Period margin',k:'periodMargin'},{l:'Turns/yr',k:'turn'}],'under')+
+    `<tbody>${iU.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
+      return `<tr>
+      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} \u00B7 ${esc(r.sup)}</span></td>
+      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
+      <td class="mono">${F(r.capital,0)} \u20BE</td>
+      <td class="mono">${F(r.u30,0)}</td>
+      <td class="mono">${F(r.rev30,0)} \u20BE</td>
+      <td class="mono">${F(r.perWeek,1)}</td>
+      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?'out':F(r.cover,0)+'d'}</span></td>
+      <td class="mono">${F(r.periodRev,0)} \u20BE</td>
+      <td class="mono">${F(r.periodMargin,0)} \u20BE</td>
+      <td class="mono">${F(r.turn,1)}\u00D7</td></tr>`;}).join('')}</tbody>
+      <tfoot><tr><td>${under.length} products</td><td></td>
+        <td class="mono">${F(under.reduce((a,r)=>a+r.capital,0),0)} \u20BE</td>
+        <td class="mono">${F(under.reduce((a,r)=>a+r.u30,0),0)}</td>
+        <td class="mono">${F(under.reduce((a,r)=>a+r.rev30,0),0)} \u20BE</td><td></td><td></td>
+        <td class="mono">${F(under.reduce((a,r)=>a+r.periodRev,0),0)} \u20BE</td>
+        <td class="mono">${F(under.reduce((a,r)=>a+r.periodMargin,0),0)} \u20BE</td><td></td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">nothing below 30 days of cover</td></tr></tbody>`;
+  drawPager('p-under',iU,'under'); wireSort('t-under','under');
+
+  /* overstocked */
+  const over=sortRows(health.filter(h=>h.capital>0&&
+      ((h.cover!=null&&h.cover>365)||(h.u30===0&&h.on_hand>0&&(prodBy[h.b]||{units:0}).units>0))),'over');
+  LAST.over=over;
+  const iO=paginate(over,'over');
+  el('t-over').innerHTML=over.length?
+    headers([{l:'Product'},{l:'On hand',k:'on_hand'},{l:'Stock value',k:'capital'},{l:'Units 30d',k:'u30'},
+      {l:'Period units',k:'periodUnits'},{l:'Period revenue',k:'periodRev'},{l:'Period margin',k:'periodMargin'},
+      {l:'Cover',k:'cover'},{l:'Turns/yr',k:'turn'}],'over')+
+    `<tbody>${iO.slice.map(r=>`<tr>
+      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} \u00B7 ${esc(r.sup)}</span></td>
+      <td class="mono">${F(r.on_hand,0)}</td>
+      <td class="mono" style="font-weight:600">${F(r.capital,0)} \u20BE</td>
+      <td class="mono"${r.u30===0?' style="color:var(--crit)"':''}>${F(r.u30,0)}</td>
+      <td class="mono">${F(r.periodUnits,0)}</td>
+      <td class="mono">${F(r.periodRev,0)} \u20BE</td>
+      <td class="mono">${F(r.periodMargin,0)} \u20BE</td>
+      <td><span class="chip warn"><span class="dot"></span>${r.cover==null?'no demand':r.cover>3650?'10y+':F(r.cover/365,1)+'y'}</span></td>
+      <td class="mono">${F(r.turn,2)}\u00D7</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>${over.length} products</td><td></td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.capital,0),0)} \u20BE</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.u30,0),0)}</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.periodUnits,0),0)}</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.periodRev,0),0)} \u20BE</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.periodMargin,0),0)} \u20BE</td><td></td><td></td></tr></tfoot>`
     :`<tbody><tr><td class="empty">nothing overstocked in this selection</td></tr></tbody>`;
-  drawPager('p-over',iO,'over');
+  drawPager('p-over',iO,'over'); wireSort('t-over','over');
+
+  const stalled=over.filter(r=>r.u30===0);
+  el('over-stats').innerHTML=[
+    {lab:'Overstocked lines',val:F(over.length),sub:'over a year of cover, or stalled'},
+    {lab:'Capital tied',val:GEL(over.reduce((a,r)=>a+r.capital,0)),sub:'at purchase cost'},
+    {lab:'No sale in 30 days',val:F(stalled.length),sub:'sold before, nothing recently'},
+    {lab:'Earned in period',val:GEL(over.reduce((a,r)=>a+r.periodMargin,0)),sub:'gross margin from this capital'},
+  ].map(x=>`<div class="stat"><span class="lab">${x.lab}</span><span class="val">${x.val}</span>
+    <span class="sub">${x.sub}</span></div>`).join('');
 
   /* dead stock */
   const sold=new Set(rows.map(l=>l.b));
-  LAST.dead=scopeStock.filter(s=>s.q>0&&!sold.has(s.b)).sort((a,b)=>b.t-a.t);
-  const deadCap=LAST.dead.reduce((a,s)=>a+s.t,0), scopeCap=scopeStock.reduce((a,s)=>a+s.t,0);
+  LAST.dead=scopeStock.filter(st=>st.q>0&&!sold.has(st.b)).sort((a,b)=>b.t-a.t);
+  const deadCap=LAST.dead.reduce((a,st)=>a+st.t,0), scopeCap=scopeStock.reduce((a,st)=>a+st.t,0);
   const allTime=state.period==='all'&&!state.chan;
   el('dead-h').textContent=allTime?'Half your stock capital has never sold':'Stock with no sales in this period';
   el('dead-big').textContent=GEL(deadCap)+'  ·  '+F(LAST.dead.length)+' products';
@@ -769,7 +1038,7 @@ const obs=new IntersectionObserver(es=>{
   es.forEach(e=>{if(e.isIntersecting){
     navLinks.forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+e.target.id));}});
 },{rootMargin:'-15% 0px -70% 0px',threshold:0});
-['overview','rhythm','products','margin','stock','dead','categories','patterns','method']
+['overview','rhythm','products','margin','order','stock','overstock','dead','categories','patterns','method']
   .forEach(id=>{const n=el(id); if(n) obs.observe(n);});
 
 el('s-first').textContent=new Date(FIRST_REV+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
