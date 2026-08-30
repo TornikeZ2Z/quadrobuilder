@@ -7,7 +7,11 @@ ASOF = '2026-08-30'
 
 lines = con.execute("""
 SELECT strftime(s.date,'%Y-%m-%d') AS d, ISODOW(s.date) AS w,
-       s.channel AS ch, s.receipt AS r, s.barcode AS b, s.product AS p,
+       s.channel AS ch, s.barcode AS b, s.product AS p,
+       -- 17 B2B lines carry no receipt number; group those by customer+day so the
+       -- receipt count and average basket stay meaningful instead of collapsing to one.
+       CASE WHEN s.receipt IS NOT NULL THEN CAST(s.receipt AS VARCHAR)
+            ELSE 'u:'||COALESCE(s.company,'?')||':'||strftime(s.date,'%Y-%m-%d') END AS r,
        s.rev_qty AS q, ROUND(s.rev_value,2) AS v,
        s.is_return AS ret, ROUND(s.line_value,2) AS lv,
        COALESCE(st.category,'—') AS c,
