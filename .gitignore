@@ -1,0 +1,4 @@
+data/
+*.xlsx
+*.duckdb
+dashboard.html

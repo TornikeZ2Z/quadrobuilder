@@ -1,0 +1,670 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>QuadroBuilder Shelf &amp; Till</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* Deliberately a single light design: white, minimal. Every colour is painted
+   explicitly so the page holds on any host ground, light or dark. */
+:root{
+  color-scheme: light;
+  --bg:#FFFFFF; --panel:#FFFFFF; --sunken:#F4F5F6;
+  --line:#E4E6E8; --line-2:#F0F1F2;
+  --ink:#101214; --ink-2:#646A70; --ink-3:#9AA0A6;
+  --accent:#2A78D6; --accent-2:#EB6834;
+  --crit:#B3302F; --crit-bg:#FCEEEE;
+  --warn:#8A6100; --warn-bg:#FBF3DF;
+  --good:#1B7A57; --good-bg:#E9F5F0;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans Georgian","Archivo",system-ui,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px; margin:0 auto; padding:34px 26px 90px; display:flex; flex-direction:column; gap:40px}
+h1,h2{font-family:"Archivo",system-ui,sans-serif; margin:0; letter-spacing:-.018em; text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+.num{font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums; font-weight:600}
+
+/* masthead */
+.mast{display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; justify-content:space-between;
+  border-bottom:1px solid var(--ink); padding-bottom:18px}
+.mast h1{font-size:clamp(27px,4vw,38px); font-weight:600; line-height:1.05}
+.mast .sub{color:var(--ink-2); font-size:14px; margin:8px 0 0; max-width:58ch}
+.stamp{text-align:right; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-3); line-height:2; font-family:"IBM Plex Mono",monospace}
+.stamp b{color:var(--ink); font-weight:500}
+
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:8px}
+section > h2{font-size:19px; font-weight:600; margin-bottom:5px}
+section > .lede{color:var(--ink-2); font-size:14px; max-width:76ch; margin:0 0 18px}
+
+/* filter bar */
+.filters{position:sticky; top:0; z-index:20; background:var(--bg); border-bottom:1px solid var(--line);
+  padding:12px 0; display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-bottom:-14px}
+.fgroup{display:flex; align-items:center; gap:8px}
+.flab{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-3)}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden}
+.seg button{appearance:none; border:0; background:var(--bg); color:var(--ink-2); cursor:pointer;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; padding:5px 11px; border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.seg button:hover:not([aria-pressed="true"]){background:var(--sunken)}
+select,input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:13px; color:var(--ink);
+  background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:5px 9px; max-width:230px}
+input[type=search]{width:190px}
+.reset{appearance:none; background:none; border:0; color:var(--accent); cursor:pointer;
+  font-size:12.5px; font-family:"IBM Plex Mono",monospace; padding:4px}
+.scope{font-size:12.5px; color:var(--ink-2); font-family:"IBM Plex Mono",monospace}
+.scope b{color:var(--ink); font-weight:500}
+
+/* kpis */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(172px,1fr)); gap:0;
+  border:1px solid var(--line); border-radius:8px; overflow:hidden}
+.kpi{padding:15px 17px 14px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:3px}
+.kpi:last-child{border-right:0}
+.kpi .lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3)}
+.kpi .val{font-size:25px; line-height:1.2}
+.kpi .val small{font-size:14px; font-weight:500; color:var(--ink-2)}
+.kpi .ctx{font-size:12px; color:var(--ink-2); line-height:1.4}
+.kpi.flag .val{color:var(--crit)}
+
+.panel{border:1px solid var(--line); border-radius:8px; padding:20px 21px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(440px,1fr)); gap:20px}
+
+/* tables */
+.tw{overflow-x:auto; margin:0 -21px; padding:0 21px}
+table{border-collapse:collapse; width:100%; font-size:13px}
+th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); text-align:right; font-weight:400; padding:0 0 9px; border-bottom:1px solid var(--line);
+  white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:9px 0; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+td:first-child{text-align:left; white-space:normal; padding-right:16px; line-height:1.35}
+tbody tr:last-child td{border-bottom:none}
+td+td, th+th{padding-left:14px}
+.pname{font-weight:500}
+.pmeta{display:block; font-size:10.5px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+.empty{color:var(--ink-3); font-size:13px; padding:18px 0; text-align:center;
+  font-family:"IBM Plex Mono",monospace}
+
+.chip{display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:99px;
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; white-space:nowrap}
+.chip.crit{background:var(--crit-bg); color:var(--crit)}
+.chip.warn{background:var(--warn-bg); color:var(--warn)}
+.chip.good{background:var(--good-bg); color:var(--good)}
+.chip .dot{width:5px; height:5px; border-radius:99px; background:currentColor; flex:none}
+
+.bar{display:block; height:4px; border-radius:2px; background:var(--sunken); overflow:hidden;
+  min-width:56px; margin-top:4px}
+.bar i{display:block; height:100%; border-radius:2px}
+
+.callout{border:1px solid var(--crit); border-radius:8px; padding:20px 21px;
+  display:flex; flex-direction:column; gap:10px}
+.callout h2{color:var(--crit); font-size:18px}
+.callout .big{font-size:clamp(21px,3.2vw,30px); font-weight:600; font-family:"Archivo",sans-serif;
+  color:var(--crit); font-variant-numeric:tabular-nums; line-height:1.15}
+.callout p{margin:0; font-size:14px; max-width:78ch}
+
+.note{border-left:2px solid var(--accent); padding:10px 0 10px 15px; font-size:13px;
+  color:var(--ink-2); margin:16px 0 0}
+.note b{color:var(--ink); font-weight:500}
+
+.chartbox{position:relative}
+svg{display:block; width:100%; overflow:visible}
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--ink); color:#fff; border-radius:6px; padding:7px 10px; font-size:11.5px;
+  font-family:"IBM Plex Mono",monospace; white-space:nowrap; z-index:30; transform:translate(-50%,-118%);
+  line-height:1.5}
+.legend{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3); margin:10px 0 0;
+  display:flex; gap:16px; flex-wrap:wrap}
+.legend span{display:inline-flex; align-items:center; gap:5px}
+.legend i{width:9px; height:9px; border-radius:2px; display:inline-block}
+
+footer{border-top:1px solid var(--line); padding-top:20px; color:var(--ink-2); font-size:12.5px;
+  display:flex; flex-direction:column; gap:9px}
+footer b{color:var(--ink); font-weight:500}
+footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:5px}
+
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:640px){
+  .wrap{padding:22px 15px 60px; gap:30px}
+  .tw{margin:0 -16px; padding:0 16px}
+  .panel{padding:16px}
+  .grid2{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi{border-bottom:1px solid var(--line)}
+  .filters{position:static}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <span class="eyebrow">შპს ქუადრო ბილდერი · building materials retail</span>
+      <h1>Shelf &amp; Till</h1>
+      <p class="sub">What sells, how fast it moves, and where the money is stuck — rebuilt from Optimo exports and netted for returns.</p>
+    </div>
+    <div class="stamp">
+      Trading since <b id="s-first"></b><br>
+      <b id="s-weeks"></b> weeks of data<br>
+      As of <b id="s-asof"></b>
+    </div>
+  </header>
+
+  <div class="filters" role="group" aria-label="Filters">
+    <div class="fgroup">
+      <span class="flab">Period</span>
+      <span class="seg" id="f-period"></span>
+    </div>
+    <div class="fgroup">
+      <span class="flab">Category</span>
+      <select id="f-cat" aria-label="Filter by category"></select>
+    </div>
+    <div class="fgroup">
+      <span class="flab">Product</span>
+      <input type="search" id="f-q" placeholder="search name or barcode" aria-label="Search product">
+    </div>
+    <button class="reset" id="f-reset" type="button">reset</button>
+    <span class="scope" id="f-scope"></span>
+  </div>
+
+  <section>
+    <span class="eyebrow">Retail counter · returns netted out</span>
+    <div class="kpis" id="kpis"></div>
+    <p class="note" id="k-note"></p>
+  </section>
+
+  <section class="panel">
+    <span class="eyebrow">Weekly net revenue · retail</span>
+    <h2>Trading rhythm</h2>
+    <p class="lede">Each column is one week at the counter, labelled with its revenue.</p>
+    <div class="chartbox"><div id="wk"></div><div class="tip" id="wk-tip"></div></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <span class="eyebrow">Act on this</span>
+      <h2>Running out</h2>
+      <p class="lede">Products still selling with under 21 days of stock left, at the pace of the selected period.</p>
+      <div class="tw"><table id="t-reorder"></table></div>
+      <p class="note" id="neg-note"></p>
+    </section>
+
+    <section class="panel">
+      <span class="eyebrow">Units per week · selected period</span>
+      <h2>Fastest movers</h2>
+      <p class="lede">Volume leaders. Deliberately not the same list as your earners.</p>
+      <div class="tw"><table id="t-velocity"></table></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <span class="eyebrow">Net revenue &amp; realised margin</span>
+    <h2>Where the money actually is</h2>
+    <p class="lede">Ranked by revenue. The margin bar shows what you keep — high revenue on a thin bar is a
+      footfall product, not a profit one.</p>
+    <div class="tw"><table id="t-top"></table></div>
+    <p class="legend">
+      <span><i style="background:var(--accent)"></i> margin 20% and above</span>
+      <span><i style="background:var(--accent-2)"></i> margin under 20%</span>
+    </p>
+  </section>
+
+  <section class="callout">
+    <span class="eyebrow" style="color:var(--crit)">The biggest finding</span>
+    <h2 id="dead-h"></h2>
+    <div class="big" id="dead-big"></div>
+    <p id="dead-p"></p>
+    <div class="tw" style="margin-top:4px"><table id="t-dead"></table></div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <span class="eyebrow">Net revenue by category</span>
+      <h2>Category mix</h2>
+      <div class="chartbox"><div id="cat"></div><div class="tip" id="cat-tip"></div></div>
+      <p class="legend">
+        <span><i style="background:var(--accent)"></i> margin 20% and above</span>
+        <span><i style="background:var(--accent-2)"></i> margin under 20%</span>
+      </p>
+    </section>
+
+    <section class="panel">
+      <span class="eyebrow">When the shop earns</span>
+      <h2>Week &amp; day pattern</h2>
+      <div class="chartbox"><div id="dow"></div><div class="tip" id="dow-tip"></div></div>
+      <span class="eyebrow" style="margin-top:18px">By hour of day</span>
+      <div class="chartbox"><div id="hr"></div><div class="tip" id="hr-tip"></div></div>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section class="panel">
+      <span class="eyebrow">Counter operations</span>
+      <h2>Payment &amp; staff</h2>
+      <div class="tw"><table id="t-pay"></table></div>
+      <div class="tw" style="margin-top:18px"><table id="t-staff"></table></div>
+    </section>
+
+    <section class="panel">
+      <span class="eyebrow">Kept separate · not affected by filters</span>
+      <h2>The B2B book</h2>
+      <p class="lede">Entity (ი/პ) orders are almost entirely one customer on consignment, and most of the value is
+        cancelled. Merging this into retail would distort every ranking on this page.</p>
+      <div class="tw"><table id="t-b2b"></table></div>
+    </section>
+  </div>
+
+  <footer>
+    <b>How this was built</b>
+    <ul>
+      <li>Five Excel exports from Optimo — retail line items, B2B line items, stock on hand, stock movement, daily statistics — loaded into DuckDB, then embedded row-level so every filter recalculates in the browser.</li>
+      <li>Returns (<span class="mono">დაბრუნებული</span>) are subtracted, not summed. Optimo's own dashboard adds them to revenue instead, which is why its headline is higher than the one here.</li>
+      <li><b>Margin is approximate.</b> Optimo's export carries no cost-at-time-of-sale, so margin uses each product's <em>current</em> purchase price. Roughly 29% here against Optimo's own 24% is the size of that gap — directionally sound, not exact to the tetri.</li>
+      <li>Velocity and days-of-cover follow the selected period. Products with fewer than 3 sales are excluded from velocity ranking — with 372 products across 909 lines, a single sale would otherwise look like a trend.</li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+const D = __DATA__;
+const LINES = D.lines, STOCK = D.stock, ASOF = new Date(D.as_of + 'T12:00:00');
+const F = (n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const GEL = n => F(n,0)+' ₾';
+const KF = n => Math.abs(n)>=1000 ? (n/1000).toFixed(n>=10000?0:1)+'k' : F(n,0);
+const el = id => document.getElementById(id);
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SVGNS='http://www.w3.org/2000/svg';
+const mk=(t,a={})=>{const e=document.createElementNS(SVGNS,t); for(const k in a) e.setAttribute(k,a[k]); return e;};
+const STOCK_BY = Object.fromEntries(STOCK.map(s=>[s.b,s]));
+const FIRST = LINES[0].d, TOTAL_STOCK = STOCK.reduce((a,s)=>a+s.t,0);
+
+/* ---------- state ---------- */
+const PERIODS = [{k:'all',l:'All time'},{k:'90',l:'90 days'},{k:'60',l:'60 days'},{k:'30',l:'30 days'}];
+const state = {period:'all', cat:'', q:''};
+
+el('f-period').innerHTML = PERIODS.map(p=>
+  `<button type="button" data-k="${p.k}" aria-pressed="${p.k===state.period}">${p.l}</button>`).join('');
+// A filter can shrink the page a long way; re-anchor so the reader is never
+// left stranded below the new content.
+function apply(){
+  render();
+  const top = document.querySelector('.filters').offsetTop;
+  if(window.scrollY > top) window.scrollTo({top, behavior:'instant'});
+}
+el('f-period').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  state.period = b.dataset.k; apply();
+});
+const cats = [...new Set(LINES.map(l=>l.c))].sort((a,b)=>a.localeCompare(b,'ka'));
+el('f-cat').innerHTML = `<option value="">All categories</option>` +
+  cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+el('f-cat').addEventListener('change', e=>{ state.cat = e.target.value; render(); });
+let qt; el('f-q').addEventListener('input', e=>{
+  clearTimeout(qt); qt = setTimeout(()=>{ state.q = e.target.value.trim().toLowerCase(); render(); }, 160);
+});
+el('f-reset').addEventListener('click', ()=>{
+  state.period='all'; state.cat=''; state.q='';
+  el('f-cat').value=''; el('f-q').value=''; render();
+});
+
+/* ---------- filtering ---------- */
+function windowStart(){
+  if(state.period==='all') return FIRST;
+  const d = new Date(ASOF); d.setDate(d.getDate() - Number(state.period) + 1);
+  return d.toISOString().slice(0,10);
+}
+function activeLines(){
+  const from = windowStart(), q = state.q;
+  return LINES.filter(l =>
+    l.d >= from &&
+    (!state.cat || l.c === state.cat) &&
+    (!q || l.p.toLowerCase().includes(q) || String(l.b).includes(q)));
+}
+function periodDays(){
+  const from = windowStart();
+  return Math.max(1, Math.round((ASOF - new Date(from+'T12:00:00'))/864e5) + 1);
+}
+
+/* ---------- aggregation ---------- */
+function byProduct(rows){
+  const m = new Map();
+  for(const l of rows){
+    let o = m.get(l.b);
+    if(!o) m.set(l.b, o = {b:l.b, p:l.p, c:l.c, rev:0, units:0, cogs:0, rs:new Set()});
+    o.rev += l.v; o.units += l.q; o.cogs += l.q*l.u; o.rs.add(l.r);
+  }
+  return [...m.values()].map(o=>{
+    const st = STOCK_BY[o.b];
+    o.txns = o.rs.size; o.margin = o.rev - o.cogs;
+    o.margin_pct = o.rev>0 ? 100*o.margin/o.rev : 0;
+    o.on_hand = st ? st.q : 0;
+    const perDay = o.units / periodDays();
+    o.upw = perDay*7;
+    o.cover = perDay>0 ? o.on_hand/perDay : null;
+    return o;
+  });
+}
+function sumBy(rows, key){
+  const m = new Map();
+  for(const l of rows){
+    let o = m.get(l[key]);
+    if(!o) m.set(l[key], o = {k:l[key], rev:0, units:0, cogs:0, rs:new Set(), bs:new Set()});
+    o.rev += l.v; o.units += l.q; o.cogs += l.q*l.u; o.rs.add(l.r); o.bs.add(l.b);
+  }
+  return [...m.values()].map(o=>({...o, receipts:o.rs.size, skus:o.bs.size,
+    margin:o.rev-o.cogs, margin_pct:o.rev>0?100*(o.rev-o.cogs)/o.rev:0}))
+    .sort((a,b)=>b.rev-a.rev);
+}
+
+/* ---------- tooltip ---------- */
+function wireTip(host, tipEl, nodes, html){
+  nodes.forEach((n,i)=>{
+    n.style.cursor='crosshair';
+    n.addEventListener('pointerenter', ()=>{
+      tipEl.innerHTML = html(i);
+      const hb = host.getBoundingClientRect(), b = n.getBoundingClientRect();
+      tipEl.style.left = (b.left-hb.left+b.width/2)+'px';
+      tipEl.style.top  = (b.top-hb.top)+'px';
+      tipEl.style.opacity = 1;
+    });
+    n.addEventListener('pointerleave', ()=> tipEl.style.opacity = 0);
+  });
+}
+
+/* ---------- horizontal bars, always labelled ---------- */
+function hbar(mount, rows, label, value, fmt, colorFn){
+  mount.innerHTML='';
+  if(!rows.length){ mount.innerHTML='<p class="empty">no data for this selection</p>'; return []; }
+  const W=470, rh=25, PT=6, LBL=182, VAL=64, H=rows.length*rh+PT+8;
+  const max = Math.max(...rows.map(value)) || 1;
+  const svg = mk('svg',{viewBox:`0 0 ${W} ${H}`});
+  const bars=[];
+  rows.forEach((r,i)=>{
+    const y = PT+i*rh;
+    const t = mk('text',{x:0, y:y+13, fill:'var(--ink-2)', 'font-size':11,
+      'font-family':'Noto Sans Georgian, sans-serif'});
+    let s = label(r); if(s.length>28) s = s.slice(0,27)+'…';
+    t.textContent = s;
+    const title = mk('title'); title.textContent = label(r); t.appendChild(title);
+    svg.appendChild(t);
+    const bw = Math.max(2, (value(r)/max)*(W-LBL-VAL));
+    const rect = mk('rect',{x:LBL, y:y+3, width:bw, height:13, rx:2,
+      fill: colorFn?colorFn(r):'var(--accent)'});
+    svg.appendChild(rect); bars.push(rect);
+    const v = mk('text',{x:LBL+bw+6, y:y+13, fill:'var(--ink-2)', 'font-size':10.5,
+      'font-family':'IBM Plex Mono, monospace'});
+    v.textContent = fmt(r); svg.appendChild(v);
+  });
+  mount.appendChild(svg);
+  return bars;
+}
+
+/* ---------- weekly column chart, every column labelled ---------- */
+function weekly(rows){
+  const m = new Map();
+  for(const l of rows){
+    const d = new Date(l.d+'T12:00:00');
+    const off = (d.getDay()+6)%7;                    // Monday start
+    d.setDate(d.getDate()-off);
+    const k = d.toISOString().slice(0,10);
+    let o = m.get(k); if(!o) m.set(k, o={wk:k, rev:0, rs:new Set()});
+    o.rev += l.v; o.rs.add(l.r);
+  }
+  return [...m.values()].sort((a,b)=>a.wk<b.wk?-1:1).map(o=>({...o, receipts:o.rs.size}));
+}
+function drawWeekly(data){
+  const host = el('wk'); host.innerHTML='';
+  if(!data.length){ host.innerHTML='<p class="empty">no sales in this selection</p>'; return; }
+  const W=920, PL=48, PR=16, PT=26, PB=54, H=252;
+  const iw=W-PL-PR, ih=H-PT-PB, step=iw/data.length, bw=Math.max(5, Math.min(34, step-7));
+  // signed scale: weeks where returns exceed sales sit below the zero line
+  const vals = data.map(d=>d.rev);
+  const rawMax = Math.max(...vals, 0), rawMin = Math.min(...vals, 0);
+  const pad = (rawMax - rawMin || 1) * 0.15;
+  const hi = rawMax + pad, lo = rawMin - (rawMin < 0 ? pad : 0);
+  const y = v => PT + ih - ((v - lo)/(hi - lo))*ih;
+  const zeroY = y(0);
+  const svg = mk('svg',{viewBox:`0 0 ${W} ${H}`, role:'img','aria-label':'Weekly net revenue'});
+
+  [hi, (hi+lo)/2, lo].forEach(v=>{
+    if(Math.abs(v) < 1e-9) return;
+    svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:y(v),y2:y(v),stroke:'var(--line-2)','stroke-width':1}));
+    const tx=mk('text',{x:PL-8,y:y(v)+4,'text-anchor':'end',fill:'var(--ink-3)','font-size':10,
+      'font-family':'IBM Plex Mono, monospace'}); tx.textContent=KF(v); svg.appendChild(tx);
+  });
+  // zero baseline, drawn last of the guides so it reads as the axis
+  svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:zeroY,y2:zeroY,stroke:'var(--ink-3)','stroke-width':1}));
+  const z0=mk('text',{x:PL-8,y:zeroY+4,'text-anchor':'end',fill:'var(--ink-3)','font-size':10,
+    'font-family':'IBM Plex Mono, monospace'}); z0.textContent='0'; svg.appendChild(z0);
+
+  const bars=[];
+  data.forEach((d,i)=>{
+    const x = PL+i*step+(step-bw)/2;
+    const neg = d.rev < 0;
+    const top = neg ? zeroY : y(d.rev);
+    const h = Math.max(1.5, Math.abs(y(d.rev) - zeroY));
+    const r = mk('rect',{x, y:top, width:bw, height:h, rx:2,
+      fill: neg ? 'var(--accent-2)' : 'var(--accent)'});
+    svg.appendChild(r); bars.push(r);
+    // value label on every column — above positives, below negatives
+    const v = mk('text',{x:x+bw/2, y: neg ? top+h+10 : top-6, 'text-anchor':'middle',
+      fill: neg ? 'var(--accent-2)' : 'var(--ink-2)',
+      'font-size':9, 'font-family':'IBM Plex Mono, monospace'});
+    v.textContent = KF(d.rev); svg.appendChild(v);
+    // date label on every column, rotated so none collide
+    const dt = new Date(d.wk+'T12:00:00');
+    const lx = x+bw/2, ly = PT+ih+12;
+    const t = mk('text',{x:lx, y:ly, 'text-anchor':'end', fill:'var(--ink-3)', 'font-size':9,
+      'font-family':'IBM Plex Mono, monospace',
+      transform:`rotate(-45 ${lx} ${ly})`});
+    t.textContent = dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    svg.appendChild(t);
+  });
+  host.appendChild(svg);
+  wireTip(host.parentNode, el('wk-tip'), bars, i=>{
+    const d=data[i];
+    return `<b>week of ${new Date(d.wk+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</b><br>${F(d.rev,2)} ₾ · ${d.receipts} receipts`;
+  });
+}
+
+/* ---------- render ---------- */
+function render(){
+  [...el('f-period').children].forEach(b=>b.setAttribute('aria-pressed', b.dataset.k===state.period));
+  const rows = activeLines(), prods = byProduct(rows), days = periodDays();
+
+  el('f-scope').innerHTML = `<b>${F(rows.length)}</b> lines · <b>${F(new Set(rows.map(r=>r.r)).size)}</b> receipts · <b>${F(days)}</b> days`;
+
+  /* KPIs */
+  const gross = rows.reduce((a,l)=>a + (l.v>0?l.v:0), 0);
+  const rets  = rows.reduce((a,l)=>a + (l.v<0?-l.v:0), 0);
+  const net   = rows.reduce((a,l)=>a+l.v, 0);
+  const cogs  = rows.reduce((a,l)=>a+l.q*l.u, 0);
+  const receipts = new Set(rows.map(l=>l.r)).size;
+  const units = rows.reduce((a,l)=>a+l.q,0);
+  const soldB = new Set(rows.map(l=>l.b));
+  const scopeStock = STOCK.filter(s=> (!state.cat || s.c===state.cat) &&
+      (!state.q || s.p.toLowerCase().includes(state.q) || String(s.b).includes(state.q)));
+  const deadRows = scopeStock.filter(s=> s.q>0 && !soldB.has(s.b))
+                             .sort((a,b)=>b.t-a.t);
+  const deadCap = deadRows.reduce((a,s)=>a+s.t,0);
+  const scopeCap = scopeStock.reduce((a,s)=>a+s.t,0);
+
+  const K = [
+    {lab:'Net revenue', val:GEL(net), ctx:`${F(gross)} ₾ gross − ${F(rets)} ₾ returned`},
+    {lab:'Realised margin', val:(net>0?F(100*(net-cogs)/net,1):'—'), unit:'%',
+     ctx:`${GEL(net-cogs)} kept on ${GEL(cogs)} of goods`},
+    {lab:'Receipts', val:F(receipts), ctx:`${receipts?GEL(net/receipts):'—'} average basket`},
+    {lab:'Units sold', val:F(units), ctx:`${F(soldB.size)} of ${F(scopeStock.length)} products sold`},
+    {lab:'Return rate', val:(gross>0?F(100*rets/gross,1):'0.0'), unit:'%',
+     ctx:`${GEL(rets)} came back in this period`},
+    {lab:'Dead stock', val:GEL(deadCap), flag:true,
+     ctx:`${F(deadRows.length)} products · ${scopeCap>0?F(100*deadCap/scopeCap,1):'0'}% of stock capital`},
+  ];
+  el('kpis').innerHTML = K.map(k=>`
+    <div class="kpi${k.flag?' flag':''}">
+      <span class="lab">${k.lab}</span>
+      <span class="val num">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</span>
+      <span class="ctx">${k.ctx}</span>
+    </div>`).join('');
+
+  el('k-note').innerHTML = (state.period==='all' && !state.cat && !state.q)
+    ? `<b>These figures differ from Optimo's, on purpose.</b> Optimo reports <span class="mono">${F(D.optimo.revenue,2)} ₾</span> because it
+       counts returned goods as revenue and blends in the mostly-cancelled B2B book. Returns are subtracted here.`
+    : `Filtered view — <b>${F(rows.length)}</b> of <b>${F(LINES.length)}</b> retail lines. Dead stock and product counts follow the same filters.`;
+
+  drawWeekly(weekly(rows));
+
+  /* reorder */
+  // Only products that actually move: below 1 unit/week, an empty shelf is a
+  // discontinued line, not a reorder.
+  const reorder = prods.filter(p=>p.txns>=3 && p.upw>=1 && p.cover!=null && p.cover<21)
+                       .sort((a,b)=>b.rev-a.rev).slice(0,12);
+  el('t-reorder').innerHTML = reorder.length ? `
+    <thead><tr><th>Product</th><th>On hand</th><th>Per week</th><th>Cover</th></tr></thead>
+    <tbody>${reorder.map(r=>{
+      const dc=r.cover, sev = dc<=3?'crit':dc<=10?'warn':'good';
+      return `<tr>
+        <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+        <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
+        <td class="mono">${F(r.upw,1)}</td>
+        <td><span class="chip ${sev}"><span class="dot"></span>${dc<1?'out':F(dc,0)+'d'}</span></td>
+      </tr>`;}).join('')}</tbody>`
+    : `<tbody><tr><td class="empty">nothing moving 1+/week is running low here</td></tr></tbody>`;
+
+  const negStock = scopeStock.filter(s=>s.q<0);
+  el('neg-note').innerHTML = negStock.length
+    ? `<b>${negStock.length} products show negative stock</b> (${F(negStock.reduce((a,s)=>a+s.q,0),1)} units).
+       Optimo let these sell without a matching goods receipt, so their cover figures cannot be trusted until the
+       counts are corrected.`
+    : '';
+
+  /* velocity */
+  const vel = prods.filter(p=>p.txns>=3).sort((a,b)=>b.upw-a.upw).slice(0,12);
+  el('t-velocity').innerHTML = vel.length ? `
+    <thead><tr><th>Product</th><th>Units/wk</th><th>Revenue</th><th>Cover</th></tr></thead>
+    <tbody>${vel.map(r=>{
+      const dc=r.cover, sev = dc==null?'':dc<=10?'crit':dc<=45?'warn':'good';
+      return `<tr>
+        <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${F(r.units,0)} units · ${r.txns} sales</span></td>
+        <td class="mono">${F(r.upw,1)}</td>
+        <td class="mono">${F(r.rev,0)} ₾</td>
+        <td>${dc==null?'<span class="pmeta">—</span>':`<span class="chip ${sev}"><span class="dot"></span>${F(dc,0)}d</span>`}</td>
+      </tr>`;}).join('')}</tbody>`
+    : `<tbody><tr><td class="empty">no product has 3+ sales in this selection</td></tr></tbody>`;
+
+  /* top revenue */
+  const top = prods.filter(p=>p.rev>0).sort((a,b)=>b.rev-a.rev).slice(0,15);
+  const maxm = Math.max(...top.map(r=>r.margin_pct), 1);
+  el('t-top').innerHTML = top.length ? `
+    <thead><tr><th>Product</th><th>Revenue</th><th>Units</th><th>Sales</th><th>Margin</th><th style="min-width:100px">Margin %</th></tr></thead>
+    <tbody>${top.map(r=>`
+      <tr>
+        <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+        <td class="mono">${F(r.rev,0)} ₾</td>
+        <td class="mono">${F(r.units,0)}</td>
+        <td class="mono">${r.txns}</td>
+        <td class="mono">${F(r.margin,0)} ₾</td>
+        <td><span class="mono" style="font-size:11.5px">${F(r.margin_pct,1)}%</span>
+          <span class="bar"><i style="width:${Math.max(2,(r.margin_pct/maxm)*100)}%;background:${r.margin_pct<20?'var(--accent-2)':'var(--accent)'}"></i></span></td>
+      </tr>`).join('')}</tbody>`
+    : `<tbody><tr><td class="empty">no sales in this selection</td></tr></tbody>`;
+
+  /* dead stock */
+  const allTime = state.period==='all';
+  el('dead-h').textContent = allTime ? 'Half your stock capital has never sold'
+                                     : 'Stock with no sales in this period';
+  el('dead-big').textContent = GEL(deadCap) + '  ·  ' + F(deadRows.length) + ' products';
+  el('dead-p').innerHTML = deadRows.length
+    ? `${F(deadRows.length)} products ${allTime?'have never recorded a single retail sale':'did not sell in the selected period'},
+       yet hold ${GEL(deadCap)} of purchase cost — <b>${scopeCap>0?F(100*deadCap/scopeCap,1):'0'}% of the ${GEL(scopeCap)} of stock in view</b>.
+       Every lari here is capital on a shelf instead of turning. The heaviest:`
+    : `Every product in this selection has sold at least once.`;
+  el('t-dead').innerHTML = deadRows.length ? `
+    <thead><tr><th>Product</th><th>Supplier</th><th>Qty</th><th>Unit cost</th><th>Capital</th></tr></thead>
+    <tbody>${deadRows.slice(0,12).map(r=>`
+      <tr>
+        <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+        <td style="text-align:left;white-space:normal;font-size:12px;color:var(--ink-2)">${esc(r.s)}</td>
+        <td class="mono">${F(r.q,0)}</td>
+        <td class="mono">${F(r.u,2)}</td>
+        <td class="mono" style="font-weight:500">${F(r.t,0)} ₾</td>
+      </tr>`).join('')}</tbody>` : '';
+
+  /* category */
+  const catRows = sumBy(rows,'c').filter(r=>r.rev>0).slice(0,8);
+  const cb = hbar(el('cat'), catRows, r=>r.k, r=>r.rev, r=>KF(r.rev)+' ₾',
+    r=> r.margin_pct<20 ? 'var(--accent-2)' : 'var(--accent)');
+  wireTip(el('cat').parentNode, el('cat-tip'), cb, i=>{
+    const r=catRows[i];
+    return `<b>${esc(r.k)}</b><br>${F(r.rev,2)} ₾ · ${F(r.units,0)} units<br>margin ${F(r.margin_pct,1)}% · ${r.skus} products`;
+  });
+
+  /* day of week */
+  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dowRows = names.map((n,i)=>{
+    const sel = rows.filter(l=>l.w===i+1);
+    return {k:n, rev:sel.reduce((a,l)=>a+l.v,0), receipts:new Set(sel.map(l=>l.r)).size};
+  }).filter(r=>r.rev!==0);
+  const db = hbar(el('dow'), dowRows, r=>r.k, r=>Math.max(0,r.rev), r=>KF(r.rev)+' ₾');
+  wireTip(el('dow').parentNode, el('dow-tip'), db, i=>
+    `<b>${dowRows[i].k}</b><br>${F(dowRows[i].rev,2)} ₾ · ${dowRows[i].receipts} receipts`);
+
+  /* hour */
+  const hourMap = new Map();
+  for(const l of rows){
+    let o=hourMap.get(l.h); if(!o) hourMap.set(l.h, o={h:l.h, rev:0, rs:new Set()});
+    o.rev+=l.v; o.rs.add(l.r);
+  }
+  const hrRows=[...hourMap.values()].sort((a,b)=>a.h-b.h)
+    .map(o=>({k:String(o.h).padStart(2,'0')+':00', rev:o.rev, receipts:o.rs.size}))
+    .filter(r=>r.rev!==0);
+  const hb = hbar(el('hr'), hrRows, r=>r.k, r=>Math.max(0,r.rev), r=>KF(r.rev)+' ₾');
+  wireTip(el('hr').parentNode, el('hr-tip'), hb, i=>
+    `<b>${hrRows[i].k}</b><br>${F(hrRows[i].rev,2)} ₾ · ${hrRows[i].receipts} receipts`);
+
+  /* payment + staff */
+  const pay = sumBy(rows,'m'), tot = pay.reduce((a,b)=>a+b.rev,0);
+  el('t-pay').innerHTML = pay.length ? `
+    <thead><tr><th>Payment</th><th>Revenue</th><th>Receipts</th><th>Share</th></tr></thead>
+    <tbody>${pay.map(r=>`<tr><td class="pname">${esc(r.k)}</td>
+      <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${r.receipts}</td>
+      <td class="mono">${tot>0?F(100*r.rev/tot,1):'0'}%</td></tr>`).join('')}</tbody>`
+    : `<tbody><tr><td class="empty">no data</td></tr></tbody>`;
+
+  const staff = sumBy(rows,'sf');
+  el('t-staff').innerHTML = staff.length ? `
+    <thead><tr><th>Staff</th><th>Revenue</th><th>Receipts</th><th>Avg basket</th></tr></thead>
+    <tbody>${staff.map(r=>`<tr><td class="pname">${esc(r.k)}</td>
+      <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${r.receipts}</td>
+      <td class="mono">${F(r.rev/r.receipts,2)} ₾</td></tr>`).join('')}</tbody>`
+    : `<tbody><tr><td class="empty">no data</td></tr></tbody>`;
+}
+
+/* ---------- static bits ---------- */
+el('s-first').textContent = new Date(FIRST+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+el('s-weeks').textContent = ((ASOF - new Date(FIRST+'T12:00:00'))/6048e5).toFixed(1);
+el('s-asof').textContent  = ASOF.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+el('t-b2b').innerHTML = `
+  <thead><tr><th>Customer</th><th>Lines</th><th>Total</th><th>Cancelled</th></tr></thead>
+  <tbody>${D.b2b.by_company.map(r=>`<tr>
+    <td><span class="pname">${esc(r.company)}</span></td>
+    <td class="mono">${r.lines}</td>
+    <td class="mono">${F(r.val,0)} ₾</td>
+    <td class="mono" style="color:${r.cancelled>0?'var(--crit)':'var(--ink-3)'}">${F(r.cancelled,0)} ₾</td>
+  </tr>`).join('')}</tbody>`;
+
+render();
+</script>
