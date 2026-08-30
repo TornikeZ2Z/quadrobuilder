@@ -1,0 +1,13 @@
+{
+  "name": "quadrobuilder-autoexport",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nightly Optimo export automation for the QuadroBuilder dashboard",
+  "type": "module",
+  "scripts": {
+    "refresh": "node scripts/auto_export.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

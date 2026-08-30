@@ -2,3 +2,7 @@ data/
 *.xlsx
 *.duckdb
 dashboard.html
+.optimo-profile/
+.dl/
+node_modules/
+logs/
