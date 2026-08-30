@@ -35,8 +35,19 @@ SELECT st.barcode AS b, st.product AS p, COALESCE(st.category,'—') AS c,
        -- opening + everything ever received: the most that can ever have sat on the
        -- shelf, since Optimo's export carries no dated goods receipts.
        COALESCE(m.open_qty,0) + COALESCE(m.qty_in,0) AS mx,
-       COALESCE(m.qty_in,0) AS rin, COALESCE(m.qty_out,0) AS rout
-FROM stock st LEFT JOIN movement m USING(barcode)""").df()
+       COALESCE(m.qty_in,0) AS rin, COALESCE(m.qty_out,0) AS rout,
+       -- Never actually stocked: everything received went straight out and the
+       -- ledger closes at zero with no capital. These are buy-to-order lines,
+       -- not shelf lines, and must not be treated as stockouts.
+       CASE WHEN COALESCE(m.qty_in,0)>0 AND COALESCE(m.qty_in,0)=COALESCE(m.qty_out,0)
+                 AND COALESCE(m.close_qty,0)=0 AND st.total_cost=0
+            THEN 1 ELSE 0 END AS pt,
+       COALESCE(o.n_occ,0) AS nocc,          -- distinct days this SKU ever sold
+       COALESCE(o.units_life,0) AS ulife
+FROM stock st
+LEFT JOIN movement m USING(barcode)
+LEFT JOIN (SELECT barcode, COUNT(DISTINCT date::DATE) AS n_occ, SUM(rev_qty) AS units_life
+           FROM sales WHERE rev_qty>0 GROUP BY 1) o USING(barcode)""").df()
 
 optimo = con.execute("""
 SELECT strftime(date,'%Y-%m-%d') AS d, revenue AS rev, markup AS mk, txns AS t

@@ -355,6 +355,18 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
         <p class="note" id="neg-note"></p>
       </section>
 
+      <section id="decide" class="panel">
+        <div class="head-row">
+          <div><span class="eyebrow" id="eb-decide"></span><h2 id="h-decide"></h2></div>
+          <button class="btn" id="x-decide" type="button"><svg viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg><span></span></button>
+        </div>
+        <p class="lede" id="l-decide"></p>
+        <div class="tw"><table id="t-decide"></table></div>
+        <div class="pager" id="p-decide"></div>
+      </section>
+
       <section id="overstock" class="panel">
         <div class="head-row">
           <div><span class="eyebrow" id="eb-over"></span><h2 id="h-over"></h2></div>
@@ -444,11 +456,11 @@ const PERIODS=[{k:'all',t:'p_all'},{k:'180',t:'p_180'},{k:'90',t:'p_90'},{k:'30'
 const GRANS=[{k:'D',t:'g_D'},{k:'W',t:'g_W'},{k:'M',t:'g_M'},{k:'Q',t:'g_Q'}];
 const CHANS=[{k:'',t:'ch_all'},{k:'retail',t:'ch_retail'},{k:'entity',t:'ch_entity'}];
 const NAV=[['overview','nav_overview'],['rhythm','nav_rhythm'],['products','nav_products'],
-  ['margin','nav_margin'],['order','nav_order'],['overstock','nav_over'],['dead','nav_dead'],
+  ['margin','nav_margin'],['order','nav_order'],['decide','nav_decide'],['overstock','nav_over'],['dead','nav_dead'],
   ['categories','nav_categories'],['patterns','nav_patterns'],['method','nav_method']];
 const state={period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null,
-  page:{prod:1,dead:1,cat:1,order:1,over:1},
-  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1},order:{k:'atRisk',dir:-1},over:{k:'capital',dir:-1}}};
+  page:{prod:1,dead:1,cat:1,order:1,over:1,decide:1},
+  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1},order:{k:'perGel',dir:-1},over:{k:'capital',dir:-1},decide:{k:'unit_cost',dir:-1}}};
 let LAST={};
 const resetPages=()=>{for(const k in state.page) state.page[k]=1;};
 
@@ -471,12 +483,13 @@ function paintStatic(){
    ['eb-prod','pr_eyebrow'],['h-prod','pr_title'],['l-prod','pr_lede'],
    ['eb-conc','cc_eyebrow'],['h-conc','cc_title'],['l-conc','cc_lede'],
    ['eb-band','mb_eyebrow'],['h-band','mb_title'],['l-band','mb_lede'],
-   ['eb-order','o_eyebrow'],['h-order','o_title'],['l-order','o_lede'],
+   ['eb-order','o_eyebrow'],['h-order','o_title'],['l-order','o_lede2'],
    ['eb-over','ov_eyebrow'],['h-over','ov_title'],['l-over','ov_lede'],
+   ['eb-decide','nd_eyebrow'],['h-decide','nd_title'],['l-decide','nd_lede'],
    ['eb-dead','d_eyebrow'],['eb-cat','cat_eyebrow'],['h-cat','cat_title'],['l-cat','cat_lede'],
    ['eb-dow','pt_eyebrow'],['h-dow','pt_title'],['eb-chan','ch_eyebrow'],['h-chan','ch_title'],
    ['m-title','m_title']].forEach(([id,k])=>{const n=el(id); if(n) n.innerHTML=T(k);});
-  document.querySelectorAll('.btn span').forEach(n=>n.textContent=T('export_csv'));
+  document.querySelectorAll('.btn span').forEach(n=>n.textContent=T('export_xlsx'));
   el('leg-trend').innerHTML=
     `<span><i style="background:var(--brand)"></i> ${T('leg_margin')}</span>`+
     `<span><i style="background:var(--cost)"></i> ${T('leg_cost')}</span>`;
@@ -589,35 +602,123 @@ function byProduct(rows){const out=[];
       txns:t.receipts,on_hand:st?st.q:0,capital:st?st.t:0});}
   return out;}
 
-function toCSV(rows,cols){const q=v=>{const s=String(v==null?'':v);
-  return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
-  return '﻿'+[cols.map(c=>q(c.l)).join(',')]
-    .concat(rows.map(r=>cols.map(c=>q(typeof c.v==='function'?c.v(r):r[c.v])).join(','))).join('\r\n');}
-function download(name,csv){const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
+/* ---- minimal .xlsx writer: store-only ZIP + inline strings, no libraries ---- */
+const CRC=(()=>{const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}
+  return t;})();
+function crc32(u8){let c=0xFFFFFFFF;
+  for(let i=0;i<u8.length;i++)c=CRC[(c^u8[i])&0xFF]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0;}
+const enc=new TextEncoder();
+function zip(files){
+  const parts=[], central=[]; let off=0;
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  for(const f of files){
+    const name=enc.encode(f.name), data=enc.encode(f.data), crc=crc32(data);
+    const hdr=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),
+      ...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0)]);
+    parts.push(hdr,name,data);
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),
+      ...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),
+      ...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),name);
+    off+=hdr.length+name.length+data.length;}
+  let clen=0; central.forEach(c=>clen+=c.length);
+  const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),
+    ...u16(files.length),...u32(clen),...u32(off),...u16(0)]);
+  const all=[...parts,...central,end];
+  let total=0; all.forEach(p=>total+=p.length);
+  const out=new Uint8Array(total); let o=0;
+  for(const p of all){out.set(p,o); o+=p.length;}
+  return out;}
+const xesc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]))
+  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
+const colName=i=>{let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=(i-m-1)/26;}return s;};
+function sheetXML(rows,cols){
+  let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>';
+  cols.forEach((c,i)=>{x+=`<col min="${i+1}" max="${i+1}" width="${c.w||16}" customWidth="1"/>`;});
+  x+='</cols><sheetData><row r="1">';
+  cols.forEach((c,i)=>{x+=`<c r="${colName(i)}1" t="inlineStr" s="1"><is><t>${xesc(c.l)}</t></is></c>`;});
+  x+='</row>';
+  rows.forEach((r,ri)=>{x+=`<row r="${ri+2}">`;
+    cols.forEach((c,i)=>{const raw=typeof c.v==='function'?c.v(r):r[c.v];
+      const ref=colName(i)+(ri+2);
+      if(raw==null||raw===''){x+=`<c r="${ref}"/>`;}
+      else if(typeof raw==='number'&&isFinite(raw)){x+=`<c r="${ref}"><v>${raw}</v></c>`;}
+      else{x+=`<c r="${ref}" t="inlineStr"><is><t>${xesc(raw)}</t></is></c>`;}});
+    x+='</row>';});
+  return x+'</sheetData></worksheet>';}
+function download(name,bytes,mime){
+  const b=new Blob([bytes],{type:mime});
   const u=URL.createObjectURL(b), a=document.createElement('a');
   a.href=u; a.download=name; document.body.appendChild(a); a.click();
-  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),1000);}
-el('x-dead').onclick=()=>download('quadrobuilder-dead-stock-'+ASOF_S+'.csv',
-  toCSV(LAST.dead||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'s'},
-    {l:'Qty on hand',v:'q'},{l:'Peak held',v:'mx'},{l:'Unit cost',v:'u'},{l:'Capital tied (GEL)',v:'t'}]));
-el('x-prod').onclick=()=>download('quadrobuilder-products-'+ASOF_S+'.csv',
-  toCSV(LAST.prods||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},
-    {l:'Revenue (GEL)',v:r=>r.rev.toFixed(2)},{l:'Units',v:'units'},{l:'Sales',v:'txns'},
-    {l:'Margin (GEL)',v:r=>r.margin.toFixed(2)},{l:'Margin %',v:r=>r.mpct.toFixed(1)},{l:'On hand',v:'on_hand'}]));
-el('x-order').onclick=()=>download('quadrobuilder-what-to-order-'+ASOF_S+'.csv',
-  toCSV(LAST.order||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Peak held',v:'maxHeld'},{l:'Total received',v:'received'},
-    {l:'Units sold 30d',v:'u30'},{l:'Units per week',v:r=>r.perWeek.toFixed(2)},
-    {l:'Days cover',v:r=>Math.round(r.cover)},{l:'Suggested order qty',v:'suggest'},
-    {l:'Unit cost (GEL)',v:r=>r.unit_cost.toFixed(2)},{l:'Order value (GEL)',v:r=>r.orderValue.toFixed(2)},
-    {l:'Margin at risk per week (GEL)',v:r=>r.atRisk.toFixed(2)}]));
-el('x-over').onclick=()=>download('quadrobuilder-overstock-'+ASOF_S+'.csv',
-  toCSV(LAST.over||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Peak held',v:'maxHeld'},
-    {l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},{l:'Units 30d',v:'u30'},
-    {l:'Period units',v:'periodUnits'},{l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
-    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},
-    {l:'Days cover',v:r=>r.cover==null?'':Math.round(r.cover)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),1500);}
+function toXLSX(name,sheet,rows,cols){
+  const files=[
+   {name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+
+    '</Types>'},
+   {name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+    '</Relationships>'},
+   {name:'xl/workbook.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+    `<sheets><sheet name="${xesc(sheet).slice(0,31)}" sheetId="1" r:id="rId1"/></sheets></workbook>`},
+   {name:'xl/_rels/workbook.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+    '</Relationships>'},
+   {name:'xl/styles.xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+    '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'+
+    '<font><b/><sz val="11"/><name val="Calibri"/></font></fonts>'+
+    '<fills count="2"><fill><patternFill patternType="none"/></fill>'+
+    '<fill><patternFill patternType="gray125"/></fill></fills>'+
+    '<borders count="1"><border/></borders>'+
+    '<cellStyleXfs count="1"><xf/></cellStyleXfs>'+
+    '<cellXfs count="2"><xf xfId="0"/><xf xfId="0" fontId="1" applyFont="1"/></cellXfs>'+
+    '</styleSheet>'},
+   {name:'xl/worksheets/sheet1.xml',data:sheetXML(rows,cols)}];
+  download(name,zip(files),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');}
+
+const N=(v,d=2)=>v==null||!isFinite(v)?null:Number(Number(v).toFixed(d));
+el('x-dead').onclick=()=>toXLSX('quadrobuilder-dead-stock-'+ASOF_S+'.xlsx','Dead stock',LAST.dead||[],
+  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'s',w:22},
+   {l:'Qty on hand',v:r=>N(r.q,3)},{l:'Unit cost',v:r=>N(r.u)},{l:'Capital tied (GEL)',v:r=>N(r.t)}]);
+el('x-prod').onclick=()=>toXLSX('quadrobuilder-products-'+ASOF_S+'.xlsx','Products',LAST.prods||[],
+  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},
+   {l:'Revenue (GEL)',v:r=>N(r.rev)},{l:'Units',v:r=>N(r.units,3)},{l:'Sales',v:'txns'},
+   {l:'Margin (GEL)',v:r=>N(r.margin)},{l:'Margin %',v:r=>N(r.mpct,1)},{l:'On hand',v:r=>N(r.on_hand,3)}]);
+el('x-order').onclick=()=>toXLSX('quadrobuilder-what-to-order-'+ASOF_S+'.xlsx','What to order',LAST.order||[],
+  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
+   {l:'Sale days (lifetime)',v:'nocc'},{l:'Qty on hand',v:r=>N(r.on_hand,3)},
+   {l:'Units sold 30d',v:r=>N(r.u30,3)},{l:'Units per week',v:r=>N(r.perWeek)},
+   {l:'Days cover',v:r=>N(r.cover,0)},{l:'Suggested order qty',v:r=>N(r.suggest,0)},
+   {l:'Unit cost (GEL)',v:r=>N(r.unit_cost)},{l:'Order value (GEL)',v:r=>N(r.orderValue)},
+   {l:'Margin at risk /wk (GEL)',v:r=>N(r.atRisk)},{l:'Protected per GEL spent',v:r=>N(r.perGel,4)},
+   {l:'Cumulative spend (GEL)',v:r=>N(r.cum)}]);
+el('x-over').onclick=()=>toXLSX('quadrobuilder-overstock-'+ASOF_S+'.xlsx','Overstocked',LAST.over||[],
+  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
+   {l:'Qty on hand',v:r=>N(r.on_hand,3)},{l:'Stock value (GEL)',v:r=>N(r.capital)},
+   {l:'Units 30d',v:r=>N(r.u30,3)},{l:'Period units',v:r=>N(r.periodUnits,3)},
+   {l:'Period revenue (GEL)',v:r=>N(r.periodRev)},{l:'Period margin (GEL)',v:r=>N(r.periodMargin)},
+   {l:'Days cover',v:r=>N(r.cover,0)},{l:'Turns per year',v:r=>N(r.turn)}]);
+el('x-decide').onclick=()=>toXLSX('quadrobuilder-needs-decision-'+ASOF_S+'.xlsx','Needs a decision',
+  LAST.decide||[],
+  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
+   {l:'Reason',v:r=>r.reasonText},{l:'Sale days (lifetime)',v:'nocc'},
+   {l:'Qty on hand',v:r=>N(r.on_hand,3)},{l:'Units sold 30d',v:r=>N(r.u30,3)},
+   {l:'Unit cost (GEL)',v:r=>N(r.unit_cost)},{l:'Unit margin (GEL)',v:r=>N(r.unitMargin)}]);
 
 const PAGE=12;
 function paginate(rows,key){const pages=Math.max(1,Math.ceil(rows.length/PAGE));
@@ -823,41 +924,58 @@ function render(){
   const health=scopeStock.map(st=>{
     const r=L30[st.b]||{u:0,rev:0,cogs:0}, pr=prodBy[st.b];
     const perDay=r.u/30, perWeek=perDay*7;
+    // TRUE unit margin. No floor: a floor would inflate the score of thin-margin,
+    // high-ticket lines, which is exactly how a 642 GEL freezer reaches rank 2.
     const unitMargin=r.u>0?(r.rev-r.cogs)/r.u:(pr&&pr.units>0?pr.margin/pr.units:0);
     const cover=perDay>0?st.q/perDay:null;
     const suggest=Math.max(0,Math.ceil(perDay*30)-st.q);
+    const orderValue=suggest*st.u;
+    const atRisk=perDay>0?perWeek*Math.max(0,unitMargin)*
+      Math.max(0,Math.min(1,1-(Math.max(0,st.q)/perDay)/21)):0;
+    // Why a line is NOT a routine reorder. Order matters: a pass-through line is
+    // never a stockout, whatever else is true of it.
+    let reason=null;
+    if(st.pt) reason='passthrough';
+    else if(st.q<0) reason='count';
+    else if(st.nocc<2) reason='oneoff';
+    else if(unitMargin<=0) reason='reprice';
     return {b:st.b,p:st.p,c:st.c,sup:st.s,on_hand:st.q,unit_cost:st.u,capital:st.t,
-      maxHeld:st.mx,received:st.rin,consumed:st.rout,
-      u30:r.u,rev30:r.rev,perWeek,cover,suggest,orderValue:suggest*st.u,unitMargin,
+      maxHeld:st.mx,received:st.rin,nocc:st.nocc,ulife:st.ulife,
+      u30:r.u,rev30:r.rev,perWeek,cover,suggest,orderValue,unitMargin,reason,
+      perGel:orderValue>0?atRisk/orderValue:0,
       turn:st.t>0?(r.cogs*12.1667)/st.t:0,
-      periodRev:pr?pr.rev:0,periodMargin:pr?pr.margin:0,periodUnits:pr?pr.units:0,
-      atRisk:perDay>0?perWeek*Math.max(0,unitMargin)*Math.max(0,Math.min(1,1-(st.q/perDay)/21)):0};});
+      periodRev:pr?pr.rev:0,periodMargin:pr?pr.margin:0,periodUnits:pr?pr.units:0,atRisk};});
 
-  const order=sortRows(health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<21),'order');
+  /* ---- what to order: proven, stocked lines only, ranked by cash efficiency ---- */
+  const urgent=health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<21);
+  let order=sortRows(urgent.filter(h=>!h.reason),'order');
+  let run=0; order.forEach(r=>{run+=r.orderValue; r.cum=run;});
   LAST.order=order;
   const iOrd=paginate(order,'order');
   el('t-order').innerHTML=order.length?
-    headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_onhand'),k:'on_hand'},
-      {l:T('c_maxheld'),k:'maxHeld'},{l:T('c_units30'),k:'u30'},{l:T('c_perweek'),k:'perWeek'},
+    headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_occ'),k:'nocc'},
+      {l:T('c_onhand'),k:'on_hand'},{l:T('c_maxheld'),k:'maxHeld'},{l:T('c_units30'),k:'u30'},
       {l:T('c_cover'),k:'cover'},{l:T('c_orderqty'),k:'suggest'},{l:T('c_ordervalue'),k:'orderValue'},
-      {l:T('c_atrisk'),k:'atRisk',w:'126px'}],'order')+
+      {l:T('c_atrisk'),k:'atRisk',w:'118px'},{l:T('c_perlari'),k:'perGel'},{l:T('c_cumcash')}],'order')+
     `<tbody>${iOrd.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
       return `<tr>
       <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
       <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.sup)}</td>
-      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
+      <td class="mono">${F(r.nocc,0)}</td>
+      <td class="mono">${F(r.on_hand,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
-      <td class="mono">${F(r.u30,0)}</td><td class="mono">${F(r.perWeek,1)}</td>
+      <td class="mono">${F(r.u30,0)}</td>
       <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?T('o_outchip'):F(r.cover,0)+'d'}</span></td>
       <td class="mono" style="font-weight:600">${F(r.suggest,0)}</td>
-      <td class="mono">${F(r.orderValue,0)} ₾</td>
-      <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} ₾</td></tr>`;}).join('')}</tbody>
-      <tfoot><tr><td>${T('o_toorder',order.length)}</td><td></td><td></td>
-        <td class="mono">${F(order.reduce((a,r)=>a+r.maxHeld,0),0)}</td><td></td><td></td><td></td>
+      <td class="mono">${F(r.orderValue,0)} \u20BE</td>
+      <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} \u20BE</td>
+      <td class="mono">${F(r.perGel,3)}</td>
+      <td class="mono" style="color:var(--ink-2)">${F(r.cum,0)} \u20BE</td></tr>`;}).join('')}</tbody>
+      <tfoot><tr><td>${T('o_toorder',order.length)}</td><td></td><td></td><td></td><td></td><td></td><td></td>
         <td class="mono">${F(order.reduce((a,r)=>a+r.suggest,0),0)}</td>
-        <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} ₾</td>
-        <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} ₾</td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">${T('o_none')}</td></tr></tbody>`;
+        <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} \u20BE</td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} \u20BE</td><td></td><td></td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">${T('o_none2')}</td></tr></tbody>`;
   drawPager('p-order',iOrd,'order'); wireSort('t-order','order');
 
   const outNow=order.filter(r=>r.on_hand<=0), supN=new Set(order.map(r=>r.sup)).size;
@@ -868,6 +986,30 @@ function render(){
     {lab:T('o_risk'),val:GEL(order.reduce((a,r)=>a+r.atRisk,0)),sub:T('o_risk_sub')},
   ].map(x=>`<div class="stat"><span class="lab">${x.lab}</span><span class="val">${x.val}</span>
     <span class="sub">${x.sub}</span></div>`).join('');
+
+  /* ---- needs a decision: excluded on purpose, never totalled ---- */
+  const RSN={passthrough:['nd_passthrough','nd_passthrough_t','warn'],
+             oneoff:['nd_oneoff','nd_oneoff_t','warn'],
+             count:['nd_count','nd_count_t','crit'],
+             reprice:['nd_reprice','nd_reprice_t','crit']};
+  const decide=sortRows(urgent.filter(h=>h.reason)
+    .map(h=>Object.assign({},h,{reasonText:T(RSN[h.reason][0])})),'decide');
+  LAST.decide=decide;
+  const iDec=paginate(decide,'decide');
+  el('t-decide').innerHTML=decide.length?
+    headers([{l:T('c_product')},{l:T('nd_reason')},{l:T('c_supplier')},{l:T('c_occ'),k:'nocc'},
+      {l:T('c_onhand'),k:'on_hand'},{l:T('c_units30'),k:'u30'},{l:T('c_unitcost'),k:'unit_cost'}],'decide')+
+    `<tbody>${iDec.slice.map(r=>{const R=RSN[r.reason];
+      return `<tr>
+      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
+      <td><span class="chip ${R[2]}" title="${esc(T(R[1]))}"><span class="dot"></span>${T(R[0])}</span></td>
+      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.sup)}</td>
+      <td class="mono">${F(r.nocc,0)}</td>
+      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
+      <td class="mono">${F(r.u30,0)}</td>
+      <td class="mono">${F(r.unit_cost,2)} \u20BE</td></tr>`;}).join('')}</tbody>`
+    :`<tbody><tr><td class="empty">${T('nd_none')}</td></tr></tbody>`;
+  drawPager('p-decide',iDec,'decide'); wireSort('t-decide','decide');
 
   const over=sortRows(health.filter(h=>h.capital>0&&
       ((h.cover!=null&&h.cover>365)||(h.u30===0&&h.on_hand>0&&(prodBy[h.b]||{units:0}).units>0))),'over');
