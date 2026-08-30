@@ -4,7 +4,7 @@
 <title>QuadroBuilder Reporting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
 <style>
 :root{
@@ -15,7 +15,7 @@
      filter labels), all of it small text, so it must clear WCAG AA 4.5:1 on BOTH
      the white panels and the warm ground. #8F97A1 managed only 2.95 / 2.64. */
   --ink:#2C333A; --ink-2:#4A525C; --ink-3:#646C77;
-  --brand:#F26F20; --brand-soft:#FDEBE0; --brand-deep:#C9540F;
+  --brand:#F26F20; --brand-soft:#FDEBE0; --brand-deep:#B44A0D;
   --cost:#C9C3BA;
   --crit:#A82B2A; --crit-bg:#FBEBEA;
   --warn:#7C5700; --warn-bg:#FAF1DC;
@@ -23,15 +23,20 @@
   --side:238px;
 }
 *{box-sizing:border-box}
+/* The filter bar is sticky, so anchored jumps must stop short of it or the
+   section heading lands underneath. Covers nav links and pager jumps alike. */
+html{scroll-padding-top:96px}
+@media (max-width:900px){html{scroll-padding-top:132px}}
 body{margin:0; background:var(--ground); color:var(--ink);
   font-family:"Noto Sans Georgian","Archivo",system-ui,sans-serif; font-size:16.5px; line-height:1.55;
   -webkit-font-smoothing:antialiased}
 h1,h2{font-family:"Archivo",sans-serif; margin:0; letter-spacing:-.015em; text-wrap:balance}
 :lang(ka) h1,:lang(ka) h2{font-family:"Noto Sans Georgian","Archivo",sans-serif; letter-spacing:-.005em}
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
-.num{font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums; font-weight:600}
+.num{font-family:"Noto Sans Georgian","Archivo",sans-serif; font-variant-numeric:tabular-nums;
+  font-weight:600}
 a{color:var(--brand-deep)}
-:focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:3px}
+:focus-visible{outline:2px solid var(--ink); outline-offset:2px; border-radius:3px}
 
 /* shell */
 .app{display:grid; grid-template-columns:var(--side) minmax(0,1fr); min-height:100vh}
@@ -77,13 +82,17 @@ a{color:var(--brand-deep)}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .seg button:hover:not([aria-pressed="true"]){background:var(--hover)}
+/* The clip rect is load-bearing (it rounds the end buttons), so the focus
+   ring has to be drawn inside it. */
+.seg button:focus-visible{outline:none; box-shadow:inset 0 0 0 2px var(--ink); border-radius:3px}
+.seg button[aria-pressed="true"]:focus-visible{box-shadow:inset 0 0 0 2px var(--panel)}
 .daterange{display:none; align-items:center; gap:7px}
 .daterange.on{display:flex}
-.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink);
+.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:16px; color:var(--ink);
   background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:5px 8px}
 .daterange input[type=date]:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
 .daterange span{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:13px}
-input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:14px; color:var(--ink);
+input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:16px; color:var(--ink);
   background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 10px; width:190px}
 .reset{appearance:none; background:none; border:0; color:var(--brand-deep); cursor:pointer; font-size:13.5px;
   font-family:"IBM Plex Mono",monospace; padding:4px}
@@ -102,12 +111,13 @@ input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:14px; 
 .combo-btn .cnt{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3)}
 .combo-btn .car{margin-left:auto; color:var(--ink-3); font-size:10px}
 .combo-btn[aria-expanded="true"]{border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
-.combo-panel{position:absolute; top:calc(100% + 6px); left:0; width:360px; background:var(--panel);
+.combo-panel{position:absolute; top:calc(100% + 6px); left:0; width:min(360px,calc(100vw - 32px)); background:var(--panel);
   border:1px solid var(--line); border-radius:9px; box-shadow:0 8px 28px rgba(44,51,58,.14);
   z-index:60; display:none; overflow:hidden}
 .combo-panel.open{display:block}
 .combo-search{width:100%; border:0; border-bottom:1px solid var(--line); border-radius:0;
-  padding:10px 13px; font-size:14px; background:var(--panel)}
+  padding:10px 13px; font-size:16px; background:var(--panel); color:var(--ink);
+  font-family:"Noto Sans Georgian",sans-serif}
 .combo-search:focus{outline:none; border-bottom-color:var(--brand)}
 .combo-list{max-height:330px; overflow-y:auto; padding:4px}
 .combo-opt{display:grid; grid-template-columns:1fr auto; gap:3px 10px; align-items:center;
@@ -131,11 +141,15 @@ section > h2{font-size:23px; font-weight:600; margin-bottom:6px}
 section > .lede{color:var(--ink-2); font-size:15.5px; max-width:84ch; margin:0 0 20px}
 .panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px 24px}
 .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(470px,1fr)); gap:18px}
+/* Without this the grid items take their content-based minimum (the widest
+   nowrap table) and push the whole page sideways on a phone. */
+.grid2>*{min-width:0}
 .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
 
 .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr));
   background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
-.kpi{padding:16px 18px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:3px}
+.kpi{padding:16px 18px; border-right:1px solid var(--line); border-top:1px solid var(--line);
+  margin-top:-1px; display:flex; flex-direction:column; gap:3px}
 .kpi:last-child{border-right:0}
 .kpi .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
   text-transform:uppercase; color:var(--ink-3)}
@@ -162,6 +176,9 @@ th:first-child{text-align:left; padding-left:0; max-width:none}
 th.sortable{cursor:pointer; user-select:none}
 th.sortable:hover{color:var(--ink)}
 th .arrow{opacity:.35; font-size:10px; margin-left:2px}
+.sortbtn{appearance:none; border:0; background:none; padding:0; margin:0; cursor:pointer;
+  font:inherit; color:inherit; letter-spacing:inherit; text-transform:inherit; text-align:inherit}
+.sortbtn:focus-visible{outline:2px solid var(--ink); outline-offset:2px; border-radius:2px}
 th[aria-sort] .arrow{opacity:1; color:var(--brand)}
 td{padding:9px 7px; border-bottom:1px solid var(--line-2); text-align:center; vertical-align:middle;
   font-variant-numeric:tabular-nums; white-space:nowrap}
@@ -188,7 +205,8 @@ td.namecell{max-width:var(--namew,240px)}
 @media (min-width:1500px){#t-prod,#t-over,#t-dead{--namew:340px; --supw:150px}
   #t-order,#t-decide{--namew:260px; --supw:132px}
   #t-cat{--namew:400px}}
-.empty{color:var(--ink-3); font-size:14.5px; padding:24px 0; text-align:center}
+td.empty,.empty{color:var(--ink-3); font-size:14.5px; padding:24px 8px; text-align:center;
+  white-space:normal}
 tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; padding-top:11px; color:var(--ink)}
 
 .pager{display:flex; align-items:center; gap:7px; margin-top:15px; flex-wrap:wrap;
@@ -217,14 +235,15 @@ tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; 
 .chip.good{background:var(--good-bg); color:var(--good)}
 .chip .dot{width:5px;height:5px;border-radius:99px;background:currentColor;flex:none}
 
-.bar{display:block; height:5px; border-radius:2px; background:var(--sunken); overflow:hidden;
+.bar{display:block; height:5px; border-radius:2px; background:#DFDAD2; overflow:hidden;
   min-width:44px; max-width:76px; margin:4px auto 0}
 .bar i{display:block; height:100%; border-radius:2px}
 
 .callout{background:var(--panel); border:1px solid var(--crit); border-radius:10px; padding:22px 24px;
   display:flex; flex-direction:column; gap:11px}
 .callout h2{color:var(--crit); font-size:22px}
-.callout .big{font-size:clamp(24px,3vw,33px); font-weight:700; font-family:"Archivo",sans-serif;
+.callout .big{font-size:clamp(24px,3vw,33px); font-weight:700;
+  font-family:"Noto Sans Georgian","Archivo",sans-serif;
   color:var(--crit); font-variant-numeric:tabular-nums; line-height:1.15}
 .callout p{margin:0; font-size:15.5px; max-width:86ch}
 
@@ -234,6 +253,8 @@ tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; 
 
 .chartbox{position:relative}
 svg{display:block; width:100%; overflow:visible}
+.brand svg{width:158px}
+.btn svg,.chip svg{width:14px}
 .tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--ink);
   color:#fff; border-radius:6px; padding:8px 11px; font-size:12.5px; font-family:"IBM Plex Mono",monospace;
   white-space:nowrap; z-index:40; transform:translate(-50%,-118%); line-height:1.6}
@@ -251,7 +272,8 @@ svg{display:block; width:100%; overflow:visible}
   text-transform:uppercase; color:var(--ink-3)}
 :lang(ka) .stat .lab{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.01em;
   text-transform:none; font-size:12.5px}
-.stat .val{font-size:21px; font-weight:600; font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums}
+.stat .val{font-size:21px; font-weight:600; font-family:"Noto Sans Georgian","Archivo",sans-serif;
+  font-variant-numeric:tabular-nums}
 .stat .sub{font-size:12.5px; color:var(--ink-2)}
 
 footer{border-top:1px solid var(--line); padding-top:22px; margin-top:8px; color:var(--ink-2);
@@ -271,7 +293,14 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
   .sidefoot{display:none}
   .inner{padding:20px 16px 0; gap:28px}
   .filters-inner{padding:0 16px}
-  .grid2{grid-template-columns:1fr}
+  /* Georgian segment labels are wide; let the groups wrap rather than push the
+     page sideways. The Period row alone is 385px against a 375px phone. */
+  .fgroup{flex-wrap:wrap; max-width:100%}
+  .seg{flex-wrap:wrap; max-width:100%}
+  .combo-btn{max-width:100%}
+  input[type=search]{width:100%}
+  .daterange{flex-wrap:wrap}
+  .grid2{grid-template-columns:minmax(0,1fr)}
   .kpis{grid-template-columns:1fr 1fr}
   .kpi{border-bottom:1px solid var(--line)}
   .tw{margin:0 -16px; padding:0 16px}
@@ -583,10 +612,17 @@ function renderCombo(){
       <span class="cbar"><i style="width:${r.all?100:Math.max(2,(r.rev/cs.max)*100)}%"></i></span>
     </div>`).join(''):`<div class="combo-none">${T('no_category')}</div>`;
   el('cat-lbl').textContent=state.cat||T('all_categories');
+  el('cat-btn').title=state.cat||T('all_categories');
   el('cat-cnt').textContent=state.cat?'':String(cs.rows.length);}
 function openCombo(o){comboOpen=o; comboIdx=-1;
-  el('cat-panel').classList.toggle('open',o); el('cat-btn').setAttribute('aria-expanded',o);
-  if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();}}
+  const p=el('cat-panel');
+  p.classList.toggle('open',o); el('cat-btn').setAttribute('aria-expanded',o);
+  // clear unconditionally so a reopen at a different width re-decides
+  p.style.left=''; p.style.right='';
+  if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();
+    const r=p.getBoundingClientRect();
+    // clientWidth, not innerWidth: innerWidth includes the scrollbar
+    if(r.right>document.documentElement.clientWidth-8){p.style.left='auto'; p.style.right='0';}}}
 el('cat-btn').addEventListener('click',()=>openCombo(!comboOpen));
 el('cat-search').addEventListener('input',()=>{comboIdx=-1; renderCombo();});
 el('cat-list').addEventListener('click',e=>{const o=e.target.closest('.combo-opt'); if(!o)return;
@@ -718,33 +754,38 @@ function toXLSX(name,sheet,rows,cols){
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');}
 
 const N=(v,d=2)=>v==null||!isFinite(v)?null:Number(Number(v).toFixed(d));
-el('x-dead').onclick=()=>toXLSX('quadrobuilder-dead-stock-'+ASOF_S+'.xlsx','Dead stock',LAST.dead||[],
-  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'s',w:22},
-   {l:'Qty on hand',v:r=>N(r.q,3)},{l:'Unit cost',v:r=>N(r.u)},{l:'Capital tied (GEL)',v:r=>N(r.t)}]);
-el('x-prod').onclick=()=>toXLSX('quadrobuilder-products-'+ASOF_S+'.xlsx','Products',LAST.prods||[],
-  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},
-   {l:'Revenue (GEL)',v:r=>N(r.rev)},{l:'Units',v:r=>N(r.units,3)},{l:'Sales',v:'txns'},
-   {l:'Margin (GEL)',v:r=>N(r.margin)},{l:'Margin %',v:r=>N(r.mpct,1)},{l:'On hand',v:r=>N(r.on_hand,3)}]);
-el('x-order').onclick=()=>toXLSX('quadrobuilder-what-to-order-'+ASOF_S+'.xlsx','What to order',LAST.order||[],
-  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
-   {l:'Sale days (lifetime)',v:'nocc'},{l:'Qty on hand',v:r=>N(r.on_hand,3)},
-   {l:'Units sold 30d',v:r=>N(r.u30,3)},{l:'Units per week',v:r=>N(r.perWeek)},
-   {l:'Days cover',v:r=>N(r.cover,0)},{l:'Suggested order qty',v:r=>N(r.suggest,0)},
-   {l:'Unit cost (GEL)',v:r=>N(r.unit_cost)},{l:'Order value (GEL)',v:r=>N(r.orderValue)},
-   {l:'Margin at risk /wk (GEL)',v:r=>N(r.atRisk)},{l:'Protected per GEL spent',v:r=>N(r.perGel,4)},
-   {l:'Cumulative spend (GEL)',v:r=>N(r.cum)}]);
-el('x-over').onclick=()=>toXLSX('quadrobuilder-overstock-'+ASOF_S+'.xlsx','Overstocked',LAST.over||[],
-  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
-   {l:'Qty on hand',v:r=>N(r.on_hand,3)},{l:'Stock value (GEL)',v:r=>N(r.capital)},
-   {l:'Units 30d',v:r=>N(r.u30,3)},{l:'Period units',v:r=>N(r.periodUnits,3)},
-   {l:'Period revenue (GEL)',v:r=>N(r.periodRev)},{l:'Period margin (GEL)',v:r=>N(r.periodMargin)},
-   {l:'Days cover',v:r=>N(r.cover,0)},{l:'Turns per year',v:r=>N(r.turn)}]);
-el('x-decide').onclick=()=>toXLSX('quadrobuilder-needs-decision-'+ASOF_S+'.xlsx','Needs a decision',
+el('x-dead').onclick=()=>toXLSX('quadrobuilder-dead-stock-'+ASOF_S+'.xlsx',T('x_sheet_dead'),LAST.dead||[],
+  [{l:T('x_product'),v:'p',w:46},{l:T('x_barcode'),v:'b'},{l:T('x_category'),v:'c',w:26},
+   {l:T('x_supplier'),v:'s',w:22},{l:T('x_onhand'),v:r=>N(r.q,3)},{l:T('x_peak'),v:r=>N(r.mx,3)},
+   {l:T('x_unitcost'),v:r=>N(r.u)},{l:T('x_capital'),v:r=>N(r.t)}]);
+el('x-prod').onclick=()=>toXLSX('quadrobuilder-products-'+ASOF_S+'.xlsx',T('x_sheet_prod'),LAST.prods||[],
+  [{l:T('x_product'),v:'p',w:46},{l:T('x_barcode'),v:'b'},{l:T('x_category'),v:'c',w:26},
+   {l:T('x_revenue'),v:r=>N(r.rev)},{l:T('x_units'),v:r=>N(r.units,3)},{l:T('x_sales'),v:'txns'},
+   {l:T('x_margin'),v:r=>N(r.margin)},{l:T('x_marginpct'),v:r=>N(r.mpct,1)},
+   {l:T('x_onhand'),v:r=>N(r.on_hand,3)}]);
+el('x-order').onclick=()=>toXLSX('quadrobuilder-what-to-order-'+ASOF_S+'.xlsx',T('x_sheet_order'),LAST.order||[],
+  [{l:T('x_product'),v:'p',w:46},{l:T('x_barcode'),v:'b'},{l:T('x_category'),v:'c',w:26},
+   {l:T('x_supplier'),v:'sup',w:22},{l:T('x_saledays'),v:'nocc'},{l:T('x_onhand'),v:r=>N(r.on_hand,3)},
+   {l:T('x_peak'),v:r=>N(r.maxHeld,3)},{l:T('x_received'),v:r=>N(r.received,3)},
+   {l:T('x_units30'),v:r=>N(r.u30,3)},{l:T('x_perweek'),v:r=>N(r.perWeek)},
+   {l:T('x_cover'),v:r=>N(r.cover,0)},{l:T('x_orderqty'),v:r=>N(r.suggest,0)},
+   {l:T('x_unitcost'),v:r=>N(r.unit_cost)},{l:T('x_ordervalue'),v:r=>N(r.orderValue)},
+   {l:T('x_atrisk'),v:r=>N(r.atRisk)},{l:T('x_pergel'),v:r=>N(r.perGel,4)},
+   {l:T('x_cum'),v:r=>N(r.cum)}]);
+el('x-over').onclick=()=>toXLSX('quadrobuilder-overstock-'+ASOF_S+'.xlsx',T('x_sheet_over'),LAST.over||[],
+  [{l:T('x_product'),v:'p',w:46},{l:T('x_barcode'),v:'b'},{l:T('x_category'),v:'c',w:26},
+   {l:T('x_supplier'),v:'sup',w:22},{l:T('x_onhand'),v:r=>N(r.on_hand,3)},
+   {l:T('x_peak'),v:r=>N(r.maxHeld,3)},{l:T('x_stockvalue'),v:r=>N(r.capital)},
+   {l:T('x_units30'),v:r=>N(r.u30,3)},{l:T('x_perunits'),v:r=>N(r.periodUnits,3)},
+   {l:T('x_perrev'),v:r=>N(r.periodRev)},{l:T('x_permargin'),v:r=>N(r.periodMargin)},
+   {l:T('x_cover'),v:r=>N(r.cover,0)},{l:T('x_turns'),v:r=>N(r.turn)}]);
+el('x-decide').onclick=()=>toXLSX('quadrobuilder-needs-decision-'+ASOF_S+'.xlsx',T('x_sheet_decide'),
   LAST.decide||[],
-  [{l:'Product',v:'p',w:46},{l:'Barcode',v:'b'},{l:'Category',v:'c',w:26},{l:'Supplier',v:'sup',w:22},
-   {l:'Reason',v:r=>r.reasonText},{l:'Sale days (lifetime)',v:'nocc'},
-   {l:'Qty on hand',v:r=>N(r.on_hand,3)},{l:'Units sold 30d',v:r=>N(r.u30,3)},
-   {l:'Unit cost (GEL)',v:r=>N(r.unit_cost)},{l:'Unit margin (GEL)',v:r=>N(r.unitMargin)}]);
+  [{l:T('x_product'),v:'p',w:46},{l:T('x_barcode'),v:'b'},{l:T('x_category'),v:'c',w:26},
+   {l:T('x_supplier'),v:'sup',w:22},{l:T('x_reason'),v:r=>r.reasonText,w:22},
+   {l:T('x_saledays'),v:'nocc'},{l:T('x_onhand'),v:r=>N(r.on_hand,3)},
+   {l:T('x_units30'),v:r=>N(r.u30,3)},{l:T('x_unitcost'),v:r=>N(r.unit_cost)},
+   {l:T('x_unitmargin'),v:r=>N(r.unitMargin)}]);
 
 const PAGE=12;
 function paginate(rows,key){const pages=Math.max(1,Math.ceil(rows.length/PAGE));
@@ -773,34 +814,50 @@ function sortRows(rows,key){const s=key&&state.sort[key]; if(!s)return rows;
     return s.dir*((x==null?-Infinity:x)-(y==null?-Infinity:y));});}
 function headers(cols,key){return '<thead><tr>'+cols.map(c=>{
     const s=key&&state.sort[key], on=s&&s.k===c.k;
-    return `<th ${c.k?`class="sortable" data-sort="${c.k}"`:''}${on?` aria-sort="${s.dir<0?'descending':'ascending'}"`:''}${c.w?` style="min-width:${c.w}"`:''}>`+
-      `${c.l}${c.k?`<span class="arrow">${on?(s.dir<0?'▼':'▲'):'⇅'}</span>`:''}</th>`;}).join('')+'</tr></thead>';}
+    // A real <button> inside the th: keyboard-reachable, and the click still
+    // bubbles to the th that carries the sort handler.
+    const inner=c.k
+      ? `<button type="button" class="sortbtn">${c.l}<span class="arrow">${on?(s.dir<0?'▼':'▲'):'⇅'}</span></button>`
+      : c.l;
+    return `<th ${c.k?`class="sortable" data-sort="${c.k}"`:''}${on?` aria-sort="${s.dir<0?'descending':'ascending'}"`:''}>${inner}</th>`;
+  }).join('')+'</tr></thead>';}
 function wireSort(tableId,key){el(tableId).querySelectorAll('th[data-sort]').forEach(th=>{
   th.onclick=()=>{const k=th.dataset.sort,s=state.sort[key];
     state.sort[key]=s&&s.k===k?{k,dir:-s.dir}:{k,dir:-1}; state.page[key]=1; render();};});}
 
-function wireTip(host,tipEl,nodes,html){nodes.forEach((n,i)=>{n.style.cursor='crosshair';
-  n.addEventListener('pointerenter',()=>{tipEl.innerHTML=html(i);
-    const hb=host.getBoundingClientRect(),b=n.getBoundingClientRect();
-    tipEl.style.left=(b.left-hb.left+b.width/2)+'px';
-    tipEl.style.top=(b.top-hb.top)+'px'; tipEl.style.opacity=1;});
+function wireTip(host,tipEl,nodes,html,anchors){nodes.forEach((n,i)=>{n.style.cursor='crosshair';
+  n.addEventListener('pointerenter',()=>{
+    tipEl.innerHTML=html(i);
+    // Anchor to the drawn mark, not the full-height hit rect, or the tip floats
+    // far above the bar it describes.
+    const a=(anchors&&anchors[i])||n;
+    const hb=host.getBoundingClientRect(), b=n.getBoundingClientRect(), ab=a.getBoundingClientRect();
+    const w=tipEl.offsetWidth, h=tipEl.offsetHeight;          // measured after innerHTML
+    let L=b.left-hb.left+b.width/2;
+    L=Math.min(Math.max(L,w/2+4),Math.max(w/2+4,hb.width-w/2-4));
+    const flip=(ab.top-h*1.18)<hb.top;                        // no room above
+    tipEl.style.transform=flip?'translate(-50%,18%)':'translate(-50%,-118%)';
+    tipEl.style.left=L+'px';
+    tipEl.style.top=((flip?ab.bottom:ab.top)-hb.top)+'px';
+    tipEl.style.opacity=1;});
   n.addEventListener('pointerleave',()=>tipEl.style.opacity=0);});}
 
 function drawTrend(bk){const host=el('trend'); host.innerHTML='';
   if(!bk.length){host.innerHTML=`<p class="empty">${T('no_sales_sel')}</p>`;return;}
-  const W=1180,PL=58,PR=14,PT=28,PB=48,H=284;
+  // One user unit == one CSS pixel, so label sizes stay constant at any width.
+  const W=Math.max(360,Math.round(host.clientWidth)),PL=58,PR=14,PT=28,PB=48,H=284;
   const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length;
   const bw=Math.max(1.5,Math.min(60,step-Math.min(14,step*0.28)));
   const every=Math.max(1,Math.ceil(bk.length/26));
   const showVals=bk.length<=34, rot=step<38;
   const max=Math.max(...bk.map(b=>Math.max(b.rev,b.cogs)))*1.16||1;
   const y=v=>PT+ih-(v/max)*ih;
-  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img',preserveAspectRatio:'xMidYMid meet'});
   [0,.25,.5,.75,1].forEach(t=>{
     svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:y(max*t),y2:y(max*t),stroke:'var(--line-2)','stroke-width':1}));
     const tx=mk('text',{x:PL-9,y:y(max*t)+4,'text-anchor':'end',fill:'var(--ink-3)','font-size':11.5,
       'font-family':'IBM Plex Mono, monospace'}); tx.textContent=KF(max*t); svg.appendChild(tx);});
-  const hit=[];
+  const hit=[], tops=[];
   bk.forEach((b,i)=>{const x=PL+i*step+(step-bw)/2;
     const cogs=Math.max(0,b.cogs), marg=Math.max(0,b.margin);
     svg.appendChild(mk('rect',{x,y:y(cogs),width:bw,height:Math.max(0,ih-(y(cogs)-PT)),fill:'var(--cost)'}));
@@ -819,13 +876,15 @@ function drawTrend(bk){const host=el('trend'); host.innerHTML='';
         'font-family':GSANS});
       if(rot) t.setAttribute('transform',`rotate(-45 ${lx} ${ly})`);
       t.textContent=bucketLabel(b.k); svg.appendChild(t);}
-    const h=mk('rect',{x,y:PT,width:bw,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
+    const h=mk('rect',{x,y:PT,width:bw,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);
+    tops.push(mk('rect',{x,y:y(cogs+marg),width:bw,height:1,fill:'none'}));
+    svg.appendChild(tops[tops.length-1]);});
   host.appendChild(svg);
   wireTip(host.parentNode,el('trend-tip'),hit,i=>{const b=bk[i];
-    return `<b>${bucketLabel(b.k)}</b><br>${T('tt_revenue')} ${F(b.rev,2)} ₾<br>${T('tt_cost')} ${F(b.cogs,2)} ₾<br>${T('tt_margin')} ${F(b.margin,2)} ₾ (${F(b.mpct,1)}%)<br>${b.receipts} ${T('tt_receipts')}`;});}
+    return `<b>${bucketLabel(b.k)}</b><br>${T('tt_revenue')} ${F(b.rev,2)} ₾<br>${T('tt_cost')} ${F(b.cogs,2)} ₾<br>${T('tt_margin')} ${F(b.margin,2)} ₾ (${F(b.mpct,1)}%)<br>${b.receipts} ${T('tt_receipts')}`;},tops);}
 
 function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)return;
-  const W=1180,PL=58,PR=14,PT=16,PB=16,H=90;
+  const W=Math.max(360,Math.round(host.clientWidth)),PL=58,PR=14,PT=16,PB=16,H=90;
   const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length, dense=bk.length>34;
   const vals=bk.map(b=>b.mpct), hi=Math.max(...vals,0)*1.25||1, lo=Math.min(...vals,0);
   const y=v=>PT+ih-((v-lo)/((hi-lo)||1))*ih;
@@ -836,16 +895,18 @@ function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)re
   const pts=bk.map((b,i)=>[PL+i*step+step/2,y(b.mpct)]);
   svg.appendChild(mk('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',
     stroke:'var(--ink)','stroke-width':2,'stroke-linejoin':'round'}));
-  const hit=[];
+  const hit=[], tops=[];
   bk.forEach((b,i)=>{const x=pts[i][0], yy=pts[i][1];
     if(!dense){svg.appendChild(mk('circle',{cx:x,cy:yy,r:3.4,fill:'var(--ink)',
         stroke:'var(--panel)','stroke-width':1.6}));
       const t=mk('text',{x,y:yy-10,'text-anchor':'middle',fill:'var(--ink-2)','font-size':11,
         'font-family':'IBM Plex Mono, monospace'}); t.textContent=F(b.mpct,0)+'%'; svg.appendChild(t);}
-    const h=mk('rect',{x:x-step/2,y:PT,width:step,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
+    const h=mk('rect',{x:x-step/2,y:PT,width:step,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);
+    tops.push(mk('rect',{x:x-0.5,y:yy,width:1,height:1,fill:'none'}));
+    svg.appendChild(tops[tops.length-1]);});
   host.appendChild(svg);
   wireTip(host.parentNode,el('mpct-tip'),hit,i=>
-    `<b>${bucketLabel(bk[i].k)}</b><br>${T('tt_margin')} ${F(bk[i].mpct,1)}%`);}
+    `<b>${bucketLabel(bk[i].k)}</b><br>${T('tt_margin')} ${F(bk[i].mpct,1)}%`,tops);}
 
 function apply(){render();
   const t=document.querySelector('.filters');
@@ -993,7 +1054,7 @@ function render(){
       <td class="mono">${F(r.on_hand,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
       <td class="mono">${F(r.u30,0)}</td>
-      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?T('o_outchip'):F(r.cover,0)+'d'}</span></td>
+      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?T('o_outchip'):F(r.cover,0)+T('u_day')}</span></td>
       <td class="mono" style="font-weight:600">${F(r.suggest,0)}</td>
       <td class="mono">${F(r.orderValue,0)} \u20BE</td>
       <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} \u20BE</td>
@@ -1150,6 +1211,7 @@ const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
     a.setAttribute('aria-current',a.getAttribute('href')==='#'+e.target.id));}});},
   {rootMargin:'-15% 0px -70% 0px',threshold:0});
 
+let rzT; window.addEventListener('resize',()=>{clearTimeout(rzT); rzT=setTimeout(render,180);});
 document.documentElement.setAttribute('lang',LANG);
 paintStatic();
 NAV.forEach(n=>{const el0=el(n[0]); if(el0) obs.observe(el0);});
