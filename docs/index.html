@@ -118,6 +118,14 @@ a{color:var(--brand-deep)}
 .dr-titles{display:flex; gap:26px; flex:1; justify-content:space-around;
   font-family:"Archivo",sans-serif; font-weight:600; font-size:14.5px}
 :lang(ka) .dr-titles{font-family:"Noto Sans Georgian",sans-serif}
+.dr-body{display:flex; gap:18px; align-items:flex-start}
+.dr-presets{display:flex; flex-direction:column; gap:2px; padding-right:16px;
+  border-right:1px solid var(--line-2); min-width:132px}
+.dr-preset{appearance:none; border:0; background:transparent; text-align:left; cursor:pointer;
+  padding:7px 10px; border-radius:7px; font-size:13.5px; color:var(--ink-2);
+  font-family:"Noto Sans Georgian",sans-serif; white-space:nowrap}
+.dr-preset:hover{background:var(--hover); color:var(--ink)}
+.dr-preset[aria-pressed="true"]{background:var(--ink); color:#fff}
 .dr-months{display:flex; gap:26px}
 /* No column gap: the selected range has to read as one continuous band, not a
    row of separate chips. Rows stay spaced. */
@@ -146,6 +154,9 @@ a{color:var(--brand-deep)}
   border-radius:7px; padding:5px 12px; font-size:12.5px; color:var(--ink-2);
   font-family:"Noto Sans Georgian",sans-serif}
 .dr-clear:hover{background:var(--ink); color:#fff; border-color:var(--ink)}
+@media (max-width:820px){.dr-body{flex-direction:column}
+  .dr-presets{flex-direction:row; flex-wrap:wrap; border-right:0; padding-right:0;
+    border-bottom:1px solid var(--line-2); padding-bottom:10px; width:100%}}
 @media (max-width:640px){.dr-months{flex-direction:column; gap:14px}
   .dr-titles{gap:0}.dr-panel{left:auto; right:0}}
 input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:16px; color:var(--ink);
@@ -406,8 +417,7 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
 
   <main class="main">
     <div class="filters"><div class="filters-inner" role="group" id="filters-inner">
-      <div class="fgroup"><span class="flab" id="lbl-period"></span><span class="seg" id="f-period"></span></div>
-      <div class="fgroup daterange" id="f-range">
+      <div class="fgroup daterange on" id="f-range">
         <button class="dr-trigger" id="dr-btn" type="button" aria-expanded="false" aria-haspopup="dialog">
           <svg class="cal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
             stroke-linecap="round" aria-hidden="true">
@@ -421,7 +431,10 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
             <div class="dr-titles"><span id="dr-t1"></span><span id="dr-t2"></span></div>
             <button class="dr-nav" id="dr-next" type="button">&#8250;</button>
           </div>
-          <div class="dr-months"><div id="dr-m1"></div><div id="dr-m2"></div></div>
+          <div class="dr-body">
+            <div class="dr-presets" id="dr-presets" role="group"></div>
+            <div class="dr-months"><div id="dr-m1"></div><div id="dr-m2"></div></div>
+          </div>
           <div class="dr-foot">
             <span class="dr-hint" id="dr-hint"></span>
             <button class="dr-clear" id="dr-clear" type="button"></button>
@@ -598,6 +611,11 @@ const DICT = {
   p_90:               ['90 d',                           '90 დღე'],
   p_30:               ['30 d',                           '30 დღე'],
   p_custom:           ['Custom',                         'არჩევითი'],
+  p_7:                ['7 days',                         '7 დღე'],
+  p_60:               ['60 days',                        '60 დღე'],
+  p_tm:               ['This month',                     'ამ თვეში'],
+  p_lm:               ['Last month',                     'გასულ თვეში'],
+  p_presets:          ['Quick ranges',                   'სწრაფი პერიოდები'],
   g_D:                ['Day',                            'დღე'],
   g_W:                ['Week',                           'კვირა'],
   g_M:                ['Month',                          'თვე'],
@@ -939,7 +957,8 @@ const L30=(()=>{const d=new Date(ASOF); d.setDate(d.getDate()-29);
     const o=m[l.b]||(m[l.b]={u:0,rev:0,cogs:0}); o.u+=l.q; o.rev+=l.v; o.cogs+=l.q*l.u; }
   return m;})();
 
-const PERIODS=[{k:'all',t:'p_all'},{k:'180',t:'p_180'},{k:'90',t:'p_90'},{k:'30',t:'p_30'},{k:'custom',t:'p_custom'}];
+const PRESETS=[{k:'all',t:'p_all'},{k:'180',t:'p_180'},{k:'90',t:'p_90'},{k:'60',t:'p_60'},
+  {k:'30',t:'p_30'},{k:'7',t:'p_7'},{k:'tm',t:'p_tm'},{k:'lm',t:'p_lm'}];
 const GRANS=[{k:'D',t:'g_D'},{k:'W',t:'g_W'},{k:'M',t:'g_M'},{k:'Q',t:'g_Q'}];
 const CHANS=[{k:'',t:'ch_all'},{k:'retail',t:'ch_retail'},{k:'entity',t:'ch_entity'}];
 const NAV=[['overview','nav_overview'],['rhythm','nav_rhythm'],['products','nav_products'],
@@ -964,11 +983,10 @@ function paintStatic(){
   el('cat-panel').setAttribute('aria-label',T('all_categories'));
   el('lbl-since').textContent=T('since'); el('lbl-weeks').textContent=T('weeks');
   el('lbl-asof').textContent=T('asof');
-  el('lbl-period').textContent=T('f_period'); el('lbl-groupby').textContent=T('f_groupby');
+  el('lbl-groupby').textContent=T('f_groupby');
   el('lbl-channel').textContent=T('f_channel'); el('lbl-dateto').textContent=T('date_to');
   el('f-reset').textContent=T('f_reset');
   el('f-q').placeholder=T('search_product'); el('cat-search').placeholder=T('filter_categories');
-  el('f-period').innerHTML=PERIODS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
   el('f-gran').innerHTML=GRANS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
   el('f-chan').innerHTML=CHANS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
   [['eb-headline','k_headline'],['eb-rhythm','r_eyebrow'],['h-rhythm','r_title'],['l-rhythm','r_lede'],
@@ -992,21 +1010,29 @@ function paintStatic(){
   el('s-asof').textContent=full(ASOF);}
 el('f-lang').addEventListener('click',e=>{const b=e.target.closest('button'); if(b) setLang(b.dataset.l);});
 
-['f-period','f-gran','f-chan'].forEach((id,i)=>{
-  const key=['period','gran','chan'][i];
+['f-gran','f-chan'].forEach((id,i)=>{
+  const key=['gran','chan'][i];
   el(id).addEventListener('click',e=>{const b=e.target.closest('button'); if(!b)return;
     state[key]=b.dataset.k; resetPages(); apply();});});
 let qt; el('f-q').addEventListener('input',e=>{clearTimeout(qt);
   qt=setTimeout(()=>{state.q=e.target.value.trim().toLowerCase(); resetPages(); apply();},160);});
 el('f-reset').addEventListener('click',()=>{
   Object.assign(state,{period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null});
+  drPick=null;
   el('f-q').value=''; resetPages(); apply();});
 
 function winRange(){
-  if(state.period==='custom') return [state.from||FIRST, state.to||ASOF_S];
-  if(state.period==='all')    return [FIRST, ASOF_S];
-  const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.period)+1);
+  const p=state.period;
+  if(p==='custom') return [state.from||FIRST, state.to||ASOF_S];
+  if(p==='all')    return [FIRST, ASOF_S];
+  if(p==='tm'){const d=new Date(ASOF.getFullYear(),ASOF.getMonth(),1,12);
+    return [isoOf(d), ASOF_S];}
+  if(p==='lm'){const a=new Date(ASOF.getFullYear(),ASOF.getMonth()-1,1,12),
+                     b=new Date(ASOF.getFullYear(),ASOF.getMonth(),0,12);
+    return [isoOf(a), isoOf(b)];}
+  const d=new Date(ASOF); d.setDate(d.getDate()-Number(p)+1);
   return [d.toISOString().slice(0,10), ASOF_S];}
+const isoOf=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dayDiff=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
 const matches=(l,from,to)=>l.d>=from&&(!to||l.d<=to)&&(!state.chan||l.ch===state.chan)&&
   (!state.cat||l.c===state.cat)&&(!state.q||l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q));
@@ -1048,7 +1074,13 @@ function dayClasses(d,out){
   if(s===iso(MAX_D)) cls.push('today');
   return cls.join(' ');
 }
+function renderPresets(){
+  el('dr-presets').innerHTML=`<div class="dr-dow" style="padding:0 0 4px 10px">${T('p_presets')}</div>`+
+    PRESETS.map(p=>`<button type="button" class="dr-preset" data-k="${p.k}"
+      aria-pressed="${state.period===p.k}">${T(p.t)}</button>`).join('');
+}
 function renderCal(){
+  renderPresets();
   if(!drCursor) drCursor=parse(state.to||ASOF_S);
   const m1=new Date(drCursor.getFullYear(),drCursor.getMonth(),1,12);
   const m0=new Date(m1.getFullYear(),m1.getMonth()-1,1,12);
@@ -1080,6 +1112,12 @@ function openDR(o){drOpen=o; drPick=null; drHover=null;
     const p=el('dr-panel'), r=p.getBoundingClientRect();
     p.style.left=''; p.style.right='';
     if(r.right>document.documentElement.clientWidth-8){p.style.left='auto'; p.style.right='0';}}}
+el('dr-presets').addEventListener('click',e=>{
+  const b=e.target.closest('.dr-preset'); if(!b) return;
+  state.period=b.dataset.k; state.from=null; state.to=null;
+  const r=winRange(); state.from=r[0]; state.to=r[1];
+  drPick=null; drCursor=parse(state.to); drLabel(); renderCal();
+  openDR(false); resetPages(); apply();});
 el('dr-btn').addEventListener('click',()=>openDR(!drOpen));
 el('dr-prev').addEventListener('click',()=>{drCursor=new Date(drCursor.getFullYear(),drCursor.getMonth()-1,1,12); renderCal();});
 el('dr-next').addEventListener('click',()=>{drCursor=new Date(drCursor.getFullYear(),drCursor.getMonth()+1,1,12); renderCal();});
@@ -1099,10 +1137,10 @@ el('dr-panel').addEventListener('keydown',e=>{
   if(e.key==='Escape'){openDR(false); el('dr-btn').focus();}});
 document.addEventListener('click',e=>{if(drOpen&&!inside(e,'#f-range')) openDR(false);});
 
-function syncRange(){const on=state.period==='custom';
-  el('f-range').classList.toggle('on',on);
-  if(on&&!state.from){state.from=FIRST; state.to=ASOF_S;}
-  if(on) drLabel();}
+function syncRange(){
+  // the pill is the period control now, so it always shows the live range
+  const r=winRange(); state.from=r[0]; state.to=r[1];
+  drLabel();}
 
 function catStats(){const r=winRange(), m=new Map();
   for(const l of LINES){ if(l.d<r[0]||l.d>r[1]) continue;
@@ -1442,7 +1480,7 @@ function apply(){render();
   if(anchor&&window.scrollY>anchor.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
 
 function render(){
-  ['period','gran','chan'].forEach((key,i)=>{const id=['f-period','f-gran','f-chan'][i];
+  ['gran','chan'].forEach((key,i)=>{const id=['f-gran','f-chan'][i];
     [...el(id).children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===state[key]));});
   [...el('f-lang').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===LANG));
   syncRange(); renderCombo();
