@@ -11,7 +11,10 @@
   color-scheme: light;
   --ground:#F4F2EF; --panel:#FFFFFF; --sunken:#EDEAE5; --hover:#FAF9F7;
   --line:#E5E1DB; --line-2:#F0EDE8;
-  --ink:#2C333A; --ink-2:#606974; --ink-3:#8F97A1;
+  /* --ink-3 carries nearly every label on the page (KPI captions, table headers,
+     filter labels), all of it small text, so it must clear WCAG AA 4.5:1 on BOTH
+     the white panels and the warm ground. #8F97A1 managed only 2.95 / 2.64. */
+  --ink:#2C333A; --ink-2:#4A525C; --ink-3:#646C77;
   --brand:#F26F20; --brand-soft:#FDEBE0; --brand-deep:#C9540F;
   --cost:#C9C3BA;
   --crit:#A82B2A; --crit-bg:#FBEBEA;
@@ -148,18 +151,22 @@ section > .lede{color:var(--ink-2); font-size:15.5px; max-width:84ch; margin:0 0
 /* tables */
 .tw{overflow-x:auto; margin:0 -24px; padding:0 24px}
 table{border-collapse:collapse; width:100%; font-size:14.5px}
-th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ink-3); text-align:right; font-weight:400; padding:0 0 10px 15px;
-  border-bottom:1px solid var(--line); white-space:nowrap; vertical-align:bottom}
-:lang(ka) th{font-family:"Noto Sans Georgian",sans-serif; text-transform:none; letter-spacing:0; font-size:13px}
-th:first-child{text-align:left; padding-left:0}
+/* Headers wrap to two short lines and centre over their column, so a wide table
+   fits the panel instead of forcing a horizontal scroll. */
+th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.03em; text-transform:uppercase;
+  color:var(--ink-3); text-align:center; font-weight:400; padding:0 7px 9px;
+  border-bottom:1px solid var(--line); white-space:normal; vertical-align:bottom;
+  line-height:1.25; hyphens:auto; overflow-wrap:anywhere; max-width:96px}
+:lang(ka) th{font-family:"Noto Sans Georgian",sans-serif; text-transform:none; letter-spacing:0; font-size:12px}
+th:first-child{text-align:left; padding-left:0; max-width:none}
 th.sortable{cursor:pointer; user-select:none}
 th.sortable:hover{color:var(--ink)}
 th .arrow{opacity:.35; font-size:10px; margin-left:2px}
 th[aria-sort] .arrow{opacity:1; color:var(--brand)}
-td{padding:9px 0 9px 15px; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
+td{padding:9px 7px; border-bottom:1px solid var(--line-2); text-align:center; vertical-align:middle;
   font-variant-numeric:tabular-nums; white-space:nowrap}
-td:first-child{text-align:left; white-space:nowrap; padding-left:0; padding-right:15px; line-height:1.3}
+td:first-child{text-align:left; white-space:nowrap; padding-left:0; padding-right:12px; line-height:1.3}
+td.tleft{text-align:left}
 tbody tr:hover{background:var(--hover)}
 tbody tr:last-child td{border-bottom:none}
 /* Names are long and Georgian: clip to one line and put the full string in the
@@ -170,14 +177,17 @@ span.pname,.pmeta,.tcell{display:block; max-width:var(--namew,330px); overflow:h
   text-overflow:ellipsis; white-space:nowrap}
 .pname{font-weight:500}
 td.pname{max-width:none}
-.pmeta{font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; margin-top:1px}
-:lang(ka) .pmeta{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px}
-.tcell{font-size:13px; color:var(--ink-2); max-width:var(--supw,168px)}
-td.namecell{max-width:var(--namew,330px)}
-#t-prod,#t-order,#t-decide,#t-over,#t-dead{--namew:300px}
-#t-cat{--namew:420px}
-@media (min-width:1500px){#t-prod,#t-over,#t-dead{--namew:420px}
-  #t-order,#t-decide{--namew:330px}}
+/* .pmeta holds category and supplier, which come from Optimo and are ALWAYS
+   Georgian whatever the UI language is. IBM Plex Mono has no Georgian glyphs,
+   so this must never be monospace - not even in English. */
+.pmeta{font-size:12.5px; color:var(--ink-3); font-family:"Noto Sans Georgian",sans-serif; margin-top:1px}
+.tcell{font-size:12.5px; color:var(--ink-2); max-width:var(--supw,124px)}
+td.namecell{max-width:var(--namew,240px)}
+#t-prod,#t-order,#t-decide,#t-over,#t-dead{--namew:230px; --supw:118px}
+#t-cat{--namew:300px}
+@media (min-width:1500px){#t-prod,#t-over,#t-dead{--namew:340px; --supw:150px}
+  #t-order,#t-decide{--namew:260px; --supw:132px}
+  #t-cat{--namew:400px}}
 .empty{color:var(--ink-3); font-size:14.5px; padding:24px 0; text-align:center}
 tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; padding-top:11px; color:var(--ink)}
 
@@ -208,7 +218,7 @@ tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; 
 .chip .dot{width:5px;height:5px;border-radius:99px;background:currentColor;flex:none}
 
 .bar{display:block; height:5px; border-radius:2px; background:var(--sunken); overflow:hidden;
-  min-width:56px; margin-top:4px}
+  min-width:44px; max-width:76px; margin:4px auto 0}
 .bar i{display:block; height:100%; border-radius:2px}
 
 .callout{background:var(--panel); border:1px solid var(--crit); border-radius:10px; padding:22px 24px;
@@ -737,6 +747,9 @@ const KF=n=>Math.abs(n)>=1000?(n/1000).toFixed(Math.abs(n)>=10000?0:1)+'k':F(n,0
 const el=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SVGNS='http://www.w3.org/2000/svg';
+// SVG text takes a presentation attribute, not the stylesheet, so any label that
+// can carry Georgian has to name a Georgian-capable face explicitly.
+const GSANS='Noto Sans Georgian, sans-serif';
 const mk=(t,a={})=>{const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
 const STOCK_BY=Object.fromEntries(STOCK.map(s=>[s.b,s]));
 const FIRST=LINES[0].d, TOTAL_STOCK=STOCK.reduce((a,s)=>a+s.t,0);
@@ -1082,8 +1095,10 @@ function drawTrend(bk){const host=el('trend'); host.innerHTML='';
     const isLast=i===bk.length-1;
     if(i%every===0||(isLast&&(bk.length-1)%every>every/2)){
       const lx=x+bw/2, ly=PT+ih+(rot?13:17);
+      // Tick labels are month names, which are Georgian by default - they must
+      // not be asked for in a font with no Georgian coverage.
       const t=mk('text',{x:lx,y:ly,'text-anchor':rot?'end':'middle',fill:'var(--ink-3)','font-size':11,
-        'font-family':'IBM Plex Mono, monospace'});
+        'font-family':GSANS});
       if(rot) t.setAttribute('transform',`rotate(-45 ${lx} ${ly})`);
       t.textContent=bucketLabel(b.k); svg.appendChild(t);}
     const h=mk('rect',{x,y:PT,width:bw,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
@@ -1099,7 +1114,7 @@ function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)re
   const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:y(0),y2:y(0),stroke:'var(--line)','stroke-width':1}));
   const lab=mk('text',{x:PL-9,y:PT+9,'text-anchor':'end',fill:'var(--ink-3)','font-size':10.5,
-    'font-family':'IBM Plex Mono, monospace'}); lab.textContent=T('margin_pct_axis'); svg.appendChild(lab);
+    'font-family':GSANS}); lab.textContent=T('margin_pct_axis'); svg.appendChild(lab);
   const pts=bk.map((b,i)=>[PL+i*step+step/2,y(b.mpct)]);
   svg.appendChild(mk('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',
     stroke:'var(--ink)','stroke-width':2,'stroke-linejoin':'round'}));
@@ -1171,7 +1186,7 @@ function render(){
   LAST.prods=sortRows(prods,'prod');
   const iP=paginate(LAST.prods,'prod'), maxM=Math.max(...prods.map(p=>p.mpct),1);
   el('t-prod').innerHTML=headers([{l:T('c_product')},{l:T('c_revenue'),k:'rev'},{l:T('c_units'),k:'units'},
-    {l:T('c_sales'),k:'txns'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct',w:'110px'},
+    {l:T('c_sales'),k:'txns'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct'},
     {l:T('c_onhand'),k:'on_hand'}],'prod')+
     (iP.slice.length?`<tbody>${iP.slice.map(r=>`<tr>
       <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
@@ -1188,7 +1203,7 @@ function render(){
 
   const byRev=prods.slice().sort((a,b)=>b.rev-a.rev);
   const cum=n=>byRev.slice(0,n).reduce((a,p)=>a+p.rev,0);
-  el('t-conc').innerHTML=headers([{l:T('cc_top')},{l:T('c_revenue')},{l:T('c_share'),w:'126px'}])+
+  el('t-conc').innerHTML=headers([{l:T('cc_top')},{l:T('c_revenue')},{l:T('c_share')}])+
     `<tbody>${[5,10,20,50].filter(n=>n<=byRev.length).map(n=>{
       const c=cum(n), sh=Tt.rev>0?100*c/Tt.rev:0;
       return `<tr><td class="pname">${T('cc_topn',n)}</td><td class="mono">${F(c,0)} ₾</td>
@@ -1201,7 +1216,7 @@ function render(){
     {l:T('mb_1530'),t:p=>p.mpct>=15&&p.mpct<30},{l:T('mb_3050'),t:p=>p.mpct>=30&&p.mpct<50},
     {l:T('mb_50'),t:p=>p.mpct>=50}];
   el('t-bands').innerHTML=headers([{l:T('mb_band')},{l:T('c_products')},{l:T('c_revenue')},
-    {l:T('c_margin_gel')},{l:T('c_share'),w:'108px'}])+
+    {l:T('c_margin_gel')},{l:T('c_share')}])+
     `<tbody>${bands.map(b=>{const gp=prods.filter(b.t);
       const rev=gp.reduce((a,p)=>a+p.rev,0), mg=gp.reduce((a,p)=>a+p.margin,0), sh=Tt.rev>0?100*rev/Tt.rev:0;
       return `<tr><td class="pname">${b.l}</td><td class="mono">${gp.length}</td>
@@ -1251,11 +1266,11 @@ function render(){
     headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_occ'),k:'nocc'},
       {l:T('c_onhand'),k:'on_hand'},{l:T('c_maxheld'),k:'maxHeld'},{l:T('c_units30'),k:'u30'},
       {l:T('c_cover'),k:'cover'},{l:T('c_orderqty'),k:'suggest'},{l:T('c_ordervalue'),k:'orderValue'},
-      {l:T('c_atrisk'),k:'atRisk',w:'118px'},{l:T('c_perlari'),k:'perGel'},{l:T('c_cumcash')}],'order')+
+      {l:T('c_atrisk'),k:'atRisk'},{l:T('c_perlari'),k:'perGel'},{l:T('c_cumcash')}],'order')+
     `<tbody>${iOrd.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
       return `<tr>
       <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
-      <td><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
+      <td class="tleft"><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
       <td class="mono">${F(r.nocc,0)}</td>
       <td class="mono">${F(r.on_hand,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
@@ -1298,7 +1313,7 @@ function render(){
       return `<tr>
       <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
       <td><span class="chip ${R[2]}" title="${esc(T(R[1]))}"><span class="dot"></span>${T(R[0])}</span></td>
-      <td><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
+      <td class="tleft"><span class="tcell" title="${esc(r.sup)}">${esc(r.sup)}</span></td>
       <td class="mono">${F(r.nocc,0)}</td>
       <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
       <td class="mono">${F(r.u30,0)}</td>
@@ -1360,7 +1375,7 @@ function render(){
       {l:T('c_unitcost')},{l:T('c_capital')}])+
     `<tbody>${iD.slice.map(r=>`<tr>
       <td><span class="pname" title="${esc(r.p)}">${esc(r.p)}</span><span class="pmeta" title="${esc(r.c)}">${esc(r.c)}</span></td>
-      <td><span class="tcell" title="${esc(r.s)}">${esc(r.s)}</span></td>
+      <td class="tleft"><span class="tcell" title="${esc(r.s)}">${esc(r.s)}</span></td>
       <td class="mono">${F(r.q,0)}</td>
       <td class="mono" style="color:var(--ink-2)">${F(r.mx,0)}</td>
       <td class="mono">${F(r.u,2)}</td>
@@ -1376,7 +1391,7 @@ function render(){
   const iC=paginate(catRows,'cat');
   el('t-cat').innerHTML=headers([{l:T('c_category')},{l:T('c_revenue'),k:'rev'},{l:T('c_units'),k:'units'},
     {l:T('c_products'),k:'skus'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct'},
-    {l:T('c_share'),k:'share',w:'112px'}],'cat')+
+    {l:T('c_share'),k:'share'}],'cat')+
     (iC.slice.length?`<tbody>${iC.slice.map(r=>`<tr>
       <td><span class="pname" title="${esc(r.cat)}">${esc(r.cat)}</span></td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${F(r.units,0)}</td><td class="mono">${r.skus}</td>
@@ -1394,7 +1409,7 @@ function render(){
     return {n:T('dow_'+i),rev:t.rev,receipts:t.receipts,basket:t.basket};}).filter(r=>r.receipts>0);
   const maxD=Math.max(...dow.map(d=>d.rev),1);
   el('t-dow').innerHTML=dow.length?
-    headers([{l:T('c_day')},{l:T('c_revenue')},{l:T('k_receipts')},{l:T('k_basket')},{l:T('c_share'),w:'104px'}])+
+    headers([{l:T('c_day')},{l:T('c_revenue')},{l:T('k_receipts')},{l:T('k_basket')},{l:T('c_share')}])+
     `<tbody>${dow.map(d=>`<tr><td class="pname">${d.n}</td>
       <td class="mono">${F(d.rev,0)} ₾</td><td class="mono">${d.receipts}</td>
       <td class="mono">${F(d.basket,0)} ₾</td>
