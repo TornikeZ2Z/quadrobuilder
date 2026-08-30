@@ -29,10 +29,14 @@ SELECT s.channel, COUNT(*) lines,
 FROM sales s LEFT JOIN stock st USING(barcode) GROUP BY 1""").df().to_string(index=False))
 
 stock = con.execute("""
-SELECT barcode AS b, product AS p, COALESCE(category,'—') AS c,
-       COALESCE(supplier,'—') AS s, qty_on_hand AS q,
-       ROUND(unit_cost,4) AS u, ROUND(total_cost,2) AS t
-FROM stock""").df()
+SELECT st.barcode AS b, st.product AS p, COALESCE(st.category,'—') AS c,
+       COALESCE(st.supplier,'—') AS s, st.qty_on_hand AS q,
+       ROUND(st.unit_cost,4) AS u, ROUND(st.total_cost,2) AS t,
+       -- opening + everything ever received: the most that can ever have sat on the
+       -- shelf, since Optimo's export carries no dated goods receipts.
+       COALESCE(m.open_qty,0) + COALESCE(m.qty_in,0) AS mx,
+       COALESCE(m.qty_in,0) AS rin, COALESCE(m.qty_out,0) AS rout
+FROM stock st LEFT JOIN movement m USING(barcode)""").df()
 
 optimo = con.execute("""
 SELECT strftime(date,'%Y-%m-%d') AS d, revenue AS rev, markup AS mk, txns AS t

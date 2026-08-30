@@ -4,228 +4,249 @@
 <title>QuadroBuilder Reporting</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 
 <style>
 :root{
   color-scheme: light;
   --ground:#F4F2EF; --panel:#FFFFFF; --sunken:#EDEAE5; --hover:#FAF9F7;
   --line:#E5E1DB; --line-2:#F0EDE8;
-  --ink:#2C333A; --ink-2:#6B7480; --ink-3:#9AA2AC;
-  --brand:#F26F20; --brand-soft:#FDEBE0; --brand-deep:#D45A11;
+  --ink:#2C333A; --ink-2:#606974; --ink-3:#8F97A1;
+  --brand:#F26F20; --brand-soft:#FDEBE0; --brand-deep:#C9540F;
   --cost:#C9C3BA;
-  --crit:#B3302F; --crit-bg:#FBEBEA;
-  --warn:#8A6100; --warn-bg:#FAF1DC;
-  --good:#1B7A57; --good-bg:#E7F4EF;
-  --side:224px;
+  --crit:#A82B2A; --crit-bg:#FBEBEA;
+  --warn:#7C5700; --warn-bg:#FAF1DC;
+  --good:#166B4C; --good-bg:#E7F4EF;
+  --side:238px;
 }
 *{box-sizing:border-box}
 body{margin:0; background:var(--ground); color:var(--ink);
-  font-family:"Noto Sans Georgian","Archivo",system-ui,sans-serif; font-size:15px; line-height:1.55;
+  font-family:"Noto Sans Georgian","Archivo",system-ui,sans-serif; font-size:16.5px; line-height:1.55;
   -webkit-font-smoothing:antialiased}
 h1,h2{font-family:"Archivo",sans-serif; margin:0; letter-spacing:-.015em; text-wrap:balance}
+:lang(ka) h1,:lang(ka) h2{font-family:"Noto Sans Georgian","Archivo",sans-serif; letter-spacing:-.005em}
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
 .num{font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums; font-weight:600}
 a{color:var(--brand-deep)}
 :focus-visible{outline:2px solid var(--brand); outline-offset:2px; border-radius:3px}
 
-/* ---------- shell ---------- */
+/* shell */
 .app{display:grid; grid-template-columns:var(--side) minmax(0,1fr); min-height:100vh}
 .side{position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--panel);
-  border-right:1px solid var(--line); padding:22px 0 24px; display:flex; flex-direction:column; gap:22px}
+  border-right:1px solid var(--line); padding:22px 0 24px; display:flex; flex-direction:column; gap:20px}
 .brand{padding:0 20px; display:flex; flex-direction:column; gap:9px}
 .brand svg{display:block}
-.brand .tag{font-family:"Archivo",sans-serif; font-size:8.5px; letter-spacing:.16em; font-weight:700;
+.brand .tag{font-family:"Archivo",sans-serif; font-size:9.5px; letter-spacing:.16em; font-weight:700;
   color:var(--brand); text-transform:uppercase}
+:lang(ka) .brand .tag{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.08em; font-size:11px}
+.langsel{padding:0 20px}
+.langsel .seg{width:100%}
+.langsel .seg button{flex:1; justify-content:center}
 .nav{display:flex; flex-direction:column; gap:1px; padding:0 12px}
-.nav a{display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:6px; text-decoration:none;
-  color:var(--ink-2); font-size:13px; line-height:1.3}
+.nav a{display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:6px; text-decoration:none;
+  color:var(--ink-2); font-size:14.5px; line-height:1.3}
 .nav a:hover{background:var(--hover); color:var(--ink)}
 .nav a[aria-current="true"]{background:var(--ink); color:#fff}
 .nav a[aria-current="true"] .dot{background:var(--brand)}
 .nav .dot{width:5px; height:5px; border-radius:99px; background:var(--line); flex:none}
 .nav a:hover .dot{background:var(--ink-3)}
-.sidefoot{margin-top:auto; padding:0 20px; font-family:"IBM Plex Mono",monospace; font-size:10px;
-  line-height:1.9; color:var(--ink-3); letter-spacing:.05em; text-transform:uppercase}
+.sidefoot{margin-top:auto; padding:0 20px; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  line-height:1.95; color:var(--ink-3); letter-spacing:.04em}
+:lang(ka) .sidefoot{font-family:"Noto Sans Georgian",sans-serif; font-size:12px; letter-spacing:0}
 .sidefoot b{color:var(--ink); font-weight:500}
-
 .main{min-width:0; padding:0 0 90px}
-.inner{max-width:none; margin:0; padding:26px 34px 0; display:flex; flex-direction:column; gap:34px}
+.inner{max-width:none; margin:0; padding:26px 34px 0; display:flex; flex-direction:column; gap:36px}
 
-/* ---------- filters ---------- */
+/* filters */
 .filters{position:sticky; top:0; z-index:30; background:var(--ground);
-  border-bottom:1px solid var(--line); padding:12px 0}
+  border-bottom:1px solid var(--line); padding:13px 0}
 .filters-inner{max-width:none; margin:0; padding:0 34px; display:flex; flex-wrap:wrap;
-  gap:9px 16px; align-items:center}
-.fgroup{display:flex; align-items:center; gap:7px}
-.flab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+  gap:10px 18px; align-items:center}
+.fgroup{display:flex; align-items:center; gap:8px}
+.flab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.11em;
   text-transform:uppercase; color:var(--ink-3)}
+:lang(ka) .flab{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.02em; text-transform:none;
+  font-size:13px}
 .seg{display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; background:var(--panel)}
 .seg button{appearance:none; border:0; background:transparent; color:var(--ink-2); cursor:pointer;
-  font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:5px 10px; border-right:1px solid var(--line)}
+  font-family:"IBM Plex Mono",monospace; font-size:13px; padding:6px 12px; border-right:1px solid var(--line)}
+:lang(ka) .seg button{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .seg button:hover:not([aria-pressed="true"]){background:var(--hover)}
-.daterange{display:none; align-items:center; gap:6px}
+.daterange{display:none; align-items:center; gap:7px}
 .daterange.on{display:flex}
-.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink);
-  background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:4px 7px}
+.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:5px 8px}
 .daterange input[type=date]:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
-.daterange span{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:11px}
-/* searchable category combobox */
+.daterange span{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:13px}
+input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:14px; color:var(--ink);
+  background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 10px; width:190px}
+.reset{appearance:none; background:none; border:0; color:var(--brand-deep); cursor:pointer; font-size:13.5px;
+  font-family:"IBM Plex Mono",monospace; padding:4px}
+:lang(ka) .reset{font-family:"Noto Sans Georgian",sans-serif}
+.scope{font-size:13px; color:var(--ink-2); font-family:"IBM Plex Mono",monospace}
+:lang(ka) .scope{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
+.scope b{color:var(--ink); font-weight:500}
+
+/* combobox */
 .combo{position:relative}
-.combo-btn{display:inline-flex; align-items:center; gap:8px; background:var(--panel);
-  border:1px solid var(--line); border-radius:6px; padding:5px 10px; cursor:pointer;
-  font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px; color:var(--ink); max-width:290px}
+.combo-btn{display:inline-flex; align-items:center; gap:9px; background:var(--panel);
+  border:1px solid var(--line); border-radius:6px; padding:6px 11px; cursor:pointer;
+  font-family:"Noto Sans Georgian",sans-serif; font-size:14px; color:var(--ink); max-width:300px}
 .combo-btn:hover{border-color:var(--ink-3)}
 .combo-btn .lbl{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.combo-btn .cnt{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3)}
-.combo-btn .car{margin-left:auto; color:var(--ink-3); font-size:9px}
+.combo-btn .cnt{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3)}
+.combo-btn .car{margin-left:auto; color:var(--ink-3); font-size:10px}
 .combo-btn[aria-expanded="true"]{border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
-.combo-panel{position:absolute; top:calc(100% + 6px); left:0; width:340px; background:var(--panel);
+.combo-panel{position:absolute; top:calc(100% + 6px); left:0; width:360px; background:var(--panel);
   border:1px solid var(--line); border-radius:9px; box-shadow:0 8px 28px rgba(44,51,58,.14);
   z-index:60; display:none; overflow:hidden}
 .combo-panel.open{display:block}
 .combo-search{width:100%; border:0; border-bottom:1px solid var(--line); border-radius:0;
-  padding:9px 12px; font-size:13px; max-width:none; background:var(--panel)}
+  padding:10px 13px; font-size:14px; background:var(--panel)}
 .combo-search:focus{outline:none; border-bottom-color:var(--brand)}
-.combo-list{max-height:300px; overflow-y:auto; padding:4px}
+.combo-list{max-height:330px; overflow-y:auto; padding:4px}
 .combo-opt{display:grid; grid-template-columns:1fr auto; gap:3px 10px; align-items:center;
-  padding:7px 9px; border-radius:6px; cursor:pointer}
+  padding:8px 10px; border-radius:6px; cursor:pointer}
 .combo-opt:hover,.combo-opt.active{background:var(--hover)}
 .combo-opt[aria-selected="true"]{background:var(--ink)}
 .combo-opt[aria-selected="true"] .cname,.combo-opt[aria-selected="true"] .crev{color:#fff}
 .combo-opt[aria-selected="true"] .cbar i{background:var(--brand)}
-.cname{font-size:12.5px; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.crev{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2); white-space:nowrap}
+.cname{font-size:14px; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.crev{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2); white-space:nowrap}
 .cbar{grid-column:1/-1; height:3px; border-radius:2px; background:var(--sunken); overflow:hidden}
 .cbar i{display:block; height:100%; background:var(--cost); border-radius:2px}
-.combo-none{padding:14px; text-align:center; color:var(--ink-3); font-size:12px;
-  font-family:"IBM Plex Mono",monospace}
-select,input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px; color:var(--ink);
-  background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:5px 8px; max-width:200px}
-input[type=search]{width:160px}
-.reset{appearance:none; background:none; border:0; color:var(--brand-deep); cursor:pointer; font-size:12px;
-  font-family:"IBM Plex Mono",monospace; padding:4px}
-.scope{font-size:12px; color:var(--ink-2); font-family:"IBM Plex Mono",monospace}
-.scope b{color:var(--ink); font-weight:500}
+.combo-none{padding:15px; text-align:center; color:var(--ink-3); font-size:13.5px}
 
-/* ---------- blocks ---------- */
-.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.15em;
-  text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:8px}
-section > h2{font-size:19px; font-weight:600; margin-bottom:5px}
-section > .lede{color:var(--ink-2); font-size:14px; max-width:78ch; margin:0 0 18px}
-.panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:20px 22px}
-.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(460px,1fr)); gap:18px}
+/* blocks */
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:9px}
+:lang(ka) .eyebrow{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.02em;
+  text-transform:none; font-size:13.5px}
+section > h2{font-size:23px; font-weight:600; margin-bottom:6px}
+section > .lede{color:var(--ink-2); font-size:15.5px; max-width:84ch; margin:0 0 20px}
+.panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px 24px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(470px,1fr)); gap:18px}
 .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
 
-.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(162px,1fr));
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr));
   background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
-.kpi{padding:14px 16px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:2px}
+.kpi{padding:16px 18px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:3px}
 .kpi:last-child{border-right:0}
-.kpi .lab{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.11em;
+.kpi .lab{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
   text-transform:uppercase; color:var(--ink-3)}
-.kpi .val{font-size:24px; line-height:1.2}
-.kpi .val small{font-size:13px; font-weight:500; color:var(--ink-2)}
-.kpi .ctx{font-size:11.5px; color:var(--ink-2); line-height:1.4}
-.delta{font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500}
+:lang(ka) .kpi .lab{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.01em;
+  text-transform:none; font-size:13px}
+.kpi .val{font-size:30px; line-height:1.2}
+.kpi .val small{font-size:16px; font-weight:500; color:var(--ink-2)}
+.kpi .ctx{font-size:13px; color:var(--ink-2); line-height:1.45}
+.delta{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500}
+:lang(ka) .delta{font-family:"Noto Sans Georgian",sans-serif}
 .delta.up{color:var(--good)} .delta.down{color:var(--crit)} .delta.flat{color:var(--ink-3)}
 
-/* ---------- tables ---------- */
-.tw{overflow-x:auto; margin:0 -22px; padding:0 22px}
-table{border-collapse:collapse; width:100%; font-size:13px; table-layout:auto}
-th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--ink-3); text-align:right; font-weight:400; padding:0 0 9px 14px;
+/* tables */
+.tw{overflow-x:auto; margin:0 -24px; padding:0 24px}
+table{border-collapse:collapse; width:100%; font-size:14.5px}
+th{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); text-align:right; font-weight:400; padding:0 0 10px 15px;
   border-bottom:1px solid var(--line); white-space:nowrap; vertical-align:bottom}
+:lang(ka) th{font-family:"Noto Sans Georgian",sans-serif; text-transform:none; letter-spacing:0; font-size:13px}
 th:first-child{text-align:left; padding-left:0}
 th.sortable{cursor:pointer; user-select:none}
 th.sortable:hover{color:var(--ink)}
-th .arrow{opacity:.35; font-size:9px; margin-left:1px}
+th .arrow{opacity:.35; font-size:10px; margin-left:2px}
 th[aria-sort] .arrow{opacity:1; color:var(--brand)}
-td{padding:9px 0 9px 14px; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
+td{padding:10px 0 10px 15px; border-bottom:1px solid var(--line-2); text-align:right; vertical-align:middle;
   font-variant-numeric:tabular-nums; white-space:nowrap}
-td:first-child{text-align:left; white-space:normal; padding-left:0; padding-right:14px; line-height:1.35}
+td:first-child{text-align:left; white-space:normal; padding-left:0; padding-right:15px; line-height:1.35}
 tbody tr:hover{background:var(--hover)}
 tbody tr:last-child td{border-bottom:none}
 .pname{font-weight:500}
-.pmeta{display:block; font-size:10.5px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
-.empty{color:var(--ink-3); font-size:13px; padding:22px 0; text-align:center;
-  font-family:"IBM Plex Mono",monospace}
-tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; padding-top:10px;
-  color:var(--ink)}
+.pmeta{display:block; font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace}
+:lang(ka) .pmeta{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px}
+.empty{color:var(--ink-3); font-size:14.5px; padding:24px 0; text-align:center}
+tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; padding-top:11px; color:var(--ink)}
 
-.pager{display:flex; align-items:center; gap:7px; margin-top:14px; flex-wrap:wrap;
-  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-2)}
+.pager{display:flex; align-items:center; gap:7px; margin-top:15px; flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2)}
+:lang(ka) .pager{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
 .pager button{appearance:none; border:1px solid var(--line); background:var(--panel); color:var(--ink-2);
-  border-radius:5px; padding:4px 9px; cursor:pointer; font-family:inherit; font-size:11.5px; min-width:30px}
+  border-radius:5px; padding:5px 11px; cursor:pointer; font-family:inherit; font-size:inherit; min-width:34px}
 .pager button:hover:not(:disabled){background:var(--sunken); color:var(--ink)}
 .pager button:disabled{opacity:.35; cursor:default}
 .pager button[aria-current="true"]{background:var(--ink); color:#fff; border-color:var(--ink)}
 .pager .gap{color:var(--ink-3); padding:0 2px}
 .pager .count{margin-left:auto}
 
-.btn{appearance:none; display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line);
-  background:var(--panel); color:var(--ink); border-radius:6px; padding:6px 12px; cursor:pointer;
-  font-family:"IBM Plex Mono",monospace; font-size:11.5px; white-space:nowrap}
+.btn{appearance:none; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line);
+  background:var(--panel); color:var(--ink); border-radius:6px; padding:7px 14px; cursor:pointer;
+  font-family:"IBM Plex Mono",monospace; font-size:13px; white-space:nowrap}
+:lang(ka) .btn{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
 .btn:hover{background:var(--ink); color:#fff; border-color:var(--ink)}
-.btn svg{width:13px; height:13px}
+.btn svg{width:14px; height:14px; flex:none}
 
-.chip{display:inline-flex; align-items:center; gap:5px; padding:2px 8px; border-radius:99px;
-  font-family:"IBM Plex Mono",monospace; font-size:10.5px; white-space:nowrap}
+.chip{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:99px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; white-space:nowrap}
+:lang(ka) .chip{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px}
 .chip.crit{background:var(--crit-bg); color:var(--crit)}
 .chip.warn{background:var(--warn-bg); color:var(--warn)}
 .chip.good{background:var(--good-bg); color:var(--good)}
 .chip .dot{width:5px;height:5px;border-radius:99px;background:currentColor;flex:none}
 
-.bar{display:block; height:4px; border-radius:2px; background:var(--sunken); overflow:hidden;
-  min-width:52px; margin-top:4px}
+.bar{display:block; height:5px; border-radius:2px; background:var(--sunken); overflow:hidden;
+  min-width:56px; margin-top:4px}
 .bar i{display:block; height:100%; border-radius:2px}
 
-.callout{background:var(--panel); border:1px solid var(--crit); border-radius:10px; padding:20px 22px;
-  display:flex; flex-direction:column; gap:10px}
-.callout h2{color:var(--crit); font-size:18px}
-.callout .big{font-size:clamp(21px,3vw,29px); font-weight:700; font-family:"Archivo",sans-serif;
+.callout{background:var(--panel); border:1px solid var(--crit); border-radius:10px; padding:22px 24px;
+  display:flex; flex-direction:column; gap:11px}
+.callout h2{color:var(--crit); font-size:22px}
+.callout .big{font-size:clamp(24px,3vw,33px); font-weight:700; font-family:"Archivo",sans-serif;
   color:var(--crit); font-variant-numeric:tabular-nums; line-height:1.15}
-.callout p{margin:0; font-size:14px; max-width:80ch}
+.callout p{margin:0; font-size:15.5px; max-width:86ch}
 
-.note{border-left:2px solid var(--brand); padding:10px 0 10px 15px; font-size:12.5px;
-  color:var(--ink-2); margin:16px 0 0}
+.note{border-left:2px solid var(--brand); padding:11px 0 11px 16px; font-size:14px;
+  color:var(--ink-2); margin:18px 0 0}
 .note b{color:var(--ink); font-weight:500}
 
 .chartbox{position:relative}
 svg{display:block; width:100%; overflow:visible}
 .tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--ink);
-  color:#fff; border-radius:6px; padding:7px 10px; font-size:11.5px; font-family:"IBM Plex Mono",monospace;
-  white-space:nowrap; z-index:40; transform:translate(-50%,-118%); line-height:1.55}
-.legend{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3); margin:12px 0 0;
-  display:flex; gap:16px; flex-wrap:wrap}
-.legend span{display:inline-flex; align-items:center; gap:5px}
-.legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  color:#fff; border-radius:6px; padding:8px 11px; font-size:12.5px; font-family:"IBM Plex Mono",monospace;
+  white-space:nowrap; z-index:40; transform:translate(-50%,-118%); line-height:1.6}
+:lang(ka) .tip{font-family:"Noto Sans Georgian",sans-serif; font-size:13px}
+.legend{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-3); margin:13px 0 0;
+  display:flex; gap:18px; flex-wrap:wrap}
+:lang(ka) .legend{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
 
-.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(136px,1fr)); gap:1px;
-  background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:18px}
-.stat{background:var(--panel); padding:12px 14px; display:flex; flex-direction:column; gap:2px}
-.stat .lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em;
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px}
+.stat{background:var(--panel); padding:13px 15px; display:flex; flex-direction:column; gap:3px}
+.stat .lab{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
   text-transform:uppercase; color:var(--ink-3)}
-.stat .val{font-size:17px; font-weight:600; font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums}
-.stat .sub{font-size:11px; color:var(--ink-2)}
+:lang(ka) .stat .lab{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.01em;
+  text-transform:none; font-size:12.5px}
+.stat .val{font-size:21px; font-weight:600; font-family:"Archivo",sans-serif; font-variant-numeric:tabular-nums}
+.stat .sub{font-size:12.5px; color:var(--ink-2)}
 
-footer{border-top:1px solid var(--line); padding-top:20px; margin-top:8px; color:var(--ink-2);
-  font-size:12.5px; display:flex; flex-direction:column; gap:9px}
+footer{border-top:1px solid var(--line); padding-top:22px; margin-top:8px; color:var(--ink-2);
+  font-size:14px; display:flex; flex-direction:column; gap:10px}
 footer b{color:var(--ink); font-weight:500}
-footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:5px}
+footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:7px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .side{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
     flex-direction:row; align-items:center; gap:14px; padding:12px 16px; overflow-x:auto}
-  .brand{padding:0; flex:none}
+  .brand,.langsel{padding:0; flex:none}
   .nav{flex-direction:row; padding:0; gap:4px}
-  .nav a{white-space:nowrap; font-size:12px; padding:6px 9px}
+  .nav a{white-space:nowrap; font-size:13.5px; padding:7px 10px}
   .nav .dot{display:none}
   .sidefoot{display:none}
-  .inner{padding:20px 16px 0; gap:26px}
+  .inner{padding:20px 16px 0; gap:28px}
   .filters-inner{padding:0 16px}
   .grid2{grid-template-columns:1fr}
   .kpis{grid-template-columns:1fr 1fr}
@@ -238,168 +259,121 @@ footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:
 <div class="app">
   <aside class="side">
     <div class="brand">
-      <svg width="150" height="34" viewBox="0 0 150 34" role="img" aria-label="QuadroBuilder">
-        <rect x="0" y="1"  width="13" height="13" fill="#2C333A"/>
-        <rect x="15" y="1"  width="13" height="13" fill="#2C333A"/>
-        <rect x="0" y="16" width="13" height="13" fill="#2C333A"/>
-        <rect x="15" y="16" width="13" height="13" fill="#F26F20"/>
-        <text x="35" y="14" font-family="Archivo, sans-serif" font-weight="800" font-size="13.5"
+      <svg width="158" height="36" viewBox="0 0 158 36" role="img" aria-label="QuadroBuilder">
+        <rect x="0" y="2"  width="14" height="14" fill="#2C333A"/>
+        <rect x="16" y="2"  width="14" height="14" fill="#2C333A"/>
+        <rect x="0" y="18" width="14" height="14" fill="#2C333A"/>
+        <rect x="16" y="18" width="14" height="14" fill="#F26F20"/>
+        <text x="38" y="15" font-family="Archivo, sans-serif" font-weight="800" font-size="14.5"
               letter-spacing="-0.3" fill="#2C333A">QUADRO</text>
-        <text x="35" y="28" font-family="Archivo, sans-serif" font-weight="800" font-size="13.5"
+        <text x="38" y="30" font-family="Archivo, sans-serif" font-weight="800" font-size="14.5"
               letter-spacing="-0.3" fill="#2C333A">BUILDER</text>
       </svg>
-      <span class="tag">Together we build</span>
+      <span class="tag" id="tagline"></span>
     </div>
-    <nav class="nav" id="nav" aria-label="Sections">
-      <a href="#overview"><span class="dot"></span>Overview</a>
-      <a href="#rhythm"><span class="dot"></span>Trading rhythm</a>
-      <a href="#products"><span class="dot"></span>Products</a>
-      <a href="#margin"><span class="dot"></span>Margin &amp; mix</a>
-      <a href="#order"><span class="dot"></span>What to order</a>
-      <a href="#stock"><span class="dot"></span>Understocked</a>
-      <a href="#overstock"><span class="dot"></span>Overstocked</a>
-      <a href="#dead"><span class="dot"></span>Dead stock</a>
-      <a href="#categories"><span class="dot"></span>Categories</a>
-      <a href="#patterns"><span class="dot"></span>Patterns</a>
-      <a href="#method"><span class="dot"></span>Method</a>
-    </nav>
+    <div class="langsel"><span class="seg" id="f-lang"></span></div>
+    <nav class="nav" id="nav" aria-label="Sections"></nav>
     <div class="sidefoot">
-      Trading since <b id="s-first"></b><br>
-      <b id="s-weeks"></b> weeks<br>
-      As of <b id="s-asof"></b>
+      <span id="lbl-since"></span> <b id="s-first"></b><br>
+      <b id="s-weeks"></b> <span id="lbl-weeks"></span><br>
+      <span id="lbl-asof"></span> <b id="s-asof"></b>
     </div>
   </aside>
 
   <main class="main">
     <div class="filters"><div class="filters-inner" role="group" aria-label="Filters">
-      <div class="fgroup"><span class="flab">Period</span><span class="seg" id="f-period"></span></div>
+      <div class="fgroup"><span class="flab" id="lbl-period"></span><span class="seg" id="f-period"></span></div>
       <div class="fgroup daterange" id="f-range">
-        <input type="date" id="f-from" aria-label="From date">
-        <span>to</span>
-        <input type="date" id="f-to" aria-label="To date"></div>
-      <div class="fgroup"><span class="flab">Group by</span><span class="seg" id="f-gran"></span></div>
-      <div class="fgroup"><span class="flab">Channel</span><span class="seg" id="f-chan"></span></div>
+        <input type="date" id="f-from"><span id="lbl-dateto"></span><input type="date" id="f-to"></div>
+      <div class="fgroup"><span class="flab" id="lbl-groupby"></span><span class="seg" id="f-gran"></span></div>
+      <div class="fgroup"><span class="flab" id="lbl-channel"></span><span class="seg" id="f-chan"></span></div>
       <div class="fgroup"><div class="combo" id="cat-combo">
         <button class="combo-btn" id="cat-btn" type="button" aria-expanded="false" aria-haspopup="listbox">
-          <span class="lbl" id="cat-lbl">All categories</span>
-          <span class="cnt" id="cat-cnt"></span><span class="car">▼</span></button>
-        <div class="combo-panel" id="cat-panel" role="listbox" aria-label="Category">
-          <input class="combo-search" id="cat-search" type="search" placeholder="filter categories" autocomplete="off">
+          <span class="lbl" id="cat-lbl"></span><span class="cnt" id="cat-cnt"></span><span class="car">&#9660;</span></button>
+        <div class="combo-panel" id="cat-panel" role="listbox">
+          <input class="combo-search" id="cat-search" type="search" autocomplete="off">
           <div class="combo-list" id="cat-list"></div>
         </div></div></div>
-      <div class="fgroup"><input type="search" id="f-q" placeholder="search product" aria-label="Search product"></div>
-      <button class="reset" id="f-reset" type="button">reset</button>
+      <div class="fgroup"><input type="search" id="f-q"></div>
+      <button class="reset" id="f-reset" type="button"></button>
       <span class="scope" id="f-scope"></span>
     </div></div>
 
     <div class="inner">
-
       <section id="overview">
-        <span class="eyebrow">Headline · selected period</span>
+        <span class="eyebrow" id="eb-headline"></span>
         <div class="kpis" id="kpis"></div>
         <p class="note" id="recon"></p>
       </section>
 
       <section id="rhythm" class="panel">
-        <span class="eyebrow">Revenue split into cost and gross margin</span>
-        <h2>Trading rhythm</h2>
-        <p class="lede">Each column is one period. The pale block is what the goods cost you; the orange block on
-          top is the gross margin you kept. Together they make revenue — so column height is revenue and the
-          orange part is profit, on one scale. The line below tracks margin percentage.</p>
+        <span class="eyebrow" id="eb-rhythm"></span>
+        <h2 id="h-rhythm"></h2>
+        <p class="lede" id="l-rhythm"></p>
         <div class="chartbox"><div id="trend"></div><div class="tip" id="trend-tip"></div></div>
-        <p class="legend">
-          <span><i style="background:var(--brand)"></i> gross margin kept</span>
-          <span><i style="background:var(--cost)"></i> cost of goods</span>
-        </p>
+        <p class="legend" id="leg-trend"></p>
         <div class="chartbox" style="margin-top:8px"><div id="mpct"></div><div class="tip" id="mpct-tip"></div></div>
         <div class="stats" id="rhythm-stats"></div>
       </section>
 
       <section id="products" class="panel">
         <div class="head-row">
-          <div>
-            <span class="eyebrow">Every product sold in the period</span>
-            <h2>Product performance</h2>
-          </div>
-          <button class="btn" id="x-prod" type="button">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-            Export CSV</button>
+          <div><span class="eyebrow" id="eb-prod"></span><h2 id="h-prod"></h2></div>
+          <button class="btn" id="x-prod" type="button"><svg viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg><span></span></button>
         </div>
-        <p class="lede">Sortable — click any column heading. Paginated across the whole list, not a top-10 slice.</p>
+        <p class="lede" id="l-prod"></p>
         <div class="tw"><table id="t-prod"></table></div>
         <div class="pager" id="p-prod"></div>
       </section>
 
       <div class="grid2" id="margin">
         <section class="panel">
-          <span class="eyebrow">How concentrated the business is</span>
-          <h2>Revenue concentration</h2>
-          <p class="lede">How much of the takings rest on how few products.</p>
+          <span class="eyebrow" id="eb-conc"></span><h2 id="h-conc"></h2>
+          <p class="lede" id="l-conc"></p>
           <div class="tw"><table id="t-conc"></table></div>
         </section>
         <section class="panel">
-          <span class="eyebrow">Revenue by margin band</span>
-          <h2>Where margin comes from</h2>
-          <p class="lede">Not all revenue is equally worth having.</p>
+          <span class="eyebrow" id="eb-band"></span><h2 id="h-band"></h2>
+          <p class="lede" id="l-band"></p>
           <div class="tw"><table id="t-bands"></table></div>
         </section>
       </div>
 
       <section id="order" class="panel">
         <div class="head-row">
-          <div><span class="eyebrow">Ranked by gross margin you lose each week it stays unavailable</span>
-            <h2>What to order</h2></div>
-          <button class="btn" id="x-order" type="button">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-            Export CSV</button>
+          <div><span class="eyebrow" id="eb-order"></span><h2 id="h-order"></h2></div>
+          <button class="btn" id="x-order" type="button"><svg viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg><span></span></button>
         </div>
-        <p class="lede">Everything still selling that will not last <b>21 days</b>, most costly first. Demand is the
-          last 30 days. Suggested quantity refills to 30 days of cover; order value prices that at current cost.</p>
-        <div class="stats" id="order-stats" style="margin:0 0 18px"></div>
+        <p class="lede" id="l-order"></p>
+        <div class="stats" id="order-stats" style="margin:0 0 20px"></div>
         <div class="tw"><table id="t-order"></table></div>
         <div class="pager" id="p-order"></div>
         <p class="note" id="neg-note"></p>
       </section>
 
-      <section id="stock" class="panel">
-        <div class="head-row">
-          <div><span class="eyebrow">Below a healthy 30 days of cover</span><h2>Understocked</h2></div>
-          <button class="btn" id="x-under" type="button">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-            Export CSV</button>
-        </div>
-        <p class="lede">The diagnostic view — every thin line with its stock value, recent demand and what it earned
-          in the selected period. Sortable.</p>
-        <div class="tw"><table id="t-under"></table></div>
-        <div class="pager" id="p-under"></div>
-      </section>
-
       <section id="overstock" class="panel">
         <div class="head-row">
-          <div><span class="eyebrow">Capital sitting still</span><h2>Overstocked</h2></div>
-          <button class="btn" id="x-over" type="button">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-            Export CSV</button>
+          <div><span class="eyebrow" id="eb-over"></span><h2 id="h-over"></h2></div>
+          <button class="btn" id="x-over" type="button"><svg viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg><span></span></button>
         </div>
-        <p class="lede">Products that do sell, but hold over a year of cover at the current pace. Sorted by the
-          capital they tie up. Sortable.</p>
-        <div class="stats" id="over-stats" style="margin:0 0 18px"></div>
+        <p class="lede" id="l-over"></p>
+        <div class="stats" id="over-stats" style="margin:0 0 20px"></div>
         <div class="tw"><table id="t-over"></table></div>
         <div class="pager" id="p-over"></div>
       </section>
 
       <section id="dead" class="callout">
         <div class="head-row">
-          <div><span class="eyebrow" style="color:var(--crit)">The biggest finding</span>
-            <h2 id="dead-h"></h2></div>
-          <button class="btn" id="x-dead" type="button">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"
-              stroke-linecap="round" stroke-linejoin="round"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg>
-            Export CSV</button>
+          <div><span class="eyebrow" id="eb-dead" style="color:var(--crit)"></span><h2 id="dead-h"></h2></div>
+          <button class="btn" id="x-dead" type="button"><svg viewBox="0 0 16 16" fill="none"
+            stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M2 13h12"/></svg><span></span></button>
         </div>
         <div class="big" id="dead-big"></div>
         <p id="dead-p"></p>
@@ -408,120 +382,139 @@ footer ul{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:
       </section>
 
       <section id="categories" class="panel">
-        <span class="eyebrow">Net revenue by category</span>
-        <h2>Category mix</h2>
-        <p class="lede">Sortable. Share is of the revenue in the current selection.</p>
+        <span class="eyebrow" id="eb-cat"></span><h2 id="h-cat"></h2>
+        <p class="lede" id="l-cat"></p>
         <div class="tw"><table id="t-cat"></table></div>
         <div class="pager" id="p-cat"></div>
       </section>
 
       <div class="grid2" id="patterns">
         <section class="panel">
-          <span class="eyebrow">Which days earn</span>
-          <h2>Weekday pattern</h2>
+          <span class="eyebrow" id="eb-dow"></span><h2 id="h-dow"></h2>
           <div class="tw"><table id="t-dow"></table></div>
         </section>
         <section class="panel">
-          <span class="eyebrow">Retail counter vs trade accounts</span>
-          <h2>Channel split</h2>
+          <span class="eyebrow" id="eb-chan"></span><h2 id="h-chan"></h2>
           <div class="tw"><table id="t-chan"></table></div>
         </section>
       </div>
 
       <footer id="method">
-        <b>How this was built, and what to distrust</b>
-        <ul>
-          <li>Five Optimo Excel exports loaded into DuckDB, then embedded row-level so every filter recalculates in the browser.</li>
-          <li><b>Revenue matches Optimo exactly</b> — 29,944.80 ₾ over the full period, difference 0.00. Revenue counts
-            retail lines excluding those flagged returned, plus B2B lines excluding those flagged cancelled.
-            Cancelled B2B lines are dropped at load and appear nowhere on this page.</li>
-          <li><b>Margin is approximate.</b> Optimo's exports carry no cost-at-time-of-sale, so margin uses each
-            product's <em>current</em> purchase price, and will differ from Optimo's own markup figure.
-            7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.</li>
-          <li>Velocity, cover and overstock follow the selected period. Products with fewer than 3 sales are excluded
-            from the reorder list so a single sale cannot look like a trend.</li>
-        </ul>
+        <b id="m-title"></b>
+        <ul id="m-list"></ul>
       </footer>
     </div>
   </main>
 </div>
 
 <script>
+__I18N__
+
+let LANG='ka';
+try{const v=localStorage.getItem('qb-lang'); if(v==='en'||v==='ka') LANG=v;}catch(e){}
+function T(key,...a){
+  const row=DICT[key]; if(!row) return key;
+  let s=(LANG==='ka'?row[1]:row[0])||row[0];
+  a.forEach((v,i)=>{s=s.split('{'+i+'}').join(v);});
+  return s;}
+const LOC=()=>LANG==='ka'?'ka-GE':'en-GB';
+function setLang(l){LANG=l; try{localStorage.setItem('qb-lang',l);}catch(e){}
+  document.documentElement.setAttribute('lang',l); paintStatic(); render();}
+
 const D=__DATA__;
 const LINES=D.lines, STOCK=D.stock, OPTIMO=D.optimo_daily;
-const ASOF=new Date(D.as_of+'T12:00:00');
+const ASOF=new Date(D.as_of+'T12:00:00'), ASOF_S=D.as_of;
 const F=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const GEL=n=>F(n,0)+' ₾';
 const KF=n=>Math.abs(n)>=1000?(n/1000).toFixed(Math.abs(n)>=10000?0:1)+'k':F(n,0);
 const el=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SVGNS='http://www.w3.org/2000/svg';
 const mk=(t,a={})=>{const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
 const STOCK_BY=Object.fromEntries(STOCK.map(s=>[s.b,s]));
 const FIRST=LINES[0].d, TOTAL_STOCK=STOCK.reduce((a,s)=>a+s.t,0);
-// trailing 30 days from the as-of date, independent of the period filter
+const FIRST_REV=(LINES.find(l=>l.v>0)||LINES[0]).d;
 const L30=(()=>{const d=new Date(ASOF); d.setDate(d.getDate()-29);
   const from=d.toISOString().slice(0,10), m={};
   for(const l of LINES){ if(l.d<from) continue;
-    const o=m[l.b]||(m[l.b]={u:0,rev:0,cogs:0});
-    o.u+=l.q; o.rev+=l.v; o.cogs+=l.q*l.u; }
+    const o=m[l.b]||(m[l.b]={u:0,rev:0,cogs:0}); o.u+=l.q; o.rev+=l.v; o.cogs+=l.q*l.u; }
   return m;})();
-// Feb 2026 contains five lines, all of them returns, and March none at all:
-// the shop's first revenue-earning day is the honest start date.
-const FIRST_REV=(LINES.find(l=>l.v>0)||LINES[0]).d;
 
-const PERIODS=[{k:'all',l:'All'},{k:'180',l:'6 mo'},{k:'90',l:'90 d'},{k:'30',l:'30 d'},{k:'custom',l:'Custom'}];
-const GRANS=[{k:'D',l:'Day'},{k:'W',l:'Week'},{k:'M',l:'Month'},{k:'Q',l:'Quarter'}];
-const CHANS=[{k:'',l:'All'},{k:'retail',l:'Retail'},{k:'entity',l:'B2B'}];
-const ASOF_S=D.as_of;
+const PERIODS=[{k:'all',t:'p_all'},{k:'180',t:'p_180'},{k:'90',t:'p_90'},{k:'30',t:'p_30'},{k:'custom',t:'p_custom'}];
+const GRANS=[{k:'D',t:'g_D'},{k:'W',t:'g_W'},{k:'M',t:'g_M'},{k:'Q',t:'g_Q'}];
+const CHANS=[{k:'',t:'ch_all'},{k:'retail',t:'ch_retail'},{k:'entity',t:'ch_entity'}];
+const NAV=[['overview','nav_overview'],['rhythm','nav_rhythm'],['products','nav_products'],
+  ['margin','nav_margin'],['order','nav_order'],['overstock','nav_over'],['dead','nav_dead'],
+  ['categories','nav_categories'],['patterns','nav_patterns'],['method','nav_method']];
 const state={period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null,
-  page:{prod:1,dead:1,cat:1,order:1,under:1,over:1},
-  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1},order:{k:'atRisk',dir:-1},under:{k:'atRisk',dir:-1},over:{k:'capital',dir:-1}}};
+  page:{prod:1,dead:1,cat:1,order:1,over:1},
+  sort:{prod:{k:'rev',dir:-1},cat:{k:'rev',dir:-1},order:{k:'atRisk',dir:-1},over:{k:'capital',dir:-1}}};
 let LAST={};
-
-function seg(id,items,key){
-  el(id).innerHTML=items.map(o=>`<button type="button" data-k="${o.k}" aria-pressed="${o.k===state[key]}">${o.l}</button>`).join('');
-  el(id).addEventListener('click',e=>{const b=e.target.closest('button'); if(!b)return;
-    state[key]=b.dataset.k; resetPages(); apply();});
-}
 const resetPages=()=>{for(const k in state.page) state.page[k]=1;};
-seg('f-period',PERIODS,'period'); seg('f-gran',GRANS,'gran'); seg('f-chan',CHANS,'chan');
-/* searchable category combobox, ranked by revenue in the current period/channel */
-function catStats(){
-  const [cf,ct]=winRange(), m=new Map();
-  for(const l of LINES){
-    if(l.d<cf||l.d>ct) continue;
-    if(state.chan&&l.ch!==state.chan) continue;
-    if(state.q&&!(l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q))) continue;
-    m.set(l.c,(m.get(l.c)||0)+l.v);
-  }
-  const rows=[...m.entries()].map(([c,rev])=>({c,rev})).sort((a,b)=>b.rev-a.rev);
-  const max=Math.max(...rows.map(r=>r.rev),1);
-  return {rows,max,total:rows.reduce((a,r)=>a+r.rev,0)};
-}
-let comboOpen=false, comboIdx=-1;
-function renderCombo(){
-  const {rows,max,total}=catStats();
-  const f=(el('cat-search').value||'').trim().toLowerCase();
-  const shown=rows.filter(r=>!f||r.c.toLowerCase().includes(f));
-  const opts=[{c:'',rev:total,all:true},...shown];
-  el('cat-list').innerHTML=opts.length?opts.map((r,i)=>`
-    <div class="combo-opt" role="option" data-v="${esc(r.c)}" data-i="${i}"
-         aria-selected="${r.c===state.cat}">
-      <span class="cname">${r.all?'All categories':esc(r.c)}</span>
-      <span class="crev">${F(r.rev,0)} ₾</span>
-      <span class="cbar"><i style="width:${r.all?100:Math.max(2,(r.rev/max)*100)}%"></i></span>
-    </div>`).join(''):'<div class="combo-none">no category matches</div>';
-  el('cat-lbl').textContent=state.cat||'All categories';
-  el('cat-cnt').textContent=state.cat?'':`${rows.length}`;
-}
-function openCombo(o){comboOpen=o; comboIdx=-1;
-  el('cat-panel').classList.toggle('open',o);
-  el('cat-btn').setAttribute('aria-expanded',o);
-  if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();}}
+
+function paintStatic(){
+  el('tagline').textContent=T('tagline');
+  el('f-lang').innerHTML=[['ka','ქარ'],['en','EN']].map(([k,l])=>
+    `<button type="button" data-l="${k}" aria-pressed="${LANG===k}">${l}</button>`).join('');
+  el('nav').innerHTML=NAV.map(([id,k])=>
+    `<a href="#${id}"><span class="dot"></span>${T(k)}</a>`).join('');
+  el('lbl-since').textContent=T('since'); el('lbl-weeks').textContent=T('weeks');
+  el('lbl-asof').textContent=T('asof');
+  el('lbl-period').textContent=T('f_period'); el('lbl-groupby').textContent=T('f_groupby');
+  el('lbl-channel').textContent=T('f_channel'); el('lbl-dateto').textContent=T('date_to');
+  el('f-reset').textContent=T('f_reset');
+  el('f-q').placeholder=T('search_product'); el('cat-search').placeholder=T('filter_categories');
+  el('f-period').innerHTML=PERIODS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
+  el('f-gran').innerHTML=GRANS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
+  el('f-chan').innerHTML=CHANS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
+  [['eb-headline','k_headline'],['eb-rhythm','r_eyebrow'],['h-rhythm','r_title'],['l-rhythm','r_lede'],
+   ['eb-prod','pr_eyebrow'],['h-prod','pr_title'],['l-prod','pr_lede'],
+   ['eb-conc','cc_eyebrow'],['h-conc','cc_title'],['l-conc','cc_lede'],
+   ['eb-band','mb_eyebrow'],['h-band','mb_title'],['l-band','mb_lede'],
+   ['eb-order','o_eyebrow'],['h-order','o_title'],['l-order','o_lede'],
+   ['eb-over','ov_eyebrow'],['h-over','ov_title'],['l-over','ov_lede'],
+   ['eb-dead','d_eyebrow'],['eb-cat','cat_eyebrow'],['h-cat','cat_title'],['l-cat','cat_lede'],
+   ['eb-dow','pt_eyebrow'],['h-dow','pt_title'],['eb-chan','ch_eyebrow'],['h-chan','ch_title'],
+   ['m-title','m_title']].forEach(([id,k])=>{const n=el(id); if(n) n.innerHTML=T(k);});
+  document.querySelectorAll('.btn span').forEach(n=>n.textContent=T('export_csv'));
+  el('leg-trend').innerHTML=
+    `<span><i style="background:var(--brand)"></i> ${T('leg_margin')}</span>`+
+    `<span><i style="background:var(--cost)"></i> ${T('leg_cost')}</span>`;
+  el('m-list').innerHTML=['m_1','m_2','m_3','m_4'].map(k=>`<li>${T(k)}</li>`).join('');
+  const full=d=>`${d.getDate()} ${T('mon_'+(d.getMonth()+1))} ${d.getFullYear()}`;
+  el('s-first').textContent=full(new Date(FIRST_REV+'T12:00:00'));
+  el('s-weeks').textContent=((ASOF-new Date(FIRST_REV+'T12:00:00'))/6048e5).toFixed(1);
+  el('s-asof').textContent=full(ASOF);}
+el('f-lang').addEventListener('click',e=>{const b=e.target.closest('button'); if(b) setLang(b.dataset.l);});
+
+['f-period','f-gran','f-chan'].forEach((id,i)=>{
+  const key=['period','gran','chan'][i];
+  el(id).addEventListener('click',e=>{const b=e.target.closest('button'); if(!b)return;
+    state[key]=b.dataset.k; resetPages(); apply();});});
+let qt; el('f-q').addEventListener('input',e=>{clearTimeout(qt);
+  qt=setTimeout(()=>{state.q=e.target.value.trim().toLowerCase(); resetPages(); apply();},160);});
+el('f-reset').addEventListener('click',()=>{
+  Object.assign(state,{period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null});
+  el('f-q').value=''; resetPages(); apply();});
+
+function winRange(){
+  if(state.period==='custom') return [state.from||FIRST, state.to||ASOF_S];
+  if(state.period==='all')    return [FIRST, ASOF_S];
+  const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.period)+1);
+  return [d.toISOString().slice(0,10), ASOF_S];}
+const dayDiff=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+const matches=(l,from,to)=>l.d>=from&&(!to||l.d<=to)&&(!state.chan||l.ch===state.chan)&&
+  (!state.cat||l.c===state.cat)&&(!state.q||l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q));
+const activeLines=()=>{const r=winRange(); return LINES.filter(l=>matches(l,r[0],r[1]));};
+function prevLines(){if(state.period==='all')return null;
+  const r=winRange(), n=dayDiff(r[0],r[1])+1;
+  const end=new Date(r[0]+'T12:00:00'); end.setDate(end.getDate()-1);
+  const st=new Date(end); st.setDate(st.getDate()-n+1);
+  return LINES.filter(l=>matches(l,st.toISOString().slice(0,10),end.toISOString().slice(0,10)));}
+const periodDays=()=>{const r=winRange(); return Math.max(1,dayDiff(r[0],r[1])+1);};
+
 el('f-from').min=el('f-to').min=FIRST; el('f-from').max=el('f-to').max=ASOF_S;
-function syncRange(){
-  const on=state.period==='custom';
+function syncRange(){const on=state.period==='custom';
   el('f-range').classList.toggle('on',on);
   if(on&&!state.from){state.from=FIRST; state.to=ASOF_S;
     el('f-from').value=state.from; el('f-to').value=state.to;}}
@@ -531,112 +524,101 @@ el('f-from').addEventListener('change',e=>{state.from=e.target.value||FIRST;
 el('f-to').addEventListener('change',e=>{state.to=e.target.value||ASOF_S;
   if(state.from&&state.to<state.from){state.from=state.to; el('f-from').value=state.from;}
   state.period='custom'; resetPages(); apply();});
+
+function catStats(){const r=winRange(), m=new Map();
+  for(const l of LINES){ if(l.d<r[0]||l.d>r[1]) continue;
+    if(state.chan&&l.ch!==state.chan) continue;
+    if(state.q&&!(l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q))) continue;
+    m.set(l.c,(m.get(l.c)||0)+l.v);}
+  const rows=[...m.entries()].map(([c,rev])=>({c,rev})).sort((a,b)=>b.rev-a.rev);
+  return {rows,max:Math.max(...rows.map(x=>x.rev),1),total:rows.reduce((a,x)=>a+x.rev,0)};}
+let comboOpen=false, comboIdx=-1;
+function renderCombo(){
+  const cs=catStats();
+  const f=(el('cat-search').value||'').trim().toLowerCase();
+  const opts=[{c:'',rev:cs.total,all:true}].concat(cs.rows.filter(r=>!f||r.c.toLowerCase().includes(f)));
+  el('cat-list').innerHTML=opts.length?opts.map((r,i)=>`
+    <div class="combo-opt" role="option" data-v="${esc(r.c)}" data-i="${i}" aria-selected="${r.c===state.cat}">
+      <span class="cname">${r.all?T('all_categories'):esc(r.c)}</span>
+      <span class="crev">${F(r.rev,0)} ₾</span>
+      <span class="cbar"><i style="width:${r.all?100:Math.max(2,(r.rev/cs.max)*100)}%"></i></span>
+    </div>`).join(''):`<div class="combo-none">${T('no_category')}</div>`;
+  el('cat-lbl').textContent=state.cat||T('all_categories');
+  el('cat-cnt').textContent=state.cat?'':String(cs.rows.length);}
+function openCombo(o){comboOpen=o; comboIdx=-1;
+  el('cat-panel').classList.toggle('open',o); el('cat-btn').setAttribute('aria-expanded',o);
+  if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();}}
 el('cat-btn').addEventListener('click',()=>openCombo(!comboOpen));
 el('cat-search').addEventListener('input',()=>{comboIdx=-1; renderCombo();});
 el('cat-list').addEventListener('click',e=>{const o=e.target.closest('.combo-opt'); if(!o)return;
   state.cat=o.dataset.v; resetPages(); openCombo(false); apply();});
 el('cat-panel').addEventListener('keydown',e=>{
-  const opts=[...el('cat-list').children].filter(n=>n.classList.contains('combo-opt'));
+  const opts=[...el('cat-list').querySelectorAll('.combo-opt')];
   if(e.key==='Escape'){openCombo(false); el('cat-btn').focus(); return;}
   if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();
     comboIdx=Math.max(0,Math.min(opts.length-1,comboIdx+(e.key==='ArrowDown'?1:-1)));
     opts.forEach((n,i)=>n.classList.toggle('active',i===comboIdx));
-    opts[comboIdx]?.scrollIntoView({block:'nearest'});}
+    if(opts[comboIdx]) opts[comboIdx].scrollIntoView({block:'nearest'});}
   if(e.key==='Enter'&&opts[comboIdx]){e.preventDefault();
     state.cat=opts[comboIdx].dataset.v; resetPages(); openCombo(false); apply();}});
 document.addEventListener('click',e=>{if(comboOpen&&!e.target.closest('#cat-combo')) openCombo(false);});
-let qt; el('f-q').addEventListener('input',e=>{clearTimeout(qt);
-  qt=setTimeout(()=>{state.q=e.target.value.trim().toLowerCase();resetPages();apply();},160);});
-el('f-reset').addEventListener('click',()=>{Object.assign(state,{period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null});
-  el('f-q').value='';resetPages();apply();});
-
-function winRange(){
-  if(state.period==='custom') return [state.from||FIRST, state.to||ASOF_S];
-  if(state.period==='all')    return [FIRST, ASOF_S];
-  const d=new Date(ASOF); d.setDate(d.getDate()-Number(state.period)+1);
-  return [d.toISOString().slice(0,10), ASOF_S];}
-const winStart=()=>winRange()[0];
-const dayDiff=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
-const matches=(l,from,to)=>l.d>=from&&(!to||l.d<=to)&&(!state.chan||l.ch===state.chan)&&
-  (!state.cat||l.c===state.cat)&&(!state.q||l.p.toLowerCase().includes(state.q)||String(l.b).includes(state.q));
-const activeLines=()=>{const [f,t]=winRange(); return LINES.filter(l=>matches(l,f,t));};
-function prevLines(){
-  if(state.period==='all') return null;
-  const [f,t]=winRange(), n=dayDiff(f,t)+1;
-  const end=new Date(f+'T12:00:00'); end.setDate(end.getDate()-1);
-  const st=new Date(end); st.setDate(st.getDate()-n+1);
-  return LINES.filter(l=>matches(l,st.toISOString().slice(0,10),end.toISOString().slice(0,10)));}
-const periodDays=()=>{const [f,t]=winRange(); return Math.max(1,dayDiff(f,t)+1);};
 
 function bucket(ds){const d=new Date(ds+'T12:00:00');
   if(state.gran==='D') return ds;
   if(state.gran==='W'){const o=(d.getDay()+6)%7; d.setDate(d.getDate()-o); return d.toISOString().slice(0,10);}
   if(state.gran==='M') return ds.slice(0,7);
   return d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);}
+const MON=d=>T('mon_'+(d.getMonth()+1));
+function fmtDay(d){return LANG==='ka'?`${d.getDate()} ${MON(d)}`:`${d.getDate()} ${MON(d)}`;}
+function fmtMon(d){return `${MON(d)} ${String(d.getFullYear()).slice(2)}`;}
 function bucketLabel(k){
-  if(state.gran==='D') return new Date(k+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  if(state.gran==='W') return new Date(k+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  if(state.gran==='M') return new Date(k+'-01T12:00:00').toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
+  if(state.gran==='D'||state.gran==='W') return fmtDay(new Date(k+'T12:00:00'));
+  if(state.gran==='M') return fmtMon(new Date(k+'-01T12:00:00'));
   return k.replace('-',' ');}
 function totals(rows){const t={rev:0,cogs:0,units:0,rs:new Set(),ret:0};
-  for(const l of rows){t.rev+=l.v;t.cogs+=l.q*l.u;t.units+=l.q;
+  for(const l of rows){t.rev+=l.v; t.cogs+=l.q*l.u; t.units+=l.q;
     if(l.v>0)t.rs.add(l.ch+l.r); if(l.ret)t.ret+=l.lv;}
   t.receipts=t.rs.size; t.margin=t.rev-t.cogs;
   t.mpct=t.rev>0?100*t.margin/t.rev:0; t.basket=t.receipts?t.rev/t.receipts:0; return t;}
 function groupBy(rows,fn){const m=new Map();
   for(const l of rows){const k=fn(l); if(!m.has(k))m.set(k,[]); m.get(k).push(l);} return m;}
 function byProduct(rows){const out=[];
-  for(const [b,ls] of groupBy(rows,l=>l.b)){
-    const t=totals(ls), st=STOCK_BY[b], perDay=t.units/periodDays();
+  for(const e of groupBy(rows,l=>l.b)){const b=e[0], ls=e[1];
+    const t=totals(ls), st=STOCK_BY[b];
     out.push({b,p:ls[0].p,c:ls[0].c,sup:ls[0].sup,rev:t.rev,units:t.units,margin:t.margin,mpct:t.mpct,
-      txns:t.receipts,on_hand:st?st.q:0,capital:st?st.t:0,unit_cost:st?st.u:0,
-      upw:perDay*7,cover:perDay>0?(st?st.q:0)/perDay:null});}
+      txns:t.receipts,on_hand:st?st.q:0,capital:st?st.t:0});}
   return out;}
 
-/* CSV export — works on the hosted site */
-function toCSV(rows,cols){
-  const q=v=>{const s=String(v??''); return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+function toCSV(rows,cols){const q=v=>{const s=String(v==null?'':v);
+  return /[",\n;]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
   return '﻿'+[cols.map(c=>q(c.l)).join(',')]
-    .concat(rows.map(r=>cols.map(c=>q(typeof c.v==='function'?c.v(r):r[c.v])).join(','))).join('\r\n');
-}
-function download(name,csv){
-  const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    .concat(rows.map(r=>cols.map(c=>q(typeof c.v==='function'?c.v(r):r[c.v])).join(','))).join('\r\n');}
+function download(name,csv){const b=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const u=URL.createObjectURL(b), a=document.createElement('a');
   a.href=u; a.download=name; document.body.appendChild(a); a.click();
-  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),1000);
-}
-const stamp=()=>ASOF.toISOString().slice(0,10);
-el('x-dead').onclick=()=>download(`quadrobuilder-dead-stock-${stamp()}.csv`,
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u),1000);}
+el('x-dead').onclick=()=>download('quadrobuilder-dead-stock-'+ASOF_S+'.csv',
   toCSV(LAST.dead||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'s'},
-    {l:'Qty on hand',v:'q'},{l:'Unit cost',v:'u'},{l:'Capital tied (GEL)',v:'t'}]));
-el('x-over').onclick=()=>download(`quadrobuilder-overstock-${stamp()}.csv`,
-  toCSV(LAST.over||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},
-    {l:'Units 30d',v:'u30'},{l:'Period units',v:'periodUnits'},
-    {l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
-    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},
-    {l:'Days cover',v:r=>r.cover==null?'':Math.round(r.cover)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
-el('x-order').onclick=()=>download(`quadrobuilder-what-to-order-${stamp()}.csv`,
-  toCSV(LAST.order||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Units sold 30d',v:'u30'},{l:'Units per week',v:r=>r.perWeek.toFixed(2)},
-    {l:'Days cover',v:r=>Math.round(r.cover)},{l:'Suggested order qty',v:'suggest'},
-    {l:'Unit cost (GEL)',v:r=>r.unit_cost.toFixed(2)},
-    {l:'Order value (GEL)',v:r=>r.orderValue.toFixed(2)},
-    {l:'Margin at risk per week (GEL)',v:r=>r.atRisk.toFixed(2)}]));
-el('x-under').onclick=()=>download(`quadrobuilder-understocked-${stamp()}.csv`,
-  toCSV(LAST.under||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
-    {l:'Qty on hand',v:'on_hand'},{l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},
-    {l:'Units 30d',v:'u30'},{l:'Revenue 30d (GEL)',v:r=>r.rev30.toFixed(2)},
-    {l:'Units per week',v:r=>r.perWeek.toFixed(2)},{l:'Days cover',v:r=>Math.round(r.cover)},
-    {l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
-    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
-el('x-prod').onclick=()=>download(`quadrobuilder-products-${stamp()}.csv`,
+    {l:'Qty on hand',v:'q'},{l:'Peak held',v:'mx'},{l:'Unit cost',v:'u'},{l:'Capital tied (GEL)',v:'t'}]));
+el('x-prod').onclick=()=>download('quadrobuilder-products-'+ASOF_S+'.csv',
   toCSV(LAST.prods||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},
     {l:'Revenue (GEL)',v:r=>r.rev.toFixed(2)},{l:'Units',v:'units'},{l:'Sales',v:'txns'},
-    {l:'Margin (GEL)',v:r=>r.margin.toFixed(2)},{l:'Margin %',v:r=>r.mpct.toFixed(1)},
-    {l:'On hand',v:'on_hand'}]));
+    {l:'Margin (GEL)',v:r=>r.margin.toFixed(2)},{l:'Margin %',v:r=>r.mpct.toFixed(1)},{l:'On hand',v:'on_hand'}]));
+el('x-order').onclick=()=>download('quadrobuilder-what-to-order-'+ASOF_S+'.csv',
+  toCSV(LAST.order||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
+    {l:'Qty on hand',v:'on_hand'},{l:'Peak held',v:'maxHeld'},{l:'Total received',v:'received'},
+    {l:'Units sold 30d',v:'u30'},{l:'Units per week',v:r=>r.perWeek.toFixed(2)},
+    {l:'Days cover',v:r=>Math.round(r.cover)},{l:'Suggested order qty',v:'suggest'},
+    {l:'Unit cost (GEL)',v:r=>r.unit_cost.toFixed(2)},{l:'Order value (GEL)',v:r=>r.orderValue.toFixed(2)},
+    {l:'Margin at risk per week (GEL)',v:r=>r.atRisk.toFixed(2)}]));
+el('x-over').onclick=()=>download('quadrobuilder-overstock-'+ASOF_S+'.csv',
+  toCSV(LAST.over||[],[{l:'Product',v:'p'},{l:'Barcode',v:'b'},{l:'Category',v:'c'},{l:'Supplier',v:'sup'},
+    {l:'Qty on hand',v:'on_hand'},{l:'Peak held',v:'maxHeld'},
+    {l:'Stock value (GEL)',v:r=>r.capital.toFixed(2)},{l:'Units 30d',v:'u30'},
+    {l:'Period units',v:'periodUnits'},{l:'Period revenue (GEL)',v:r=>r.periodRev.toFixed(2)},
+    {l:'Period margin (GEL)',v:r=>r.periodMargin.toFixed(2)},
+    {l:'Days cover',v:r=>r.cover==null?'':Math.round(r.cover)},{l:'Turns per year',v:r=>r.turn.toFixed(2)}]));
 
-/* pagination + sort */
 const PAGE=12;
 function paginate(rows,key){const pages=Math.max(1,Math.ceil(rows.length/PAGE));
   if(state.page[key]>pages)state.page[key]=pages;
@@ -644,32 +626,32 @@ function paginate(rows,key){const pages=Math.max(1,Math.ceil(rows.length/PAGE));
   return {slice:rows.slice((p-1)*PAGE,p*PAGE),page:p,pages,total:rows.length,
     from:rows.length?(p-1)*PAGE+1:0,to:Math.min(p*PAGE,rows.length)};}
 function drawPager(id,info,key){const n=el(id); if(!n)return;
-  if(info.total<=PAGE){n.innerHTML=info.total?`<span class="count">${info.total} row${info.total===1?'':'s'}</span>`:'';return;}
-  const {page:p,pages}=info, nums=[];
+  if(info.total<=PAGE){n.innerHTML=info.total?
+    `<span class="count">${info.total===1?T('pg_row',info.total):T('pg_rows',info.total)}</span>`:''; return;}
+  const p=info.page, pages=info.pages, nums=[];
   nums.push(1); if(p>3)nums.push('…');
   for(let i=Math.max(2,p-1);i<=Math.min(pages-1,p+1);i++)nums.push(i);
   if(p<pages-2)nums.push('…'); if(pages>1)nums.push(pages);
-  n.innerHTML=`<button type="button" data-go="${p-1}" ${p===1?'disabled':''}>prev</button>`+
+  n.innerHTML=`<button type="button" data-go="${p-1}" ${p===1?'disabled':''}>${T('pg_prev')}</button>`+
     nums.map(v=>v==='…'?`<span class="gap">…</span>`
       :`<button type="button" data-go="${v}" aria-current="${v===p}">${v}</button>`).join('')+
-    `<button type="button" data-go="${p+1}" ${p===pages?'disabled':''}>next</button>`+
-    `<span class="count">${info.from}–${info.to} of ${info.total}</span>`;
+    `<button type="button" data-go="${p+1}" ${p===pages?'disabled':''}>${T('pg_next')}</button>`+
+    `<span class="count">${T('pg_of',info.from,info.to,info.total)}</span>`;
   n.onclick=e=>{const b=e.target.closest('button[data-go]'); if(!b||b.disabled)return;
     state.page[key]=Number(b.dataset.go); render();
     n.closest('section').scrollIntoView({block:'start',behavior:'instant'});};}
-function sortRows(rows,key){const s=state.sort[key]; if(!s)return rows;
-  return [...rows].sort((a,b)=>{const x=a[s.k],y=b[s.k];
+function sortRows(rows,key){const s=key&&state.sort[key]; if(!s)return rows;
+  return rows.slice().sort((a,b)=>{const x=a[s.k],y=b[s.k];
     if(typeof x==='string')return s.dir*x.localeCompare(y,'ka');
-    return s.dir*((x??-Infinity)-(y??-Infinity));});}
+    return s.dir*((x==null?-Infinity:x)-(y==null?-Infinity:y));});}
 function headers(cols,key){return '<thead><tr>'+cols.map(c=>{
     const s=key&&state.sort[key], on=s&&s.k===c.k;
     return `<th ${c.k?`class="sortable" data-sort="${c.k}"`:''}${on?` aria-sort="${s.dir<0?'descending':'ascending'}"`:''}${c.w?` style="min-width:${c.w}"`:''}>`+
-      `${c.l}${c.k?`<span class="arrow">${on?(s.dir<0?'▼':'▲'):'↕'}</span>`:''}</th>`;}).join('')+'</tr></thead>';}
+      `${c.l}${c.k?`<span class="arrow">${on?(s.dir<0?'▼':'▲'):'⇅'}</span>`:''}</th>`;}).join('')+'</tr></thead>';}
 function wireSort(tableId,key){el(tableId).querySelectorAll('th[data-sort]').forEach(th=>{
   th.onclick=()=>{const k=th.dataset.sort,s=state.sort[key];
     state.sort[key]=s&&s.k===k?{k,dir:-s.dir}:{k,dir:-1}; state.page[key]=1; render();};});}
 
-/* charts */
 function wireTip(host,tipEl,nodes,html){nodes.forEach((n,i)=>{n.style.cursor='crosshair';
   n.addEventListener('pointerenter',()=>{tipEl.innerHTML=html(i);
     const hb=host.getBoundingClientRect(),b=n.getBoundingClientRect();
@@ -678,371 +660,328 @@ function wireTip(host,tipEl,nodes,html){nodes.forEach((n,i)=>{n.style.cursor='cr
   n.addEventListener('pointerleave',()=>tipEl.style.opacity=0);});}
 
 function drawTrend(bk){const host=el('trend'); host.innerHTML='';
-  if(!bk.length){host.innerHTML='<p class="empty">no sales in this selection</p>';return;}
-  const W=1180,PL=54,PR=14,PT=26,PB=46,H=270;
+  if(!bk.length){host.innerHTML=`<p class="empty">${T('no_sales_sel')}</p>`;return;}
+  const W=1180,PL=58,PR=14,PT=28,PB=48,H=284;
   const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length;
-  const bw=Math.max(1.5,Math.min(58,step-Math.min(14,step*0.28)));
-  // Day grouping can put 150 columns on screen: thin the labels rather than
-  // overprinting them, and drop per-column values once they cannot fit.
+  const bw=Math.max(1.5,Math.min(60,step-Math.min(14,step*0.28)));
   const every=Math.max(1,Math.ceil(bk.length/26));
-  const showVals=bk.length<=34, rot=step<34;
+  const showVals=bk.length<=34, rot=step<38;
   const max=Math.max(...bk.map(b=>Math.max(b.rev,b.cogs)))*1.16||1;
   const y=v=>PT+ih-(v/max)*ih;
-  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Revenue split into cost and gross margin'});
+  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   [0,.25,.5,.75,1].forEach(t=>{
     svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:y(max*t),y2:y(max*t),stroke:'var(--line-2)','stroke-width':1}));
-    const tx=mk('text',{x:PL-8,y:y(max*t)+4,'text-anchor':'end',fill:'var(--ink-3)','font-size':10,
+    const tx=mk('text',{x:PL-9,y:y(max*t)+4,'text-anchor':'end',fill:'var(--ink-3)','font-size':11.5,
       'font-family':'IBM Plex Mono, monospace'}); tx.textContent=KF(max*t); svg.appendChild(tx);});
   const hit=[];
   bk.forEach((b,i)=>{const x=PL+i*step+(step-bw)/2;
     const cogs=Math.max(0,b.cogs), marg=Math.max(0,b.margin);
     svg.appendChild(mk('rect',{x,y:y(cogs),width:bw,height:Math.max(0,ih-(y(cogs)-PT)),fill:'var(--cost)'}));
-    if(marg>0) svg.appendChild(mk('rect',{x,y:y(cogs+marg),width:bw,height:Math.max(0,y(cogs)-y(cogs+marg)-2),
-      fill:'var(--brand)'}));
+    if(marg>0) svg.appendChild(mk('rect',{x,y:y(cogs+marg),width:bw,
+      height:Math.max(0,y(cogs)-y(cogs+marg)-2),fill:'var(--brand)'}));
     if(b.margin<0) svg.appendChild(mk('rect',{x,y:y(cogs),width:bw,height:6,fill:'var(--crit)'}));
     if(showVals){const v=mk('text',{x:x+bw/2,y:y(cogs+marg)-8,'text-anchor':'middle',fill:'var(--ink)',
-      'font-size':10,'font-weight':600,'font-family':'IBM Plex Mono, monospace'});
+      'font-size':11.5,'font-weight':600,'font-family':'IBM Plex Mono, monospace'});
       v.textContent=KF(b.rev); svg.appendChild(v);}
     const isLast=i===bk.length-1;
     if(i%every===0||(isLast&&(bk.length-1)%every>every/2)){
-      const lx=x+bw/2, ly=PT+ih+(rot?12:15);
-      const t=mk('text',{x:lx,y:ly,'text-anchor':rot?'end':'middle',fill:'var(--ink-3)','font-size':9.5,
+      const lx=x+bw/2, ly=PT+ih+(rot?13:17);
+      const t=mk('text',{x:lx,y:ly,'text-anchor':rot?'end':'middle',fill:'var(--ink-3)','font-size':11,
         'font-family':'IBM Plex Mono, monospace'});
       if(rot) t.setAttribute('transform',`rotate(-45 ${lx} ${ly})`);
       t.textContent=bucketLabel(b.k); svg.appendChild(t);}
     const h=mk('rect',{x,y:PT,width:bw,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
   host.appendChild(svg);
   wireTip(host.parentNode,el('trend-tip'),hit,i=>{const b=bk[i];
-    return `<b>${bucketLabel(b.k)}</b><br>revenue ${F(b.rev,2)} ₾<br>cost ${F(b.cogs,2)} ₾<br>margin ${F(b.margin,2)} ₾ (${F(b.mpct,1)}%)<br>${b.receipts} receipts`;});}
+    return `<b>${bucketLabel(b.k)}</b><br>${T('tt_revenue')} ${F(b.rev,2)} ₾<br>${T('tt_cost')} ${F(b.cogs,2)} ₾<br>${T('tt_margin')} ${F(b.margin,2)} ₾ (${F(b.mpct,1)}%)<br>${b.receipts} ${T('tt_receipts')}`;});}
 
 function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)return;
-  const W=1180,PL=54,PR=14,PT=16,PB=16,H=84;
-  const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length;
-  const dense=bk.length>34;
+  const W=1180,PL=58,PR=14,PT=16,PB=16,H=90;
+  const iw=W-PL-PR, ih=H-PT-PB, step=iw/bk.length, dense=bk.length>34;
   const vals=bk.map(b=>b.mpct), hi=Math.max(...vals,0)*1.25||1, lo=Math.min(...vals,0);
   const y=v=>PT+ih-((v-lo)/((hi-lo)||1))*ih;
-  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Gross margin percent by period'});
+  const svg=mk('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   svg.appendChild(mk('line',{x1:PL,x2:W-PR,y1:y(0),y2:y(0),stroke:'var(--line)','stroke-width':1}));
-  const lab=mk('text',{x:PL-8,y:PT+8,'text-anchor':'end',fill:'var(--ink-3)','font-size':9,
-    'font-family':'IBM Plex Mono, monospace'}); lab.textContent='margin %'; svg.appendChild(lab);
+  const lab=mk('text',{x:PL-9,y:PT+9,'text-anchor':'end',fill:'var(--ink-3)','font-size':10.5,
+    'font-family':'IBM Plex Mono, monospace'}); lab.textContent=T('margin_pct_axis'); svg.appendChild(lab);
   const pts=bk.map((b,i)=>[PL+i*step+step/2,y(b.mpct)]);
   svg.appendChild(mk('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',
     stroke:'var(--ink)','stroke-width':2,'stroke-linejoin':'round'}));
   const hit=[];
-  bk.forEach((b,i)=>{const [x,yy]=pts[i];
-    if(!dense){
-      svg.appendChild(mk('circle',{cx:x,cy:yy,r:3.2,fill:'var(--ink)',stroke:'var(--panel)','stroke-width':1.6}));
-      const t=mk('text',{x,y:yy-9,'text-anchor':'middle',fill:'var(--ink-2)','font-size':9.5,
+  bk.forEach((b,i)=>{const x=pts[i][0], yy=pts[i][1];
+    if(!dense){svg.appendChild(mk('circle',{cx:x,cy:yy,r:3.4,fill:'var(--ink)',
+        stroke:'var(--panel)','stroke-width':1.6}));
+      const t=mk('text',{x,y:yy-10,'text-anchor':'middle',fill:'var(--ink-2)','font-size':11,
         'font-family':'IBM Plex Mono, monospace'}); t.textContent=F(b.mpct,0)+'%'; svg.appendChild(t);}
     const h=mk('rect',{x:x-step/2,y:PT,width:step,height:ih,fill:'transparent'}); svg.appendChild(h); hit.push(h);});
   host.appendChild(svg);
-  wireTip(host.parentNode,el('mpct-tip'),hit,i=>`<b>${bucketLabel(bk[i].k)}</b><br>margin ${F(bk[i].mpct,1)}%`);}
+  wireTip(host.parentNode,el('mpct-tip'),hit,i=>
+    `<b>${bucketLabel(bk[i].k)}</b><br>${T('tt_margin')} ${F(bk[i].mpct,1)}%`);}
 
 function apply(){render();
-  const t=document.querySelector('.filters'); if(window.scrollY>t.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
+  const t=document.querySelector('.filters');
+  if(window.scrollY>t.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
 
 function render(){
   ['period','gran','chan'].forEach((key,i)=>{const id=['f-period','f-gran','f-chan'][i];
     [...el(id).children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===state[key]));});
-  const rows=activeLines(), prev=prevLines(), T=totals(rows), P=prev?totals(prev):null, days=periodDays();
+  [...el('f-lang').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===LANG));
   syncRange(); renderCombo();
-  el('f-scope').innerHTML=`<b>${F(rows.length)}</b> lines · <b>${F(T.receipts)}</b> receipts · <b>${F(days)}</b> days`;
+
+  const rows=activeLines(), prev=prevLines(), Tt=totals(rows), P=prev?totals(prev):null, days=periodDays();
+  el('f-scope').innerHTML=`<b>${F(rows.length)}</b> ${T('s_lines')} · <b>${F(Tt.receipts)}</b> ${T('s_receipts')} · <b>${F(days)}</b> ${T('s_days')}`;
 
   const dl=(c,p)=>{if(P===null||!p)return'';
     const v=100*(c-p)/Math.abs(p), cl=Math.abs(v)<0.5?'flat':v>0?'up':'down';
-    return `<span class="delta ${cl}">${v>0?'+':''}${F(v,1)}% vs prev</span>`;};
+    return `<span class="delta ${cl}">${v>0?'+':''}${F(v,1)}% ${T('vs_prev')}</span>`;};
   el('kpis').innerHTML=[
-    {lab:'Revenue',val:GEL(T.rev),ctx:dl(T.rev,P&&P.rev)||`${F(rows.length)} lines`},
-    {lab:'Gross margin',val:GEL(T.margin),ctx:dl(T.margin,P&&P.margin)||`on ${GEL(T.cogs)} of goods`},
-    {lab:'Margin %',val:F(T.mpct,1),unit:'%',ctx:(P&&dl(T.mpct,P.mpct))||`${GEL(T.cogs)} cost of goods`},
-    {lab:'Receipts',val:F(T.receipts),ctx:dl(T.receipts,P&&P.receipts)||`${F(T.units,0)} units`},
-    {lab:'Avg basket',val:GEL(T.basket),ctx:dl(T.basket,P&&P.basket)||`${F(T.units,0)} units sold`},
-    {lab:'Returned',val:GEL(T.ret),ctx:`${(T.rev+T.ret)>0?F(100*T.ret/(T.rev+T.ret),1):'0'}% of gross, excluded`},
+    {lab:T('k_revenue'),val:GEL(Tt.rev),ctx:dl(Tt.rev,P&&P.rev)||T('lines_n',F(rows.length))},
+    {lab:T('k_margin'),val:GEL(Tt.margin),ctx:dl(Tt.margin,P&&P.margin)||T('on_goods',GEL(Tt.cogs))},
+    {lab:T('k_marginpct'),val:F(Tt.mpct,1),unit:'%',ctx:(P&&dl(Tt.mpct,P.mpct))||T('cost_of_goods',GEL(Tt.cogs))},
+    {lab:T('k_receipts'),val:F(Tt.receipts),ctx:dl(Tt.receipts,P&&P.receipts)||T('units_n',F(Tt.units,0))},
+    {lab:T('k_basket'),val:GEL(Tt.basket),ctx:dl(Tt.basket,P&&P.basket)||T('units_sold',F(Tt.units,0))},
+    {lab:T('k_returned'),val:GEL(Tt.ret),
+     ctx:T('pct_gross_excl',(Tt.rev+Tt.ret)>0?F(100*Tt.ret/(Tt.rev+Tt.ret),1):'0')},
   ].map(k=>`<div class="kpi"><span class="lab">${k.lab}</span>
     <span class="val num">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</span>
     <span class="ctx">${k.ctx}</span></div>`).join('');
 
-  const [rf,rt]=winRange(), opt=OPTIMO.filter(o=>o.d>=rf&&o.d<=rt).reduce((a,o)=>a+o.rev,0);
+  const wr=winRange(), opt=OPTIMO.filter(o=>o.d>=wr[0]&&o.d<=wr[1]).reduce((a,o)=>a+o.rev,0);
   el('recon').innerHTML=(!state.chan&&!state.cat&&!state.q)
-    ? `<b>Reconciled to Optimo.</b> Optimo reports <span class="mono">${F(opt,2)} ₾</span> for this period;
-       this page computes <span class="mono">${F(T.rev,2)} ₾</span> — difference
-       <span class="mono">${F(T.rev-opt,2)} ₾</span>.`
-    : `Filtered view — <b>${F(rows.length)}</b> of <b>${F(LINES.length)}</b> lines. Clear channel, category and
-       search to see the reconciliation against Optimo.`;
+    ? T('recon_ok',F(opt,2),F(Tt.rev,2),F(Tt.rev-opt,2))
+    : T('recon_filtered',F(rows.length),F(LINES.length));
 
   const bk=[...groupBy(rows,l=>bucket(l.d)).entries()].sort((a,b)=>a[0]<b[0]?-1:1)
-    .map(([k,ls])=>({k,...totals(ls)}));
+    .map(e=>Object.assign({k:e[0]},totals(e[1])));
   drawTrend(bk); drawMpct(bk);
 
   const best=bk.reduce((a,b)=>b.rev>a.rev?b:a,bk[0]||{rev:0});
   const worst=bk.reduce((a,b)=>b.rev<a.rev?b:a,bk[0]||{rev:0});
   const growth=bk.length>1&&bk[0].rev>0?100*(bk[bk.length-1].rev-bk[0].rev)/bk[0].rev:null;
-  const turn=TOTAL_STOCK>0?(T.cogs/(days/365))/TOTAL_STOCK:0;
-  const g={D:'day',W:'week',M:'month',Q:'quarter'}[state.gran];
+  const turn=TOTAL_STOCK>0?(Tt.cogs/(days/365))/TOTAL_STOCK:0;
+  const gname=T({D:'n_day',W:'n_week',M:'n_month',Q:'n_quarter'}[state.gran]);
   el('rhythm-stats').innerHTML=[
-    {lab:`Best ${g}`,val:GEL(best.rev||0),sub:best.k?bucketLabel(best.k):'—'},
-    {lab:`Weakest ${g}`,val:GEL(worst.rev||0),sub:worst.k?bucketLabel(worst.k):'—'},
-    {lab:`Average ${g}`,val:GEL(bk.length?T.rev/bk.length:0),sub:`${bk.length} in view`},
-    {lab:'First → last',val:growth==null?'—':`${growth>0?'+':''}${F(growth,0)}%`,
+    {lab:T('st_best',gname),val:GEL(best.rev||0),sub:best.k?bucketLabel(best.k):'—'},
+    {lab:T('st_weak',gname),val:GEL(worst.rev||0),sub:worst.k?bucketLabel(worst.k):'—'},
+    {lab:T('st_avg',gname),val:GEL(bk.length?Tt.rev/bk.length:0),sub:T('st_inview',bk.length)},
+    {lab:T('st_firstlast'),val:growth==null?'—':`${growth>0?'+':''}${F(growth,0)}%`,
       sub:bk.length>1?`${bucketLabel(bk[0].k)} → ${bucketLabel(bk[bk.length-1].k)}`:'—'},
-    {lab:'Stock turns / yr',val:F(turn,1)+'×',sub:`${GEL(TOTAL_STOCK)} held at cost`},
-    {lab:'Days of inventory',val:turn>0?F(365/turn,0):'—',sub:'at this rate of sale'},
+    {lab:T('st_turns'),val:F(turn,1)+'×',sub:T('st_heldcost',GEL(TOTAL_STOCK))},
+    {lab:T('st_daysinv'),val:turn>0?F(365/turn,0):'—',sub:T('st_atrate')},
   ].map(s=>`<div class="stat"><span class="lab">${s.lab}</span><span class="val">${s.val}</span>
     <span class="sub">${s.sub}</span></div>`).join('');
 
-  /* products */
   const prods=byProduct(rows).filter(p=>p.rev!==0);
   LAST.prods=sortRows(prods,'prod');
   const iP=paginate(LAST.prods,'prod'), maxM=Math.max(...prods.map(p=>p.mpct),1);
-  el('t-prod').innerHTML=headers([{l:'Product'},{l:'Revenue',k:'rev'},{l:'Units',k:'units'},{l:'Sales',k:'txns'},
-    {l:'Margin ₾',k:'margin'},{l:'Margin %',k:'mpct',w:'96px'},{l:'On hand',k:'on_hand'}],'prod')+
+  el('t-prod').innerHTML=headers([{l:T('c_product')},{l:T('c_revenue'),k:'rev'},{l:T('c_units'),k:'units'},
+    {l:T('c_sales'),k:'txns'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct',w:'110px'},
+    {l:T('c_onhand'),k:'on_hand'}],'prod')+
     (iP.slice.length?`<tbody>${iP.slice.map(r=>`<tr>
       <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${F(r.units,0)}</td><td class="mono">${r.txns}</td>
       <td class="mono">${F(r.margin,0)} ₾</td>
-      <td><span class="mono" style="font-size:11.5px${r.mpct<0?';color:var(--crit)':''}">${F(r.mpct,1)}%</span>
+      <td><span class="mono" style="font-size:13px${r.mpct<0?';color:var(--crit)':''}">${F(r.mpct,1)}%</span>
         <span class="bar"><i style="width:${Math.max(2,Math.min(100,(r.mpct/maxM)*100))}%;background:${r.mpct<0?'var(--crit)':r.mpct<20?'var(--cost)':'var(--brand)'}"></i></span></td>
       <td class="mono">${F(r.on_hand,0)}</td></tr>`).join('')}</tbody>
-      <tfoot><tr><td>${F(prods.length)} products</td><td class="mono">${F(T.rev,0)} ₾</td>
-      <td class="mono">${F(T.units,0)}</td><td class="mono">${F(T.receipts)}</td>
-      <td class="mono">${F(T.margin,0)} ₾</td><td class="mono">${F(T.mpct,1)}%</td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">no sales in this selection</td></tr></tbody>`);
+      <tfoot><tr><td>${T('n_products',F(prods.length))}</td><td class="mono">${F(Tt.rev,0)} ₾</td>
+      <td class="mono">${F(Tt.units,0)}</td><td class="mono">${F(Tt.receipts)}</td>
+      <td class="mono">${F(Tt.margin,0)} ₾</td><td class="mono">${F(Tt.mpct,1)}%</td><td></td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">${T('no_sales_sel')}</td></tr></tbody>`);
   drawPager('p-prod',iP,'prod'); wireSort('t-prod','prod');
 
-  /* concentration */
-  const byRev=[...prods].sort((a,b)=>b.rev-a.rev);
+  const byRev=prods.slice().sort((a,b)=>b.rev-a.rev);
   const cum=n=>byRev.slice(0,n).reduce((a,p)=>a+p.rev,0);
-  el('t-conc').innerHTML=headers([{l:'Top products'},{l:'Revenue'},{l:'Share',w:'110px'}])+
+  el('t-conc').innerHTML=headers([{l:T('cc_top')},{l:T('c_revenue')},{l:T('c_share'),w:'126px'}])+
     `<tbody>${[5,10,20,50].filter(n=>n<=byRev.length).map(n=>{
-      const c=cum(n), s=T.rev>0?100*c/T.rev:0;
-      return `<tr><td class="pname">Top ${n}</td><td class="mono">${F(c,0)} ₾</td>
-        <td><span class="mono" style="font-size:11.5px">${F(s,1)}%</span>
-        <span class="bar"><i style="width:${Math.min(100,s)}%;background:var(--brand)"></i></span></td></tr>`;}).join('')}
-      <tr><td class="pname">All ${F(byRev.length)}</td><td class="mono">${F(T.rev,0)} ₾</td>
+      const c=cum(n), sh=Tt.rev>0?100*c/Tt.rev:0;
+      return `<tr><td class="pname">${T('cc_topn',n)}</td><td class="mono">${F(c,0)} ₾</td>
+        <td><span class="mono" style="font-size:13px">${F(sh,1)}%</span>
+        <span class="bar"><i style="width:${Math.min(100,sh)}%;background:var(--brand)"></i></span></td></tr>`;}).join('')}
+      <tr><td class="pname">${T('cc_alln',F(byRev.length))}</td><td class="mono">${F(Tt.rev,0)} ₾</td>
         <td class="mono">100.0%</td></tr></tbody>`;
 
-  /* margin bands */
-  const bands=[{l:'Negative',t:p=>p.mpct<0},{l:'Under 15%',t:p=>p.mpct>=0&&p.mpct<15},
-    {l:'15–30%',t:p=>p.mpct>=15&&p.mpct<30},{l:'30–50%',t:p=>p.mpct>=30&&p.mpct<50},
-    {l:'50%+',t:p=>p.mpct>=50}];
-  el('t-bands').innerHTML=headers([{l:'Margin band'},{l:'Products'},{l:'Revenue'},{l:'Margin ₾'},{l:'Share',w:'92px'}])+
+  const bands=[{l:T('mb_neg'),t:p=>p.mpct<0},{l:T('mb_u15'),t:p=>p.mpct>=0&&p.mpct<15},
+    {l:T('mb_1530'),t:p=>p.mpct>=15&&p.mpct<30},{l:T('mb_3050'),t:p=>p.mpct>=30&&p.mpct<50},
+    {l:T('mb_50'),t:p=>p.mpct>=50}];
+  el('t-bands').innerHTML=headers([{l:T('mb_band')},{l:T('c_products')},{l:T('c_revenue')},
+    {l:T('c_margin_gel')},{l:T('c_share'),w:'108px'}])+
     `<tbody>${bands.map(b=>{const gp=prods.filter(b.t);
-      const rev=gp.reduce((a,p)=>a+p.rev,0), mg=gp.reduce((a,p)=>a+p.margin,0), s=T.rev>0?100*rev/T.rev:0;
+      const rev=gp.reduce((a,p)=>a+p.rev,0), mg=gp.reduce((a,p)=>a+p.margin,0), sh=Tt.rev>0?100*rev/Tt.rev:0;
       return `<tr><td class="pname">${b.l}</td><td class="mono">${gp.length}</td>
         <td class="mono">${F(rev,0)} ₾</td>
         <td class="mono"${mg<0?' style="color:var(--crit)"':''}>${F(mg,0)} ₾</td>
-        <td><span class="mono" style="font-size:11.5px">${F(s,1)}%</span>
-        <span class="bar"><i style="width:${Math.min(100,s)}%;background:${b.l==='Negative'?'var(--crit)':'var(--brand)'}"></i></span></td></tr>`;}).join('')}</tbody>`;
+        <td><span class="mono" style="font-size:13px">${F(sh,1)}%</span>
+        <span class="bar"><i style="width:${Math.min(100,sh)}%;background:${mg<0?'var(--crit)':'var(--brand)'}"></i></span></td></tr>`;}).join('')}</tbody>`;
 
-  /* ---- stock health: what to order / understocked / overstocked ---- */
   const scopeStock=STOCK.filter(st=>(!state.cat||st.c===state.cat)&&
     (!state.q||st.p.toLowerCase().includes(state.q)||String(st.b).includes(state.q)));
   const neg=scopeStock.filter(st=>st.q<0);
-  el('neg-note').innerHTML=neg.length?`<b>${neg.length} products show negative stock</b>
-    (${F(neg.reduce((a,st)=>a+st.q,0),1)} units). Optimo let these sell without a matching goods receipt, so their
-    cover and suggested quantities cannot be trusted until recounted.`:'';
+  el('neg-note').innerHTML=neg.length?T('neg_stock',neg.length,F(neg.reduce((a,st)=>a+st.q,0),1)):'';
 
-  // Demand for ordering is measured over a FIXED trailing 30 days regardless of the
-  // period filter: what to buy is a decision about now, not about the window being viewed.
   const prodBy=Object.fromEntries(prods.map(x=>[x.b,x]));
   const health=scopeStock.map(st=>{
     const r=L30[st.b]||{u:0,rev:0,cogs:0}, pr=prodBy[st.b];
     const perDay=r.u/30, perWeek=perDay*7;
     const unitMargin=r.u>0?(r.rev-r.cogs)/r.u:(pr&&pr.units>0?pr.margin/pr.units:0);
     const cover=perDay>0?st.q/perDay:null;
-    const target=Math.ceil(perDay*30);
-    const suggest=Math.max(0,target-st.q);
+    const suggest=Math.max(0,Math.ceil(perDay*30)-st.q);
     return {b:st.b,p:st.p,c:st.c,sup:st.s,on_hand:st.q,unit_cost:st.u,capital:st.t,
-      u30:r.u,rev30:r.rev,margin30:r.rev-r.cogs,perWeek,cover,suggest,
-      orderValue:suggest*st.u,unitMargin,
+      maxHeld:st.mx,received:st.rin,consumed:st.rout,
+      u30:r.u,rev30:r.rev,perWeek,cover,suggest,orderValue:suggest*st.u,unitMargin,
       turn:st.t>0?(r.cogs*12.1667)/st.t:0,
       periodRev:pr?pr.rev:0,periodMargin:pr?pr.margin:0,periodUnits:pr?pr.units:0,
-      atRisk:perDay>0?perWeek*Math.max(0,unitMargin)*Math.max(0,Math.min(1,1-(st.q/perDay)/21)):0};
-  });
+      atRisk:perDay>0?perWeek*Math.max(0,unitMargin)*Math.max(0,Math.min(1,1-(st.q/perDay)/21)):0};});
 
-  /* what to order */
   const order=sortRows(health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<21),'order');
   LAST.order=order;
   const iOrd=paginate(order,'order');
   el('t-order').innerHTML=order.length?
-    headers([{l:'Product'},{l:'Supplier'},{l:'On hand',k:'on_hand'},{l:'Units 30d',k:'u30'},
-      {l:'Per week',k:'perWeek'},{l:'Cover',k:'cover'},{l:'Order qty',k:'suggest'},
-      {l:'Order value',k:'orderValue'},{l:'Margin at risk / wk',k:'atRisk',w:'128px'}],'order')+
+    headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_onhand'),k:'on_hand'},
+      {l:T('c_maxheld'),k:'maxHeld'},{l:T('c_units30'),k:'u30'},{l:T('c_perweek'),k:'perWeek'},
+      {l:T('c_cover'),k:'cover'},{l:T('c_orderqty'),k:'suggest'},{l:T('c_ordervalue'),k:'orderValue'},
+      {l:T('c_atrisk'),k:'atRisk',w:'126px'}],'order')+
     `<tbody>${iOrd.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
       return `<tr>
       <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td style="text-align:left;white-space:normal;font-size:12px;color:var(--ink-2)">${esc(r.sup)}</td>
+      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.sup)}</td>
       <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
-      <td class="mono">${F(r.u30,0)}</td>
-      <td class="mono">${F(r.perWeek,1)}</td>
-      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?'out':F(r.cover,0)+'d'}</span></td>
+      <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
+      <td class="mono">${F(r.u30,0)}</td><td class="mono">${F(r.perWeek,1)}</td>
+      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?T('o_outchip'):F(r.cover,0)+'d'}</span></td>
       <td class="mono" style="font-weight:600">${F(r.suggest,0)}</td>
-      <td class="mono">${F(r.orderValue,0)} \u20BE</td>
-      <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} \u20BE</td></tr>`;}).join('')}</tbody>
-      <tfoot><tr><td>${order.length} to order</td><td></td><td></td><td></td><td></td><td></td>
+      <td class="mono">${F(r.orderValue,0)} ₾</td>
+      <td class="mono" style="color:var(--brand-deep);font-weight:600">${F(r.atRisk,1)} ₾</td></tr>`;}).join('')}</tbody>
+      <tfoot><tr><td>${T('o_toorder',order.length)}</td><td></td><td></td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.maxHeld,0),0)}</td><td></td><td></td><td></td>
         <td class="mono">${F(order.reduce((a,r)=>a+r.suggest,0),0)}</td>
-        <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} \u20BE</td>
-        <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} \u20BE</td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">nothing needs ordering \u2014 everything selling has 21+ days of cover</td></tr></tbody>`;
+        <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} ₾</td>
+        <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} ₾</td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">${T('o_none')}</td></tr></tbody>`;
   drawPager('p-order',iOrd,'order'); wireSort('t-order','order');
 
-  const outNow=order.filter(r=>r.on_hand<=0);
-  const supN=new Set(order.map(r=>r.sup)).size;
+  const outNow=order.filter(r=>r.on_hand<=0), supN=new Set(order.map(r=>r.sup)).size;
   el('order-stats').innerHTML=[
-    {lab:'Lines to order',val:F(order.length),sub:`across ${supN} supplier${supN===1?'':'s'}`},
-    {lab:'Already out',val:F(outNow.length),sub:'selling with zero or negative stock'},
-    {lab:'Order value',val:GEL(order.reduce((a,r)=>a+r.orderValue,0)),sub:'at current purchase cost'},
-    {lab:'Margin at risk',val:GEL(order.reduce((a,r)=>a+r.atRisk,0))+' /wk',sub:'forfeited while unavailable'},
+    {lab:T('o_lines'),val:F(order.length),sub:supN===1?T('o_supplier1',supN):T('o_suppliers',supN)},
+    {lab:T('o_out'),val:F(outNow.length),sub:T('o_out_sub')},
+    {lab:T('o_value'),val:GEL(order.reduce((a,r)=>a+r.orderValue,0)),sub:T('o_value_sub')},
+    {lab:T('o_risk'),val:GEL(order.reduce((a,r)=>a+r.atRisk,0)),sub:T('o_risk_sub')},
   ].map(x=>`<div class="stat"><span class="lab">${x.lab}</span><span class="val">${x.val}</span>
     <span class="sub">${x.sub}</span></div>`).join('');
 
-  /* understocked */
-  const under=sortRows(health.filter(h=>h.u30>0&&h.cover!=null&&h.cover<30),'under');
-  LAST.under=under;
-  const iU=paginate(under,'under');
-  el('t-under').innerHTML=under.length?
-    headers([{l:'Product'},{l:'On hand',k:'on_hand'},{l:'Stock value',k:'capital'},{l:'Units 30d',k:'u30'},
-      {l:'Revenue 30d',k:'rev30'},{l:'Per week',k:'perWeek'},{l:'Cover',k:'cover'},
-      {l:'Period revenue',k:'periodRev'},{l:'Period margin',k:'periodMargin'},{l:'Turns/yr',k:'turn'}],'under')+
-    `<tbody>${iU.slice.map(r=>{const sev=r.cover<=7?'crit':r.cover<=14?'warn':'good';
-      return `<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} \u00B7 ${esc(r.sup)}</span></td>
-      <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
-      <td class="mono">${F(r.capital,0)} \u20BE</td>
-      <td class="mono">${F(r.u30,0)}</td>
-      <td class="mono">${F(r.rev30,0)} \u20BE</td>
-      <td class="mono">${F(r.perWeek,1)}</td>
-      <td><span class="chip ${sev}"><span class="dot"></span>${r.cover<1?'out':F(r.cover,0)+'d'}</span></td>
-      <td class="mono">${F(r.periodRev,0)} \u20BE</td>
-      <td class="mono">${F(r.periodMargin,0)} \u20BE</td>
-      <td class="mono">${F(r.turn,1)}\u00D7</td></tr>`;}).join('')}</tbody>
-      <tfoot><tr><td>${under.length} products</td><td></td>
-        <td class="mono">${F(under.reduce((a,r)=>a+r.capital,0),0)} \u20BE</td>
-        <td class="mono">${F(under.reduce((a,r)=>a+r.u30,0),0)}</td>
-        <td class="mono">${F(under.reduce((a,r)=>a+r.rev30,0),0)} \u20BE</td><td></td><td></td>
-        <td class="mono">${F(under.reduce((a,r)=>a+r.periodRev,0),0)} \u20BE</td>
-        <td class="mono">${F(under.reduce((a,r)=>a+r.periodMargin,0),0)} \u20BE</td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">nothing below 30 days of cover</td></tr></tbody>`;
-  drawPager('p-under',iU,'under'); wireSort('t-under','under');
-
-  /* overstocked */
   const over=sortRows(health.filter(h=>h.capital>0&&
       ((h.cover!=null&&h.cover>365)||(h.u30===0&&h.on_hand>0&&(prodBy[h.b]||{units:0}).units>0))),'over');
   LAST.over=over;
   const iO=paginate(over,'over');
   el('t-over').innerHTML=over.length?
-    headers([{l:'Product'},{l:'On hand',k:'on_hand'},{l:'Stock value',k:'capital'},{l:'Units 30d',k:'u30'},
-      {l:'Period units',k:'periodUnits'},{l:'Period revenue',k:'periodRev'},{l:'Period margin',k:'periodMargin'},
-      {l:'Cover',k:'cover'},{l:'Turns/yr',k:'turn'}],'over')+
+    headers([{l:T('c_product')},{l:T('c_onhand'),k:'on_hand'},{l:T('c_maxheld'),k:'maxHeld'},
+      {l:T('c_stockvalue'),k:'capital'},{l:T('c_units30'),k:'u30'},{l:T('c_perunits'),k:'periodUnits'},
+      {l:T('c_perrev'),k:'periodRev'},{l:T('c_permargin'),k:'periodMargin'},
+      {l:T('c_cover'),k:'cover'},{l:T('c_turns'),k:'turn'}],'over')+
     `<tbody>${iO.slice.map(r=>`<tr>
-      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} \u00B7 ${esc(r.sup)}</span></td>
+      <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)} · ${esc(r.sup)}</span></td>
       <td class="mono">${F(r.on_hand,0)}</td>
-      <td class="mono" style="font-weight:600">${F(r.capital,0)} \u20BE</td>
+      <td class="mono" style="color:var(--ink-2)">${F(r.maxHeld,0)}</td>
+      <td class="mono" style="font-weight:600">${F(r.capital,0)} ₾</td>
       <td class="mono"${r.u30===0?' style="color:var(--crit)"':''}>${F(r.u30,0)}</td>
-      <td class="mono">${F(r.periodUnits,0)}</td>
-      <td class="mono">${F(r.periodRev,0)} \u20BE</td>
-      <td class="mono">${F(r.periodMargin,0)} \u20BE</td>
-      <td><span class="chip warn"><span class="dot"></span>${r.cover==null?'no demand':r.cover>3650?'10y+':F(r.cover/365,1)+'y'}</span></td>
-      <td class="mono">${F(r.turn,2)}\u00D7</td></tr>`).join('')}</tbody>
-      <tfoot><tr><td>${over.length} products</td><td></td>
-        <td class="mono">${F(over.reduce((a,r)=>a+r.capital,0),0)} \u20BE</td>
+      <td class="mono">${F(r.periodUnits,0)}</td><td class="mono">${F(r.periodRev,0)} ₾</td>
+      <td class="mono">${F(r.periodMargin,0)} ₾</td>
+      <td><span class="chip warn"><span class="dot"></span>${r.cover==null?T('ov_nodemand'):r.cover>3650?T('ov_10y'):T('ov_y',F(r.cover/365,1))}</span></td>
+      <td class="mono">${F(r.turn,2)}×</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>${T('n_products',over.length)}</td><td></td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.maxHeld,0),0)}</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.capital,0),0)} ₾</td>
         <td class="mono">${F(over.reduce((a,r)=>a+r.u30,0),0)}</td>
         <td class="mono">${F(over.reduce((a,r)=>a+r.periodUnits,0),0)}</td>
-        <td class="mono">${F(over.reduce((a,r)=>a+r.periodRev,0),0)} \u20BE</td>
-        <td class="mono">${F(over.reduce((a,r)=>a+r.periodMargin,0),0)} \u20BE</td><td></td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">nothing overstocked in this selection</td></tr></tbody>`;
+        <td class="mono">${F(over.reduce((a,r)=>a+r.periodRev,0),0)} ₾</td>
+        <td class="mono">${F(over.reduce((a,r)=>a+r.periodMargin,0),0)} ₾</td><td></td><td></td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">${T('ov_none')}</td></tr></tbody>`;
   drawPager('p-over',iO,'over'); wireSort('t-over','over');
 
   const stalled=over.filter(r=>r.u30===0);
   el('over-stats').innerHTML=[
-    {lab:'Overstocked lines',val:F(over.length),sub:'over a year of cover, or stalled'},
-    {lab:'Capital tied',val:GEL(over.reduce((a,r)=>a+r.capital,0)),sub:'at purchase cost'},
-    {lab:'No sale in 30 days',val:F(stalled.length),sub:'sold before, nothing recently'},
-    {lab:'Earned in period',val:GEL(over.reduce((a,r)=>a+r.periodMargin,0)),sub:'gross margin from this capital'},
+    {lab:T('ov_lines'),val:F(over.length),sub:T('ov_lines_sub')},
+    {lab:T('ov_capital'),val:GEL(over.reduce((a,r)=>a+r.capital,0)),sub:T('ov_capital_sub')},
+    {lab:T('ov_nosale'),val:F(stalled.length),sub:T('ov_nosale_sub')},
+    {lab:T('ov_earned'),val:GEL(over.reduce((a,r)=>a+r.periodMargin,0)),sub:T('ov_earned_sub')},
   ].map(x=>`<div class="stat"><span class="lab">${x.lab}</span><span class="val">${x.val}</span>
     <span class="sub">${x.sub}</span></div>`).join('');
 
-  /* dead stock */
   const sold=new Set(rows.map(l=>l.b));
   LAST.dead=scopeStock.filter(st=>st.q>0&&!sold.has(st.b)).sort((a,b)=>b.t-a.t);
   const deadCap=LAST.dead.reduce((a,st)=>a+st.t,0), scopeCap=scopeStock.reduce((a,st)=>a+st.t,0);
   const allTime=state.period==='all'&&!state.chan;
-  el('dead-h').textContent=allTime?'Half your stock capital has never sold':'Stock with no sales in this period';
-  el('dead-big').textContent=GEL(deadCap)+'  ·  '+F(LAST.dead.length)+' products';
-  el('dead-p').innerHTML=LAST.dead.length?
-    `${F(LAST.dead.length)} products ${allTime?'have never recorded a single sale':'did not sell in the selected period'},
-     yet hold ${GEL(deadCap)} of purchase cost — <b>${scopeCap>0?F(100*deadCap/scopeCap,1):'0'}% of the
-     ${GEL(scopeCap)} of stock in view</b>. Every lari here is capital on a shelf instead of turning.`
-    :`Every product in this selection has sold at least once.`;
+  el('dead-h').textContent=allTime?T('d_title_all'):T('d_title_period');
+  el('dead-big').textContent=GEL(deadCap)+'  ·  '+T('n_products',F(LAST.dead.length));
+  el('dead-p').innerHTML=LAST.dead.length
+    ? T('d_body',F(LAST.dead.length),allTime?T('d_never'):T('d_notperiod'),GEL(deadCap),
+        scopeCap>0?F(100*deadCap/scopeCap,1):'0',GEL(scopeCap))
+    : T('d_allsold');
   const iD=paginate(LAST.dead,'dead');
   el('t-dead').innerHTML=iD.slice.length?
-    headers([{l:'Product'},{l:'Supplier'},{l:'Qty'},{l:'Unit cost'},{l:'Capital'}])+
+    headers([{l:T('c_product')},{l:T('c_supplier')},{l:T('c_qty')},{l:T('c_maxheld')},
+      {l:T('c_unitcost')},{l:T('c_capital')}])+
     `<tbody>${iD.slice.map(r=>`<tr>
       <td><span class="pname">${esc(r.p)}</span><span class="pmeta">${esc(r.c)}</span></td>
-      <td style="text-align:left;white-space:normal;font-size:12px;color:var(--ink-2)">${esc(r.s)}</td>
-      <td class="mono">${F(r.q,0)}</td><td class="mono">${F(r.u,2)}</td>
+      <td style="text-align:left;white-space:normal;font-size:13px;color:var(--ink-2)">${esc(r.s)}</td>
+      <td class="mono">${F(r.q,0)}</td>
+      <td class="mono" style="color:var(--ink-2)">${F(r.mx,0)}</td>
+      <td class="mono">${F(r.u,2)}</td>
       <td class="mono" style="font-weight:500">${F(r.t,0)} ₾</td></tr>`).join('')}</tbody>
-      <tfoot><tr><td>${LAST.dead.length} products</td><td></td><td></td><td></td>
+      <tfoot><tr><td>${T('n_products',LAST.dead.length)}</td><td></td><td></td><td></td><td></td>
       <td class="mono">${F(deadCap,0)} ₾</td></tr></tfoot>`:'';
   drawPager('p-dead',iD,'dead');
 
-  /* categories */
-  let catRows=[...groupBy(rows,l=>l.c).entries()].map(([k,ls])=>{const t=totals(ls);
-    return {cat:k,rev:t.rev,units:t.units,margin:t.margin,mpct:t.mpct,
-      skus:new Set(ls.map(l=>l.b)).size,share:T.rev>0?100*t.rev/T.rev:0};});
+  let catRows=[...groupBy(rows,l=>l.c).entries()].map(e=>{const t=totals(e[1]);
+    return {cat:e[0],rev:t.rev,units:t.units,margin:t.margin,mpct:t.mpct,
+      skus:new Set(e[1].map(l=>l.b)).size,share:Tt.rev>0?100*t.rev/Tt.rev:0};});
   catRows=sortRows(catRows,'cat');
   const iC=paginate(catRows,'cat');
-  el('t-cat').innerHTML=headers([{l:'Category'},{l:'Revenue',k:'rev'},{l:'Units',k:'units'},
-    {l:'Products',k:'skus'},{l:'Margin ₾',k:'margin'},{l:'Margin %',k:'mpct'},{l:'Share',k:'share',w:'96px'}],'cat')+
+  el('t-cat').innerHTML=headers([{l:T('c_category')},{l:T('c_revenue'),k:'rev'},{l:T('c_units'),k:'units'},
+    {l:T('c_products'),k:'skus'},{l:T('c_margin_gel'),k:'margin'},{l:T('c_margin_pct'),k:'mpct'},
+    {l:T('c_share'),k:'share',w:'112px'}],'cat')+
     (iC.slice.length?`<tbody>${iC.slice.map(r=>`<tr>
       <td class="pname">${esc(r.cat)}</td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${F(r.units,0)}</td><td class="mono">${r.skus}</td>
       <td class="mono">${F(r.margin,0)} ₾</td>
       <td class="mono"${r.mpct<20?' style="color:var(--brand-deep)"':''}>${F(r.mpct,1)}%</td>
-      <td><span class="mono" style="font-size:11.5px">${F(r.share,1)}%</span>
+      <td><span class="mono" style="font-size:13px">${F(r.share,1)}%</span>
       <span class="bar"><i style="width:${Math.min(100,r.share)}%;background:var(--brand)"></i></span></td></tr>`).join('')}</tbody>
-      <tfoot><tr><td>${catRows.length} categories</td><td class="mono">${F(T.rev,0)} ₾</td>
-      <td class="mono">${F(T.units,0)}</td><td></td><td class="mono">${F(T.margin,0)} ₾</td>
-      <td class="mono">${F(T.mpct,1)}%</td><td class="mono">100%</td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">no data</td></tr></tbody>`);
+      <tfoot><tr><td>${T('n_categories',catRows.length)}</td><td class="mono">${F(Tt.rev,0)} ₾</td>
+      <td class="mono">${F(Tt.units,0)}</td><td></td><td class="mono">${F(Tt.margin,0)} ₾</td>
+      <td class="mono">${F(Tt.mpct,1)}%</td><td class="mono">100%</td></tr></tfoot>`
+    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`);
   drawPager('p-cat',iC,'cat'); wireSort('t-cat','cat');
 
-  /* weekday */
-  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const dow=names.map((n,i)=>{const t=totals(rows.filter(l=>l.w===i+1));
-    return {n,rev:t.rev,receipts:t.receipts,basket:t.basket};}).filter(r=>r.receipts>0);
+  const dow=[1,2,3,4,5,6,7].map(i=>{const t=totals(rows.filter(l=>l.w===i));
+    return {n:T('dow_'+i),rev:t.rev,receipts:t.receipts,basket:t.basket};}).filter(r=>r.receipts>0);
   const maxD=Math.max(...dow.map(d=>d.rev),1);
   el('t-dow').innerHTML=dow.length?
-    headers([{l:'Day'},{l:'Revenue'},{l:'Receipts'},{l:'Avg basket'},{l:'Share',w:'88px'}])+
+    headers([{l:T('c_day')},{l:T('c_revenue')},{l:T('k_receipts')},{l:T('k_basket')},{l:T('c_share'),w:'104px'}])+
     `<tbody>${dow.map(d=>`<tr><td class="pname">${d.n}</td>
       <td class="mono">${F(d.rev,0)} ₾</td><td class="mono">${d.receipts}</td>
       <td class="mono">${F(d.basket,0)} ₾</td>
-      <td><span class="bar" style="min-width:72px"><i style="width:${(d.rev/maxD)*100}%;background:var(--brand)"></i></span></td></tr>`).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">no data</td></tr></tbody>`;
+      <td><span class="bar" style="min-width:86px"><i style="width:${(d.rev/maxD)*100}%;background:var(--brand)"></i></span></td></tr>`).join('')}</tbody>`
+    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`;
 
-  /* channel */
-  const ch=[...groupBy(rows,l=>l.ch).entries()].map(([k,ls])=>{const t=totals(ls);
-    return {k:k==='retail'?'Retail counter':'B2B (ი/პ)',rev:t.rev,mpct:t.mpct,receipts:t.receipts,
-      share:T.rev>0?100*t.rev/T.rev:0};}).sort((a,b)=>b.rev-a.rev);
+  const ch=[...groupBy(rows,l=>l.ch).entries()].map(e=>{const t=totals(e[1]);
+    return {k:e[0]==='retail'?T('ch_retail_full'):T('ch_entity_full'),rev:t.rev,mpct:t.mpct,
+      receipts:t.receipts,share:Tt.rev>0?100*t.rev/Tt.rev:0};}).sort((a,b)=>b.rev-a.rev);
   el('t-chan').innerHTML=ch.length?
-    headers([{l:'Channel'},{l:'Revenue'},{l:'Receipts'},{l:'Margin %'},{l:'Share'}])+
+    headers([{l:T('c_channel')},{l:T('c_revenue')},{l:T('k_receipts')},{l:T('c_margin_pct')},{l:T('c_share')}])+
     `<tbody>${ch.map(r=>`<tr><td class="pname">${r.k}</td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${r.receipts}</td>
       <td class="mono">${F(r.mpct,1)}%</td><td class="mono">${F(r.share,1)}%</td></tr>`).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">no data</td></tr></tbody>`;
+    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`;
 }
 
-/* sidebar scroll-spy */
-const navLinks=[...document.querySelectorAll('.nav a')];
-const obs=new IntersectionObserver(es=>{
-  es.forEach(e=>{if(e.isIntersecting){
-    navLinks.forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+e.target.id));}});
-},{rootMargin:'-15% 0px -70% 0px',threshold:0});
-['overview','rhythm','products','margin','order','stock','overstock','dead','categories','patterns','method']
-  .forEach(id=>{const n=el(id); if(n) obs.observe(n);});
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){
+  document.querySelectorAll('.nav a').forEach(a=>
+    a.setAttribute('aria-current',a.getAttribute('href')==='#'+e.target.id));}});},
+  {rootMargin:'-15% 0px -70% 0px',threshold:0});
 
-el('s-first').textContent=new Date(FIRST_REV+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-el('s-weeks').textContent=((ASOF-new Date(FIRST_REV+'T12:00:00'))/6048e5).toFixed(1);
-el('s-asof').textContent=ASOF.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+document.documentElement.setAttribute('lang',LANG);
+paintStatic();
+NAV.forEach(n=>{const el0=el(n[0]); if(el0) obs.observe(el0);});
 render();
 </script>
