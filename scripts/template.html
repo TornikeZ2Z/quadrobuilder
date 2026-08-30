@@ -44,8 +44,8 @@ a{color:var(--brand-deep)}
   border-right:1px solid var(--line); padding:22px 0 24px; display:flex; flex-direction:column; gap:20px}
 .brand{padding:0 20px; display:flex; flex-direction:column; gap:9px}
 .brand svg{display:block}
-.brand .tag{font-family:"Archivo",sans-serif; font-size:9.5px; letter-spacing:.16em; font-weight:700;
-  color:var(--brand); text-transform:uppercase}
+.brand .tag{font-family:"Archivo",sans-serif; font-size:11px; letter-spacing:.14em; font-weight:700;
+  color:var(--ink-3); text-transform:uppercase}
 :lang(ka) .brand .tag{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.08em; font-size:11px}
 .langsel{padding:0 20px}
 .langsel .seg{width:100%}
@@ -55,7 +55,8 @@ a{color:var(--brand-deep)}
   color:var(--ink-2); font-size:14.5px; line-height:1.3}
 .nav a:hover{background:var(--hover); color:var(--ink)}
 .nav a[aria-current="true"]{background:var(--ink); color:#fff}
-.nav a[aria-current="true"] .dot{background:var(--brand)}
+.nav a[aria-current="true"] .dot,
+.nav a[aria-current="true"]:hover .dot{background:var(--brand)}
 .nav .dot{width:5px; height:5px; border-radius:99px; background:var(--line); flex:none}
 .nav a:hover .dot{background:var(--ink-3)}
 .sidefoot{margin-top:auto; padding:0 20px; font-family:"IBM Plex Mono",monospace; font-size:11px;
@@ -79,6 +80,8 @@ a{color:var(--brand-deep)}
 .seg button{appearance:none; border:0; background:transparent; color:var(--ink-2); cursor:pointer;
   font-family:"IBM Plex Mono",monospace; font-size:13px; padding:6px 12px; border-right:1px solid var(--line)}
 :lang(ka) .seg button{font-family:"Noto Sans Georgian",sans-serif; font-size:13.5px}
+/* Always Georgian text, whatever the UI language. */
+#f-lang button{font-family:"Noto Sans Georgian",sans-serif}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .seg button:hover:not([aria-pressed="true"]){background:var(--hover)}
@@ -115,14 +118,15 @@ input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:16px; 
   border:1px solid var(--line); border-radius:9px; box-shadow:0 8px 28px rgba(44,51,58,.14);
   z-index:60; display:none; overflow:hidden}
 .combo-panel.open{display:block}
-.combo-search{width:100%; border:0; border-bottom:1px solid var(--line); border-radius:0;
+input.combo-search{width:100%; border:0; border-bottom:1px solid var(--line); border-radius:0;
   padding:10px 13px; font-size:16px; background:var(--panel); color:var(--ink);
   font-family:"Noto Sans Georgian",sans-serif}
-.combo-search:focus{outline:none; border-bottom-color:var(--brand)}
+input.combo-search:focus{outline:none; border-bottom-color:var(--brand)}
 .combo-list{max-height:330px; overflow-y:auto; padding:4px}
 .combo-opt{display:grid; grid-template-columns:1fr auto; gap:3px 10px; align-items:center;
   padding:8px 10px; border-radius:6px; cursor:pointer}
-.combo-opt:hover,.combo-opt.active{background:var(--hover)}
+.combo-opt:hover{background:var(--hover)}
+.combo-opt.active{background:var(--brand-soft); box-shadow:inset 0 0 0 2px var(--brand)}
 .combo-opt[aria-selected="true"]{background:var(--ink)}
 .combo-opt[aria-selected="true"] .cname,.combo-opt[aria-selected="true"] .crev{color:#fff}
 .combo-opt[aria-selected="true"] .cbar i{background:var(--brand)}
@@ -137,16 +141,16 @@ input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:16px; 
   text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:9px}
 :lang(ka) .eyebrow{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.02em;
   text-transform:none; font-size:13.5px}
-section > h2{font-size:23px; font-weight:600; margin-bottom:6px}
+section h2{font-size:23px; font-weight:600; margin-bottom:6px}
 section > .lede{color:var(--ink-2); font-size:15.5px; max-width:84ch; margin:0 0 20px}
 .panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px 24px}
-.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(470px,1fr)); gap:18px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(580px,1fr)); gap:18px}
 /* Without this the grid items take their content-based minimum (the widest
    nowrap table) and push the whole page sideways on a phone. */
 .grid2>*{min-width:0}
 .head-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
 
-.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr));
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(166px,1fr));
   background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
 .kpi{padding:16px 18px; border-right:1px solid var(--line); border-top:1px solid var(--line);
   margin-top:-1px; display:flex; flex-direction:column; gap:3px}
@@ -250,6 +254,7 @@ tfoot td{border-top:1px solid var(--line); border-bottom:none; font-weight:600; 
 .note{border-left:2px solid var(--brand); padding:11px 0 11px 16px; font-size:14px;
   color:var(--ink-2); margin:18px 0 0}
 .note b{color:var(--ink); font-weight:500}
+.note:empty{display:none}
 
 .chartbox{position:relative}
 svg{display:block; width:100%; overflow:visible}
@@ -257,7 +262,7 @@ svg{display:block; width:100%; overflow:visible}
 .btn svg,.chip svg{width:14px}
 .tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s; background:var(--ink);
   color:#fff; border-radius:6px; padding:8px 11px; font-size:12.5px; font-family:"IBM Plex Mono",monospace;
-  white-space:nowrap; z-index:40; transform:translate(-50%,-118%); line-height:1.6}
+  white-space:nowrap; z-index:20; transform:translate(-50%,-118%); line-height:1.6}
 :lang(ka) .tip{font-family:"Noto Sans Georgian",sans-serif; font-size:13px}
 .legend{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-3); margin:13px 0 0;
   display:flex; gap:18px; flex-wrap:wrap}
@@ -281,17 +286,24 @@ footer{border-top:1px solid var(--line); padding-top:22px; margin-top:8px; color
 footer b{color:var(--ink); font-weight:500}
 footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:7px}
 
+/* Six KPI tiles need ~996px of track; below that the auto-fit grid strands one
+   tile on a second row (1280 showed 5+1). Drop to a clean 3x2 instead. */
+@media (min-width:901px) and (max-width:1301px){.kpis{grid-template-columns:repeat(3,1fr)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:900px){
   .app{grid-template-columns:1fr}
   .side{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line);
-    flex-direction:row; align-items:center; gap:14px; padding:12px 16px; overflow-x:auto}
+    flex-direction:row; flex-wrap:wrap; align-items:center; gap:10px 14px; padding:12px 16px}
+  .nav{flex:1 0 100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin; padding-bottom:2px}
   .brand,.langsel{padding:0; flex:none}
   .nav{flex-direction:row; padding:0; gap:4px}
   .nav a{white-space:nowrap; font-size:13.5px; padding:7px 10px}
   .nav .dot{display:none}
   .sidefoot{display:none}
   .inner{padding:20px 16px 0; gap:28px}
+  /* 278px of sticky chrome is a third of a phone screen; let it scroll away. */
+  .filters{position:static}
   .filters-inner{padding:0 16px}
   /* Georgian segment labels are wide; let the groups wrap rather than push the
      page sideways. The Period row alone is 385px against a 375px phone. */
@@ -324,7 +336,7 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
       <span class="tag" id="tagline"></span>
     </div>
     <div class="langsel"><span class="seg" id="f-lang"></span></div>
-    <nav class="nav" id="nav" aria-label="Sections"></nav>
+    <nav class="nav" id="nav"></nav>
     <div class="sidefoot">
       <span id="lbl-since"></span> <b id="s-first"></b><br>
       <b id="s-weeks"></b> <span id="lbl-weeks"></span><br>
@@ -333,7 +345,7 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
   </aside>
 
   <main class="main">
-    <div class="filters"><div class="filters-inner" role="group" aria-label="Filters">
+    <div class="filters"><div class="filters-inner" role="group" id="filters-inner">
       <div class="fgroup"><span class="flab" id="lbl-period"></span><span class="seg" id="f-period"></span></div>
       <div class="fgroup daterange" id="f-range">
         <input type="date" id="f-from"><span id="lbl-dateto"></span><input type="date" id="f-to"></div>
@@ -523,8 +535,13 @@ function paintStatic(){
   el('tagline').textContent=T('tagline');
   el('f-lang').innerHTML=[['ka','ქარ'],['en','EN']].map(([k,l])=>
     `<button type="button" data-l="${k}" aria-pressed="${LANG===k}">${l}</button>`).join('');
+  const cur=(document.querySelector('.nav a[aria-current="true"]')||{}).hash;
   el('nav').innerHTML=NAV.map(([id,k])=>
     `<a href="#${id}"><span class="dot"></span>${T(k)}</a>`).join('');
+  if(cur){const a=el('nav').querySelector(`a[href="${cur}"]`); if(a) a.setAttribute('aria-current','true');}
+  el('nav').setAttribute('aria-label',T('a_sections'));
+  el('filters-inner').setAttribute('aria-label',T('a_filters'));
+  el('cat-panel').setAttribute('aria-label',T('all_categories'));
   el('lbl-since').textContent=T('since'); el('lbl-weeks').textContent=T('weeks');
   el('lbl-asof').textContent=T('asof');
   el('lbl-period').textContent=T('f_period'); el('lbl-groupby').textContent=T('f_groupby');
@@ -620,6 +637,8 @@ function openCombo(o){comboOpen=o; comboIdx=-1;
   // clear unconditionally so a reopen at a different width re-decides
   p.style.left=''; p.style.right='';
   if(o){el('cat-search').value=''; renderCombo(); el('cat-search').focus();
+    const sel=el('cat-list').querySelector('[aria-selected="true"]');
+    if(sel) sel.scrollIntoView({block:'nearest'});
     const r=p.getBoundingClientRect();
     // clientWidth, not innerWidth: innerWidth includes the scrollbar
     if(r.right>document.documentElement.clientWidth-8){p.style.left='auto'; p.style.right='0';}}}
@@ -634,9 +653,17 @@ el('cat-panel').addEventListener('keydown',e=>{
     comboIdx=Math.max(0,Math.min(opts.length-1,comboIdx+(e.key==='ArrowDown'?1:-1)));
     opts.forEach((n,i)=>n.classList.toggle('active',i===comboIdx));
     if(opts[comboIdx]) opts[comboIdx].scrollIntoView({block:'nearest'});}
-  if(e.key==='Enter'&&opts[comboIdx]){e.preventDefault();
-    state.cat=opts[comboIdx].dataset.v; resetPages(); openCombo(false); apply();}});
+  if(e.key==='Enter'){e.preventDefault();
+    // fall back to the first real option so type-then-Enter works
+    const pick=opts[comboIdx]||opts[0];
+    if(pick){state.cat=pick.dataset.v; resetPages(); openCombo(false); apply();}}});
 document.addEventListener('click',e=>{if(comboOpen&&!e.target.closest('#cat-combo')) openCombo(false);});
+// Tabbing away must close it too. relatedTarget is null on a mousedown inside the
+// list, so only close when focus actually landed outside the component.
+el('cat-combo').addEventListener('focusout',e=>{
+  if(!comboOpen) return;
+  const to=e.relatedTarget;
+  if(to&&!el('cat-combo').contains(to)) openCombo(false);});
 
 function bucket(ds){const d=new Date(ds+'T12:00:00');
   if(state.gran==='D') return ds;
@@ -649,7 +676,7 @@ function fmtMon(d){return `${MON(d)} ${String(d.getFullYear()).slice(2)}`;}
 function bucketLabel(k){
   if(state.gran==='D'||state.gran==='W') return fmtDay(new Date(k+'T12:00:00'));
   if(state.gran==='M') return fmtMon(new Date(k+'-01T12:00:00'));
-  return k.replace('-',' ');}
+  const q=k.split('-Q'); return T('q_label',q[1],q[0].slice(2));}
 function totals(rows){const t={rev:0,cogs:0,units:0,rs:new Set(),ret:0};
   for(const l of rows){t.rev+=l.v; t.cogs+=l.q*l.u; t.units+=l.q;
     if(l.v>0)t.rs.add(l.ch+l.r); if(l.ret)t.ret+=l.lv;}
@@ -787,6 +814,8 @@ el('x-decide').onclick=()=>toXLSX('quadrobuilder-needs-decision-'+ASOF_S+'.xlsx'
    {l:T('x_units30'),v:r=>N(r.u30,3)},{l:T('x_unitcost'),v:r=>N(r.unit_cost)},
    {l:T('x_unitmargin'),v:r=>N(r.unitMargin)}]);
 
+// An empty state must span the whole header row or it reads as a broken cell.
+const emptyBody=(cols,msg)=>`<tbody><tr><td class="empty" colspan="${cols}">${msg}</td></tr></tbody>`;
 const PAGE=12;
 function paginate(rows,key){const pages=Math.max(1,Math.ceil(rows.length/PAGE));
   if(state.page[key]>pages)state.page[key]=pages;
@@ -909,8 +938,10 @@ function drawMpct(bk){const host=el('mpct'); host.innerHTML=''; if(!bk.length)re
     `<b>${bucketLabel(bk[i].k)}</b><br>${T('tt_margin')} ${F(bk[i].mpct,1)}%`,tops);}
 
 function apply(){render();
-  const t=document.querySelector('.filters');
-  if(window.scrollY>t.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
+  // .filters is sticky, so its offsetTop tracks scrollY and the old comparison
+  // was always false. .inner is static, so it gives a real threshold.
+  const anchor=document.querySelector('.inner');
+  if(anchor&&window.scrollY>anchor.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
 
 function render(){
   ['period','gran','chan'].forEach((key,i)=>{const id=['f-period','f-gran','f-chan'][i];
@@ -977,7 +1008,7 @@ function render(){
       <tfoot><tr><td>${T('n_products',F(prods.length))}</td><td class="mono">${F(Tt.rev,0)} ₾</td>
       <td class="mono">${F(Tt.units,0)}</td><td class="mono">${F(Tt.receipts)}</td>
       <td class="mono">${F(Tt.margin,0)} ₾</td><td class="mono">${F(Tt.mpct,1)}%</td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">${T('no_sales_sel')}</td></tr></tbody>`);
+    :emptyBody(7,T('no_sales_sel')));
   drawPager('p-prod',iP,'prod'); wireSort('t-prod','prod');
 
   const byRev=prods.slice().sort((a,b)=>b.rev-a.rev);
@@ -1064,7 +1095,7 @@ function render(){
         <td class="mono">${F(order.reduce((a,r)=>a+r.suggest,0),0)}</td>
         <td class="mono">${F(order.reduce((a,r)=>a+r.orderValue,0),0)} \u20BE</td>
         <td class="mono">${F(order.reduce((a,r)=>a+r.atRisk,0),1)} \u20BE</td><td></td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">${T('o_none2')}</td></tr></tbody>`;
+    :emptyBody(12,T('o_none2'));
   drawPager('p-order',iOrd,'order'); wireSort('t-order','order');
 
   const outNow=order.filter(r=>r.on_hand<=0), supN=new Set(order.map(r=>r.sup)).size;
@@ -1097,7 +1128,7 @@ function render(){
       <td class="mono"${r.on_hand<0?' style="color:var(--crit)"':''}>${F(r.on_hand,0)}</td>
       <td class="mono">${F(r.u30,0)}</td>
       <td class="mono">${F(r.unit_cost,2)} \u20BE</td></tr>`;}).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">${T('nd_none')}</td></tr></tbody>`;
+    :emptyBody(7,T('nd_none'));
   drawPager('p-decide',iDec,'decide'); wireSort('t-decide','decide');
 
   const over=sortRows(health.filter(h=>h.capital>0&&
@@ -1126,7 +1157,7 @@ function render(){
         <td class="mono">${F(over.reduce((a,r)=>a+r.periodUnits,0),0)}</td>
         <td class="mono">${F(over.reduce((a,r)=>a+r.periodRev,0),0)} ₾</td>
         <td class="mono">${F(over.reduce((a,r)=>a+r.periodMargin,0),0)} ₾</td><td></td><td></td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">${T('ov_none')}</td></tr></tbody>`;
+    :emptyBody(10,T('ov_none'));
   drawPager('p-over',iO,'over'); wireSort('t-over','over');
 
   const stalled=over.filter(r=>r.u30===0);
@@ -1181,7 +1212,7 @@ function render(){
       <tfoot><tr><td>${T('n_categories',catRows.length)}</td><td class="mono">${F(Tt.rev,0)} ₾</td>
       <td class="mono">${F(Tt.units,0)}</td><td></td><td class="mono">${F(Tt.margin,0)} ₾</td>
       <td class="mono">${F(Tt.mpct,1)}%</td><td class="mono">100%</td></tr></tfoot>`
-    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`);
+    :emptyBody(5,T('no_data')));
   drawPager('p-cat',iC,'cat'); wireSort('t-cat','cat');
 
   const dow=[1,2,3,4,5,6,7].map(i=>{const t=totals(rows.filter(l=>l.w===i));
@@ -1193,7 +1224,7 @@ function render(){
       <td class="mono">${F(d.rev,0)} ₾</td><td class="mono">${d.receipts}</td>
       <td class="mono">${F(d.basket,0)} ₾</td>
       <td><span class="bar" style="min-width:86px"><i style="width:${(d.rev/maxD)*100}%;background:var(--brand)"></i></span></td></tr>`).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`;
+    :emptyBody(5,T('no_data'));
 
   const ch=[...groupBy(rows,l=>l.ch).entries()].map(e=>{const t=totals(e[1]);
     return {k:e[0]==='retail'?T('ch_retail_full'):T('ch_entity_full'),rev:t.rev,mpct:t.mpct,
@@ -1203,7 +1234,7 @@ function render(){
     `<tbody>${ch.map(r=>`<tr><td class="pname">${r.k}</td>
       <td class="mono">${F(r.rev,0)} ₾</td><td class="mono">${r.receipts}</td>
       <td class="mono">${F(r.mpct,1)}%</td><td class="mono">${F(r.share,1)}%</td></tr>`).join('')}</tbody>`
-    :`<tbody><tr><td class="empty">${T('no_data')}</td></tr></tbody>`;
+    :emptyBody(5,T('no_data'));
 }
 
 const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){

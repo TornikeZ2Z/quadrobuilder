@@ -19,6 +19,10 @@ const DICT = {
   weeks:              ['weeks',                          'კვირა'],
   asof:               ['As of',                          'თარიღით'],
 
+  a_sections:         ['Sections',                       'სექციები'],
+  a_filters:          ['Filters',                        'ფილტრები'],
+  q_label:            ['Q{0} {1}',                       '{0} კვ. {1}'],
+
   /* filters */
   f_period:           ['Period',                         'პერიოდი'],
   f_groupby:          ['Group by',                       'დაჯგუფება'],
