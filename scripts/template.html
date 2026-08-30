@@ -96,17 +96,58 @@ a{color:var(--brand-deep)}
 .daterange:focus-within{border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
 .daterange .cal{width:15px; height:15px; flex:none; color:var(--ink-3)}
 .daterange:focus-within .cal{color:var(--brand)}
-.daterange input[type=date]{font-family:"IBM Plex Mono",monospace; font-size:16px; color:var(--ink);
-  background:transparent; border:0; border-radius:7px; padding:5px 7px; cursor:pointer;
-  transition:background .12s}
-.daterange input[type=date]:hover{background:var(--hover)}
-.daterange input[type=date]:focus{outline:none; background:var(--brand-soft)}
-/* One calendar glyph on the control, not one per field. The whole input opens
-   the picker instead (showPicker), so nothing is lost by hiding these. */
-.daterange input[type=date]::-webkit-calendar-picker-indicator{display:none}
-.daterange input[type=date]::-webkit-inner-spin-button{display:none}
-.daterange .sep{color:var(--ink-3); font-family:"IBM Plex Mono",monospace; font-size:14px;
-  padding:0 1px; user-select:none}
+.dr-trigger{appearance:none; border:0; background:transparent; cursor:pointer; display:flex;
+  align-items:center; gap:8px; padding:5px 8px; border-radius:7px; color:var(--ink);
+  font-family:"IBM Plex Mono",monospace; font-size:15px; font-variant-numeric:tabular-nums}
+:lang(ka) .dr-trigger{font-family:"Noto Sans Georgian",sans-serif}
+.dr-trigger:hover{background:var(--hover)}
+.dr-sep{color:var(--ink-3); padding:0 2px}
+
+/* two-month range calendar */
+.dr-panel{position:absolute; top:calc(100% + 8px); left:0; z-index:70; display:none;
+  background:var(--panel); border:1px solid var(--line); border-radius:12px;
+  box-shadow:0 12px 40px rgba(44,51,58,.16); padding:14px; width:max-content;
+  max-width:calc(100vw - 32px)}
+.dr-panel.open{display:block}
+.dr-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px}
+.dr-nav{appearance:none; border:1px solid var(--line); background:var(--panel); color:var(--ink-2);
+  width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:15px; line-height:1;
+  display:flex; align-items:center; justify-content:center; flex:none}
+.dr-nav:hover:not(:disabled){background:var(--ink); color:#fff; border-color:var(--ink)}
+.dr-nav:disabled{opacity:.3; cursor:default}
+.dr-titles{display:flex; gap:26px; flex:1; justify-content:space-around;
+  font-family:"Archivo",sans-serif; font-weight:600; font-size:14.5px}
+:lang(ka) .dr-titles{font-family:"Noto Sans Georgian",sans-serif}
+.dr-months{display:flex; gap:26px}
+/* No column gap: the selected range has to read as one continuous band, not a
+   row of separate chips. Rows stay spaced. */
+.dr-grid{display:grid; grid-template-columns:repeat(7,34px); column-gap:0; row-gap:3px}
+.dr-dow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--ink-3);
+  text-align:center; padding:4px 0 6px; text-transform:uppercase}
+:lang(ka) .dr-dow{font-family:"Noto Sans Georgian",sans-serif; text-transform:none; font-size:11px}
+.dr-day{appearance:none; border:0; background:transparent; height:32px; border-radius:8px;
+  cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink);
+  font-variant-numeric:tabular-nums; position:relative}
+.dr-day:hover:not(:disabled){background:var(--sunken)}
+.dr-day:disabled{color:var(--line); cursor:default}
+.dr-day.out{visibility:hidden}
+.dr-day.in{background:var(--brand-soft); border-radius:0}
+.dr-day.edge{background:var(--brand); color:#fff; font-weight:600}
+.dr-day.edge.start{border-radius:8px 0 0 8px}
+.dr-day.edge.end{border-radius:0 8px 8px 0}
+.dr-day.edge.only{border-radius:8px}
+.dr-day.today:not(.edge)::after{content:''; position:absolute; left:50%; bottom:4px;
+  width:4px; height:4px; margin-left:-2px; border-radius:99px; background:var(--brand)}
+.dr-day:focus-visible{outline:2px solid var(--ink); outline-offset:-2px}
+.dr-foot{display:flex; align-items:center; justify-content:space-between; gap:14px;
+  margin-top:12px; padding-top:11px; border-top:1px solid var(--line-2)}
+.dr-hint{font-size:12.5px; color:var(--ink-2)}
+.dr-clear{appearance:none; border:1px solid var(--line); background:var(--panel); cursor:pointer;
+  border-radius:7px; padding:5px 12px; font-size:12.5px; color:var(--ink-2);
+  font-family:"Noto Sans Georgian",sans-serif}
+.dr-clear:hover{background:var(--ink); color:#fff; border-color:var(--ink)}
+@media (max-width:640px){.dr-months{flex-direction:column; gap:14px}
+  .dr-titles{gap:0}.dr-panel{left:auto; right:0}}
 input[type=search]{font-family:"Noto Sans Georgian",sans-serif; font-size:16px; color:var(--ink);
   background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:6px 10px; width:190px}
 .reset{appearance:none; background:none; border:0; color:var(--brand-deep); cursor:pointer; font-size:13.5px;
@@ -367,12 +408,26 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
     <div class="filters"><div class="filters-inner" role="group" id="filters-inner">
       <div class="fgroup"><span class="flab" id="lbl-period"></span><span class="seg" id="f-period"></span></div>
       <div class="fgroup daterange" id="f-range">
-        <svg class="cal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
-          stroke-linecap="round" aria-hidden="true">
-          <rect x="1.75" y="3.25" width="12.5" height="11" rx="2"/>
-          <path d="M1.75 6.75h12.5M5.25 1.75v3M10.75 1.75v3"/></svg>
-        <input type="date" id="f-from"><span class="sep" id="lbl-dateto"></span>
-        <input type="date" id="f-to"></div>
+        <button class="dr-trigger" id="dr-btn" type="button" aria-expanded="false" aria-haspopup="dialog">
+          <svg class="cal" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" aria-hidden="true">
+            <rect x="1.75" y="3.25" width="12.5" height="11" rx="2"/>
+            <path d="M1.75 6.75h12.5M5.25 1.75v3M10.75 1.75v3"/></svg>
+          <span id="dr-from"></span><span class="dr-sep" id="lbl-dateto"></span><span id="dr-to"></span>
+        </button>
+        <div class="dr-panel" id="dr-panel" role="dialog">
+          <div class="dr-head">
+            <button class="dr-nav" id="dr-prev" type="button">&#8249;</button>
+            <div class="dr-titles"><span id="dr-t1"></span><span id="dr-t2"></span></div>
+            <button class="dr-nav" id="dr-next" type="button">&#8250;</button>
+          </div>
+          <div class="dr-months"><div id="dr-m1"></div><div id="dr-m2"></div></div>
+          <div class="dr-foot">
+            <span class="dr-hint" id="dr-hint"></span>
+            <button class="dr-clear" id="dr-clear" type="button"></button>
+          </div>
+        </div>
+      </div>
       <div class="fgroup"><span class="flab" id="lbl-groupby"></span><span class="seg" id="f-gran"></span></div>
       <div class="fgroup"><span class="flab" id="lbl-channel"></span><span class="seg" id="f-chan"></span></div>
       <div class="fgroup"><div class="combo" id="cat-combo">
@@ -622,23 +677,91 @@ function prevLines(){if(state.period==='all')return null;
   return LINES.filter(l=>matches(l,st.toISOString().slice(0,10),end.toISOString().slice(0,10)));}
 const periodDays=()=>{const r=winRange(); return Math.max(1,dayDiff(r[0],r[1])+1);};
 
-el('f-from').min=el('f-to').min=FIRST; el('f-from').max=el('f-to').max=ASOF_S;
+/* ---------- two-month range calendar ---------- */
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parse=s=>{const p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2],12);};
+const MIN_D=parse(FIRST), MAX_D=parse(ASOF_S);
+let drOpen=false, drCursor=null, drPick=null, drHover=null;
+
+function monthGrid(base){
+  // Monday-first grid, 6 rows so the panel height never jumps between months
+  const y=base.getFullYear(), m=base.getMonth();
+  const first=new Date(y,m,1,12), lead=(first.getDay()+6)%7;
+  const cells=[];
+  for(let i=0;i<42;i++){
+    const d=new Date(y,m,1-lead+i,12);
+    cells.push({d, out:d.getMonth()!==m});
+  }
+  return cells;
+}
+function dayClasses(d,out){
+  const s=iso(d);
+  const a=state.from, b=drPick?(drHover&&drHover<drPick?drHover:drHover||drPick):state.to;
+  const lo=drPick?(drHover&&drHover<drPick?drHover:drPick):a;
+  const hi=drPick?(drHover&&drHover<drPick?drPick:(drHover||drPick)):b;
+  const cls=[];
+  if(out) cls.push('out');
+  if(lo&&hi&&s>lo&&s<hi) cls.push('in');
+  if(s===lo||s===hi){cls.push('edge');
+    if(lo===hi) cls.push('only'); else cls.push(s===lo?'start':'end');}
+  if(s===iso(MAX_D)) cls.push('today');
+  return cls.join(' ');
+}
+function renderCal(){
+  if(!drCursor) drCursor=parse(state.to||ASOF_S);
+  const m1=new Date(drCursor.getFullYear(),drCursor.getMonth(),1,12);
+  const m0=new Date(m1.getFullYear(),m1.getMonth()-1,1,12);
+  const label=d=>`${T('mon_'+(d.getMonth()+1))} ${d.getFullYear()}`;
+  el('dr-t1').textContent=label(m0); el('dr-t2').textContent=label(m1);
+  const head='<div class="dr-grid">'+[1,2,3,4,5,6,7].map(i=>`<div class="dr-dow">${T('dw_'+i)}</div>`).join('');
+  [['dr-m1',m0],['dr-m2',m1]].forEach(([id,base])=>{
+    el(id).innerHTML=head+monthGrid(base).map(c=>{
+      const s=iso(c.d), dis=c.d<MIN_D||c.d>MAX_D;
+      return `<button type="button" class="dr-day ${dayClasses(s===undefined?c.d:c.d,c.out)}"
+        data-d="${s}" ${dis||c.out?'disabled':''}>${c.d.getDate()}</button>`;}).join('')+'</div>';
+  });
+  el('dr-prev').disabled = m0<=new Date(MIN_D.getFullYear(),MIN_D.getMonth(),1,12);
+  el('dr-next').disabled = m1>=new Date(MAX_D.getFullYear(),MAX_D.getMonth(),1,12);
+  el('dr-hint').textContent = drPick ? T('dr_hint_end')
+    : (state.from&&state.to ? T('dr_nights',Math.round((parse(state.to)-parse(state.from))/864e5)+1)
+                            : T('dr_hint_start'));
+  el('dr-clear').textContent=T('dr_clear');
+  el('dr-prev').title=T('dr_prev'); el('dr-next').title=T('dr_next');
+}
+function drLabel(){
+  const f=state.from||FIRST, t2=state.to||ASOF_S;
+  const fmt=s=>{const d=parse(s); return `${d.getDate()} ${T('mon_'+(d.getMonth()+1))} ${String(d.getFullYear()).slice(2)}`;};
+  el('dr-from').textContent=fmt(f); el('dr-to').textContent=fmt(t2);
+}
+function openDR(o){drOpen=o; drPick=null; drHover=null;
+  el('dr-panel').classList.toggle('open',o); el('dr-btn').setAttribute('aria-expanded',o);
+  if(o){drCursor=parse(state.to||ASOF_S); renderCal();
+    const p=el('dr-panel'), r=p.getBoundingClientRect();
+    p.style.left=''; p.style.right='';
+    if(r.right>document.documentElement.clientWidth-8){p.style.left='auto'; p.style.right='0';}}}
+el('dr-btn').addEventListener('click',()=>openDR(!drOpen));
+el('dr-prev').addEventListener('click',()=>{drCursor=new Date(drCursor.getFullYear(),drCursor.getMonth()-1,1,12); renderCal();});
+el('dr-next').addEventListener('click',()=>{drCursor=new Date(drCursor.getFullYear(),drCursor.getMonth()+1,1,12); renderCal();});
+el('dr-clear').addEventListener('click',()=>{state.from=FIRST; state.to=ASOF_S; drPick=null;
+  drLabel(); renderCal(); resetPages(); render();});
+el('dr-panel').addEventListener('click',e=>{
+  const b=e.target.closest('.dr-day'); if(!b||b.disabled) return;
+  const v=b.dataset.d;
+  if(!drPick){drPick=v; drHover=null; renderCal(); return;}
+  let a=drPick, z=v; if(z<a){const tmp=a; a=z; z=tmp;}
+  state.from=a; state.to=z; state.period='custom'; drPick=null; drHover=null;
+  drLabel(); openDR(false); resetPages(); apply();});
+el('dr-panel').addEventListener('mouseover',e=>{
+  const b=e.target.closest('.dr-day'); if(!b||b.disabled||!drPick) return;
+  if(drHover!==b.dataset.d){drHover=b.dataset.d; renderCal();}});
+el('dr-panel').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){openDR(false); el('dr-btn').focus();}});
+document.addEventListener('click',e=>{if(drOpen&&!inside(e,'#f-range')) openDR(false);});
+
 function syncRange(){const on=state.period==='custom';
   el('f-range').classList.toggle('on',on);
-  if(on&&!state.from){state.from=FIRST; state.to=ASOF_S;
-    el('f-from').value=state.from; el('f-to').value=state.to;}}
-// Clicking anywhere in the field (or the leading icon) opens the native picker.
-[['f-from'],['f-to']].forEach(([id])=>{
-  const i=el(id);
-  i.addEventListener('click',()=>{try{i.showPicker();}catch(err){}});});
-el('f-range').querySelector('.cal').addEventListener('click',()=>{
-  try{el('f-from').showPicker();}catch(err){}});
-el('f-from').addEventListener('change',e=>{state.from=e.target.value||FIRST;
-  if(state.to&&state.from>state.to){state.to=state.from; el('f-to').value=state.to;}
-  state.period='custom'; resetPages(); apply();});
-el('f-to').addEventListener('change',e=>{state.to=e.target.value||ASOF_S;
-  if(state.from&&state.to<state.from){state.from=state.to; el('f-from').value=state.from;}
-  state.period='custom'; resetPages(); apply();});
+  if(on&&!state.from){state.from=FIRST; state.to=ASOF_S;}
+  if(on) drLabel();}
 
 function catStats(){const r=winRange(), m=new Map();
   for(const l of LINES){ if(l.d<r[0]||l.d>r[1]) continue;
@@ -687,7 +810,11 @@ el('cat-panel').addEventListener('keydown',e=>{
     // fall back to the first real option so type-then-Enter works
     const pick=opts[comboIdx]||opts[0];
     if(pick){state.cat=pick.dataset.v; resetPages(); openCombo(false); apply();}}});
-document.addEventListener('click',e=>{if(comboOpen&&!e.target.closest('#cat-combo')) openCombo(false);});
+const inside=(e,sel)=>{
+  const host=document.querySelector(sel); if(!host) return false;
+  const path=typeof e.composedPath==='function'?e.composedPath():null;
+  return path?path.indexOf(host)>-1:!!(e.target&&e.target.closest&&e.target.closest(sel));};
+document.addEventListener('click',e=>{if(comboOpen&&!inside(e,'#cat-combo')) openCombo(false);});
 // Tabbing away must close it too. relatedTarget is null on a mousedown inside the
 // list, so only close when focus actually landed outside the component.
 el('cat-combo').addEventListener('focusout',e=>{

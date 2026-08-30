@@ -291,6 +291,22 @@ const DICT = {
   x_permargin:        ['Period margin (GEL)',            'ფასნამატი პერიოდში (₾)'],
   x_turns:            ['Turns per year',                 'ბრუნვა წელიწადში'],
 
+  /* custom range calendar */
+  dr_hint_start:      ['Pick a start date',              'აირჩიეთ დაწყების თარიღი'],
+  dr_hint_end:        ['Pick an end date',               'აირჩიეთ დასრულების თარიღი'],
+  dr_clear:           ['Reset',                          'გასუფთავება'],
+  dr_apply:           ['Apply',                          'დადასტურება'],
+  dr_prev:            ['Previous month',                 'წინა თვე'],
+  dr_next:            ['Next month',                     'შემდეგი თვე'],
+  dr_nights:          ['{0} days selected',              'არჩეულია {0} დღე'],
+  dw_1:               ['M',                              'ორ'],
+  dw_2:               ['T',                              'სა'],
+  dw_3:               ['W',                              'ოთ'],
+  dw_4:               ['T',                              'ხუ'],
+  dw_5:               ['F',                              'პა'],
+  dw_6:               ['S',                              'შა'],
+  dw_7:               ['S',                              'კვ'],
+
   /* month abbreviations - browsers do not reliably carry Georgian short months */
   mon_1:  ['Jan','იან'], mon_2:  ['Feb','თებ'], mon_3:  ['Mar','მარ'],
   mon_4:  ['Apr','აპრ'], mon_5:  ['May','მაი'], mon_6:  ['Jun','ივნ'],
