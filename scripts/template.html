@@ -164,9 +164,12 @@ tbody tr:hover{background:var(--hover)}
 tbody tr:last-child td{border-bottom:none}
 /* Names are long and Georgian: clip to one line and put the full string in the
    title, so every row is the same height and the table stays scannable. */
-.pname,.pmeta,.tcell{display:block; max-width:var(--namew,330px); overflow:hidden;
+/* Only the inner spans clip. A td.pname must stay display:table-cell or the
+   whole row loses its grid. */
+span.pname,.pmeta,.tcell{display:block; max-width:var(--namew,330px); overflow:hidden;
   text-overflow:ellipsis; white-space:nowrap}
 .pname{font-weight:500}
+td.pname{max-width:none}
 .pmeta{font-size:12px; color:var(--ink-3); font-family:"IBM Plex Mono",monospace; margin-top:1px}
 :lang(ka) .pmeta{font-family:"Noto Sans Georgian",sans-serif; font-size:12.5px}
 .tcell{font-size:13px; color:var(--ink-2); max-width:var(--supw,168px)}
