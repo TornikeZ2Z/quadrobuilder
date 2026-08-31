@@ -3,7 +3,16 @@ import json, os, sys, duckdb
 try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception: pass
 con = duckdb.connect('data/processed/quadro.duckdb')
-ASOF = '2026-08-30'
+# As-of is the latest day the data actually covers, not a fixed date and not
+# "today": if the shop has not traded yet today, anchoring to today would shift
+# the trailing-30-day demand window onto an empty day. Taking the max of the last
+# sale and the last daily-stats row keeps the window honest as data refreshes.
+ASOF = con.execute("""
+  SELECT strftime(GREATEST(
+           (SELECT MAX(date) FROM sales),
+           (SELECT CAST(MAX(date) AS TIMESTAMP) FROM daily_stats WHERE revenue>0 OR txns>0)
+         ),'%Y-%m-%d')""").fetchone()[0]
+print('as_of:', ASOF)
 
 lines = con.execute("""
 SELECT strftime(s.date,'%Y-%m-%d') AS d, ISODOW(s.date) AS w,
