@@ -6,3 +6,4 @@ dashboard.html
 .dl/
 node_modules/
 logs/
+.playwright-browsers/

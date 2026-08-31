@@ -9,9 +9,8 @@
  *   node scripts/auto_export.mjs --login    # visible window to log in / re-auth
  *   node scripts/auto_export.mjs --no-push  # build locally, skip git push
  */
-import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, renameSync, rmSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, renameSync, rmSync, readdirSync, statSync, copyFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
@@ -19,6 +18,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RAW = join(ROOT, 'data', 'raw');
 const PROFILE = join(ROOT, '.optimo-profile');           // gitignored session store
 const TMP = join(ROOT, '.dl');                            // scratch download dir
+// Browsers live inside the repo, not %LOCALAPPDATA%\ms-playwright. The default
+// location is not guaranteed to be the same directory for every process on this
+// machine, and a scheduled run that cannot see the browser fails with a bogus
+// "Executable doesn't exist" error. Must be set BEFORE playwright is imported,
+// which is why the import below is dynamic.
+process.env.PLAYWRIGHT_BROWSERS_PATH ||= join(ROOT, '.playwright-browsers');
+const { chromium } = await import('playwright');
+
 const ARGS = new Set(process.argv.slice(2));
 const LOGIN = ARGS.has('--login');
 const PUSH = !ARGS.has('--no-push');
@@ -146,7 +153,9 @@ async function main() {
   py('build_warehouse.py');
   py('export_data.py');
   py('render.py');
-  execFileSync('cp', [join(ROOT, 'dashboard.html'), join(ROOT, 'docs', 'index.html')], { stdio: 'inherit' });
+  // node's own copy - no dependency on a POSIX cp being on PATH when the
+  // scheduler starts us from the Startup folder rather than a Git Bash shell.
+  copyFileSync(join(ROOT, 'dashboard.html'), join(ROOT, 'docs', 'index.html'));
 
   if (PUSH) {
     log('publishing…');
