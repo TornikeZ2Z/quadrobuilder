@@ -3,7 +3,7 @@
 # Started hidden at logon by Startup\QuadroBuilderRefresh.vbs and stays resident.
 # Refreshes three times a day, local time (machine is UTC+4 / Georgian Standard):
 #
-#   morning  - at logon
+#   morning  - at logon, or from 06:00 if the machine was left on overnight
 #   14:00
 #   19:00
 #
@@ -149,15 +149,23 @@ function Slot-Due([string]$slot, [int]$hour) {
 
 Write-Log "--- daemon started pid=$PID (slots: logon, 14:00, 19:00 local) ---"
 
+# The morning slot is "at logon" on the first pass. After that the daemon is
+# already resident, so on a machine left on overnight the slot would otherwise
+# come due the moment the date rolls to midnight; from the second pass on it
+# waits for 06:00 instead.
+$firstPass = $true
+
 try {
   # give the network a moment after logon
   Start-Sleep -Seconds 45
 
   while ($true) {
     try {
-      if (Slot-Due 'morning'   -1) { Invoke-Refresh 'morning' }
+      $morningHour = if ($firstPass) { -1 } else { 6 }
+      if (Slot-Due 'morning' $morningHour) { Invoke-Refresh 'morning' }
       if (Slot-Due 'afternoon' 14) { Invoke-Refresh 'afternoon' }
       if (Slot-Due 'evening'   19) { Invoke-Refresh 'evening' }
+      $firstPass = $false
     } catch {
       Write-Log "slot error: [$($_.Exception.GetType().Name)] $($_.Exception.Message)"
       Write-Log "slot error at: $($_.InvocationInfo.PositionMessage -replace '\s+', ' ')"
