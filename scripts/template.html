@@ -344,7 +344,7 @@ td.chipcell{text-align:left}
 .wk-bar{background:var(--brand); border-radius:4px 4px 0 0; min-height:3px;
   transition:background .15s}
 .wk-col.is-today .wk-bar{background:var(--brand-deep)}
-.wk-col.is-today .wk-amt{color:var(--ink); font-weight:500}
+.wk-col.is-today .wk-amt{color:var(--ink); font-weight:700}   /* must outrank .num's 600 */
 .wk-col.future .wk-bar{background:var(--line)}
 .wk-col.future .wk-amt{color:var(--ink-3)}
 .wk-dow{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
@@ -1183,12 +1183,11 @@ function apply(){render();
    but it still honours the channel / category / search filters like everything
    else on the page. */
 function weekBounds(){
-  const d=new Date(ASOF.getTime());
+  const d=parse(ASOF_S);
   const dow=(d.getDay()+6)%7;                       // 0=Mon
   const mon=new Date(d.getTime()); mon.setDate(d.getDate()-dow);
   const sun=new Date(mon.getTime()); sun.setDate(mon.getDate()+6);
-  const iso=x=>x.toISOString().slice(0,10);
-  return {mon,sun,from:iso(mon),to:iso(sun)};
+  return {mon,sun,from:iso(mon),to:iso(sun)};       // iso() reads local parts, not UTC
 }
 
 function renderWeek(){
@@ -1196,7 +1195,7 @@ function renderWeek(){
   // Reuse the page's existing fmtDay, which takes a Date. Declaring a second
   // top-level fmtDay here silently overrode it and broke every Day/Week label
   // in the Rhythm section, so keep this local.
-  const dayLabel=ds=>fmtDay(new Date(ds+'T12:00:00'));
+  const dayLabel=ds=>fmtDay(parse(ds));
   const wb=weekBounds();
   const rows=LINES.filter(l=>matches(l,wb.from,wb.to));
   const byDay=groupBy(rows,l=>l.d);
@@ -1204,24 +1203,24 @@ function renderWeek(){
   // Same weekday last week, for an honest like-for-like comparison.
   const prevFrom=new Date(wb.mon.getTime()); prevFrom.setDate(prevFrom.getDate()-7);
   const prevTo=new Date(wb.sun.getTime());   prevTo.setDate(prevTo.getDate()-7);
-  const pIso=x=>x.toISOString().slice(0,10);
-  const prevRows=LINES.filter(l=>matches(l,pIso(prevFrom),pIso(prevTo)));
+  const prevRows=LINES.filter(l=>matches(l,iso(prevFrom),iso(prevTo)));
   const prevByDay=groupBy(prevRows,l=>l.d);
 
   const days=[];
   for(let i=0;i<7;i++){
     const dt=new Date(wb.mon.getTime()); dt.setDate(wb.mon.getDate()+i);
-    const ds=dt.toISOString().slice(0,10);
+    const ds=iso(dt);
     const t=totals(byDay.get(ds)||[]);
     days.push({ds,dow:i+1,rev:t.rev,margin:t.margin,receipts:t.receipts,
                future:ds>ASOF_S, today:ds===ASOF_S});
   }
+  const isLive=ASOF_S===iso(new Date());
   const peak=Math.max(1,...days.map(d=>d.rev));
   const today=days.find(d=>d.today)||days.filter(d=>!d.future).pop()||days[0];
 
-  const pt=totals(prevByDay.get((()=>{const x=new Date(today.ds+'T12:00:00');
-    x.setDate(x.getDate()-7); return x.toISOString().slice(0,10);})())||[]);
-  const delta=(cur,prev)=>{ if(!prev) return '';
+  const back7=d=>{const x=parse(d); x.setDate(x.getDate()-7); return iso(x);};
+  const pt=totals(prevByDay.get(back7(today.ds))||[]);
+  const delta=(cur,prev)=>{ if(!prev) return `<span class="delta flat">${T('wk_nobase')}</span>`;
     const v=100*(cur-prev)/Math.abs(prev), cl=Math.abs(v)<0.5?'flat':v>0?'up':'down';
     return `<span class="delta ${cl}">${v>0?'+':''}${F(v,1)}% ${T('wk_vs_lastweek')}</span>`; };
 
@@ -1229,7 +1228,7 @@ function renderWeek(){
   const wtdMargin=days.reduce((a,d)=>a+d.margin,0);
   // Compare like with like: only last week's days up to the same weekday.
   const prevWtd=[...prevByDay.entries()]
-    .filter(([ds])=>ds<=pIso(new Date(new Date(today.ds+'T12:00:00').getTime()-7*864e5)))
+    .filter(([ds])=>ds<=back7(today.ds))
     .reduce((a,[,ls])=>a+totals(ls).rev,0);
 
   host.innerHTML=
@@ -1237,13 +1236,13 @@ function renderWeek(){
        <span class="day">${T('dow_'+today.dow)} · ${dayLabel(today.ds)}</span>
        <span class="big num">${GEL(today.rev)}</span>
        <span class="sub">${T('wk_margin_receipts',GEL(today.margin),F(today.receipts))}</span>
-       ${delta(today.rev,pt.rev)?`<span class="sub">${delta(today.rev,pt.rev)}</span>`:''}
-       <span class="partial">${T('wk_partial')}</span>
+       <span class="sub">${delta(today.rev,pt.rev)}</span>
+       <span class="partial">${isLive?T('wk_partial'):T('wk_stale',dayLabel(ASOF_S))}</span>
      </div>
      <div>
        <div class="wk-days">${days.map(d=>`
          <div class="wk-col ${d.today?'is-today':''} ${d.future?'future':''}"
-              title="${T('dow_'+d.dow)} ${dayLabel(d.ds)} — ${GEL(d.rev)}">
+              title="${T('dow_'+d.dow)} ${dayLabel(d.ds)} — ${d.future?T('wk_nodata'):GEL(d.rev)}">
            <span class="wk-amt num">${d.future?'—':F(d.rev,0)}</span>
            <div class="wk-bar" style="height:${d.future?3:Math.max(3,Math.round(96*d.rev/peak))}px"></div>
            <span class="wk-dow">${T('dw_'+d.dow)}</span>
