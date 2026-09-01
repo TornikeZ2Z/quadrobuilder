@@ -1556,6 +1556,10 @@ function weekBounds(){
 
 function renderWeek(){
   const host=el('wk'); if(!host) return;
+  // Reuse the page's existing fmtDay, which takes a Date. Declaring a second
+  // top-level fmtDay here silently overrode it and broke every Day/Week label
+  // in the Rhythm section, so keep this local.
+  const dayLabel=ds=>fmtDay(new Date(ds+'T12:00:00'));
   const wb=weekBounds();
   const rows=LINES.filter(l=>matches(l,wb.from,wb.to));
   const byDay=groupBy(rows,l=>l.d);
@@ -1593,7 +1597,7 @@ function renderWeek(){
 
   host.innerHTML=
     `<div class="wk-today">
-       <span class="day">${T('dow_'+today.dow)} · ${fmtDay(today.ds)}</span>
+       <span class="day">${T('dow_'+today.dow)} · ${dayLabel(today.ds)}</span>
        <span class="big num">${GEL(today.rev)}</span>
        <span class="sub">${T('wk_margin_receipts',GEL(today.margin),F(today.receipts))}</span>
        ${delta(today.rev,pt.rev)?`<span class="sub">${delta(today.rev,pt.rev)}</span>`:''}
@@ -1602,7 +1606,7 @@ function renderWeek(){
      <div>
        <div class="wk-days">${days.map(d=>`
          <div class="wk-col ${d.today?'is-today':''} ${d.future?'future':''}"
-              title="${T('dow_'+d.dow)} ${fmtDay(d.ds)} — ${GEL(d.rev)}">
+              title="${T('dow_'+d.dow)} ${dayLabel(d.ds)} — ${GEL(d.rev)}">
            <span class="wk-amt num">${d.future?'—':F(d.rev,0)}</span>
            <div class="wk-bar" style="height:${d.future?3:Math.max(3,Math.round(96*d.rev/peak))}px"></div>
            <span class="wk-dow">${T('dw_'+d.dow)}</span>
@@ -1614,9 +1618,6 @@ function renderWeek(){
        ${prevWtd?`<span>${delta(wtd,prevWtd)}</span>`:''}
      </div>`;
 }
-
-function fmtDay(ds){const d=new Date(ds+'T12:00:00');
-  return `${d.getDate()} ${T('mon_'+(d.getMonth()+1))}`;}
 
 function render(){
   ['gran','chan'].forEach((key,i)=>{const id=['f-gran','f-chan'][i];
