@@ -322,6 +322,43 @@ td.chipcell{text-align:left}
   color:var(--crit); font-variant-numeric:tabular-nums; line-height:1.15}
 .callout p{margin:0; font-size:15.5px; max-width:86ch}
 
+/* This-week strip: today as the hero figure, the rest of the week beside it.
+   Bars are plain divs rather than SVG - no font-embedding worries for the
+   Georgian day names, and it reflows without a viewBox to recompute. */
+.wk{display:grid; grid-template-columns:minmax(0,260px) minmax(0,1fr); gap:26px; align-items:stretch}
+.wk>*{min-width:0}
+.wk-today{display:flex; flex-direction:column; justify-content:center;
+  padding:18px 20px; background:var(--ground); border-radius:10px}
+.wk-today .day{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-3)}
+:lang(ka) .wk-today .day{font-family:"Noto Sans Georgian",sans-serif; letter-spacing:.01em;
+  text-transform:none; font-size:12.5px}
+.wk-today .big{font-size:42px; line-height:1.12; color:var(--brand-deep); margin-top:6px}
+.wk-today .sub{font-size:13px; color:var(--ink-2); line-height:1.5; margin-top:8px}
+.wk-today .partial{font-size:12px; color:var(--ink-3); margin-top:8px; font-style:italic}
+
+.wk-days{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; align-items:end}
+.wk-col{display:flex; flex-direction:column; justify-content:flex-end; gap:6px; min-width:0}
+.wk-amt{font-size:12px; color:var(--ink-2); text-align:center; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis}
+.wk-bar{background:var(--brand); border-radius:4px 4px 0 0; min-height:3px;
+  transition:background .15s}
+.wk-col.is-today .wk-bar{background:var(--brand-deep)}
+.wk-col.is-today .wk-amt{color:var(--ink); font-weight:500}
+.wk-col.future .wk-bar{background:var(--line)}
+.wk-col.future .wk-amt{color:var(--ink-3)}
+.wk-dow{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
+  text-align:center; padding-top:7px; border-top:1px solid var(--line)}
+:lang(ka) .wk-dow{font-family:"Noto Sans Georgian",sans-serif; font-size:11.5px}
+.wk-col.is-today .wk-dow{color:var(--ink); font-weight:500}
+.wk-foot{grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px 26px; align-items:baseline;
+  border-top:1px solid var(--line); padding-top:14px; font-size:14px; color:var(--ink-2)}
+.wk-foot b{color:var(--ink); font-weight:500}
+@media (max-width:760px){
+  .wk{grid-template-columns:1fr; gap:18px}
+  .wk-today .big{font-size:34px}
+  .wk-amt{font-size:10.5px}
+}
 .note{border-left:2px solid var(--brand); padding:11px 0 11px 16px; font-size:14px;
   color:var(--ink-2); margin:18px 0 0}
 .note b{color:var(--ink); font-weight:500}
@@ -462,6 +499,13 @@ footer ul{margin:0; padding-left:19px; display:flex; flex-direction:column; gap:
         <p class="note" id="recon"></p>
       </section>
 
+      <section id="week" class="panel">
+        <span class="eyebrow" id="eb-week"></span>
+        <h2 id="h-week"></h2>
+        <p class="lede" id="l-week"></p>
+        <div class="wk" id="wk"></div>
+      </section>
+
       <section id="rhythm" class="panel">
         <span class="eyebrow" id="eb-rhythm"></span>
         <h2 id="h-rhythm"></h2>
@@ -583,6 +627,7 @@ const DICT = {
   /* chrome */
   tagline:            ['Together we build',              'ერთად ვაშენებთ'],
   nav_overview:       ['Overview',                       'მიმოხილვა'],
+  nav_week:           ['This week',                      'ეს კვირა'],
   nav_rhythm:         ['Trading rhythm',                 'ვაჭრობის რიტმი'],
   nav_products:       ['Products',                       'პროდუქტები'],
   nav_margin:         ['Margin & mix',                   'ფასნამატი და სტრუქტურა'],
@@ -797,6 +842,22 @@ const DICT = {
   ch_title:           ['Channel split',                  'არხების განაწილება'],
   ch_retail_full:     ['Retail counter',                 'საცალო დახლი'],
   ch_entity_full:     ['B2B (ი/პ)',                      'ი/პ გაყიდვები'],
+  wk_eyebrow:         ['THIS WEEK',                      'ეს კვირა'],
+  wk_title:           ['Today and the days before it',   'დღეს და წინა დღეები'],
+  wk_lede:            ['Today’s takings first, then the rest of the week beside them. '
+                     + 'This block always shows the current week, so the period picker '
+                     + 'above does not change it — the channel, category and search '
+                     + 'filters still apply.',
+                       'ჯერ დღევანდელი შემოსავალი, შემდეგ კვირის დანარჩენი დღეები. '
+                     + 'ეს ბლოკი ყოველთვის მიმდინარე კვირას აჩვენებს, ამიტომ ზემოთ '
+                     + 'პერიოდის ფილტრი მას არ ცვლის — არხის, კატეგორიისა და ძიების '
+                     + 'ფილტრები კი მოქმედებს.'],
+  wk_margin_receipts: ['{0} margin · {1} receipts',       '{0} მარჟა · {1} ჩეკი'],
+  wk_partial:         ['Today is still in progress — the data refreshes three times a day.',
+                       'დღე ჯერ არ დასრულებულა — მონაცემები დღეში სამჯერ განახლდება.'],
+  wk_total:           ['Week to date',                    'კვირის ჯამი'],
+  wk_margin_total:    ['Margin this week',                'კვირის მარჟა'],
+  wk_vs_lastweek:     ['vs last week',                    'გასულ კვირასთან'],
   dow_1:              ['Mon',                            'ორშ'],
   dow_2:              ['Tue',                            'სამ'],
   dow_3:              ['Wed',                            'ოთხ'],
@@ -961,7 +1022,7 @@ const PRESETS=[{k:'all',t:'p_all'},{k:'180',t:'p_180'},{k:'90',t:'p_90'},{k:'60'
   {k:'30',t:'p_30'},{k:'7',t:'p_7'},{k:'tm',t:'p_tm'},{k:'lm',t:'p_lm'}];
 const GRANS=[{k:'D',t:'g_D'},{k:'W',t:'g_W'},{k:'M',t:'g_M'},{k:'Q',t:'g_Q'}];
 const CHANS=[{k:'',t:'ch_all'},{k:'retail',t:'ch_retail'},{k:'entity',t:'ch_entity'}];
-const NAV=[['overview','nav_overview'],['rhythm','nav_rhythm'],['products','nav_products'],
+const NAV=[['overview','nav_overview'],['week','nav_week'],['rhythm','nav_rhythm'],['products','nav_products'],
   ['margin','nav_margin'],['order','nav_order'],['decide','nav_decide'],['overstock','nav_over'],['dead','nav_dead'],
   ['categories','nav_categories'],['patterns','nav_patterns'],['method','nav_method']];
 const state={period:'all',gran:'M',chan:'',cat:'',q:'',from:null,to:null,
@@ -991,6 +1052,7 @@ function paintStatic(){
   el('f-chan').innerHTML=CHANS.map(p=>`<button type="button" data-k="${p.k}">${T(p.t)}</button>`).join('');
   [['eb-headline','k_headline'],['eb-rhythm','r_eyebrow'],['h-rhythm','r_title'],['l-rhythm','r_lede'],
    ['eb-prod','pr_eyebrow'],['h-prod','pr_title'],['l-prod','pr_lede'],
+   ['eb-week','wk_eyebrow'],['h-week','wk_title'],['l-week','wk_lede'],
    ['eb-conc','cc_eyebrow'],['h-conc','cc_title'],['l-conc','cc_lede'],
    ['eb-band','mb_eyebrow'],['h-band','mb_title'],['l-band','mb_lede'],
    ['eb-order','o_eyebrow'],['h-order','o_title'],['l-order','o_lede2'],
@@ -1479,6 +1541,83 @@ function apply(){render();
   const anchor=document.querySelector('.inner');
   if(anchor&&window.scrollY>anchor.offsetTop) window.scrollTo({top:0,behavior:'instant'});}
 
+/* The current ISO week (Mon-Sun) containing the as-of date. This block owns the
+   date axis - it is "this week" by definition - so it ignores the period picker,
+   but it still honours the channel / category / search filters like everything
+   else on the page. */
+function weekBounds(){
+  const d=new Date(ASOF.getTime());
+  const dow=(d.getDay()+6)%7;                       // 0=Mon
+  const mon=new Date(d.getTime()); mon.setDate(d.getDate()-dow);
+  const sun=new Date(mon.getTime()); sun.setDate(mon.getDate()+6);
+  const iso=x=>x.toISOString().slice(0,10);
+  return {mon,sun,from:iso(mon),to:iso(sun)};
+}
+
+function renderWeek(){
+  const host=el('wk'); if(!host) return;
+  const wb=weekBounds();
+  const rows=LINES.filter(l=>matches(l,wb.from,wb.to));
+  const byDay=groupBy(rows,l=>l.d);
+
+  // Same weekday last week, for an honest like-for-like comparison.
+  const prevFrom=new Date(wb.mon.getTime()); prevFrom.setDate(prevFrom.getDate()-7);
+  const prevTo=new Date(wb.sun.getTime());   prevTo.setDate(prevTo.getDate()-7);
+  const pIso=x=>x.toISOString().slice(0,10);
+  const prevRows=LINES.filter(l=>matches(l,pIso(prevFrom),pIso(prevTo)));
+  const prevByDay=groupBy(prevRows,l=>l.d);
+
+  const days=[];
+  for(let i=0;i<7;i++){
+    const dt=new Date(wb.mon.getTime()); dt.setDate(wb.mon.getDate()+i);
+    const ds=dt.toISOString().slice(0,10);
+    const t=totals(byDay.get(ds)||[]);
+    days.push({ds,dow:i+1,rev:t.rev,margin:t.margin,receipts:t.receipts,
+               future:ds>ASOF_S, today:ds===ASOF_S});
+  }
+  const peak=Math.max(1,...days.map(d=>d.rev));
+  const today=days.find(d=>d.today)||days.filter(d=>!d.future).pop()||days[0];
+
+  const pt=totals(prevByDay.get((()=>{const x=new Date(today.ds+'T12:00:00');
+    x.setDate(x.getDate()-7); return x.toISOString().slice(0,10);})())||[]);
+  const delta=(cur,prev)=>{ if(!prev) return '';
+    const v=100*(cur-prev)/Math.abs(prev), cl=Math.abs(v)<0.5?'flat':v>0?'up':'down';
+    return `<span class="delta ${cl}">${v>0?'+':''}${F(v,1)}% ${T('wk_vs_lastweek')}</span>`; };
+
+  const wtd=days.reduce((a,d)=>a+d.rev,0);
+  const wtdMargin=days.reduce((a,d)=>a+d.margin,0);
+  // Compare like with like: only last week's days up to the same weekday.
+  const prevWtd=[...prevByDay.entries()]
+    .filter(([ds])=>ds<=pIso(new Date(new Date(today.ds+'T12:00:00').getTime()-7*864e5)))
+    .reduce((a,[,ls])=>a+totals(ls).rev,0);
+
+  host.innerHTML=
+    `<div class="wk-today">
+       <span class="day">${T('dow_'+today.dow)} · ${fmtDay(today.ds)}</span>
+       <span class="big num">${GEL(today.rev)}</span>
+       <span class="sub">${T('wk_margin_receipts',GEL(today.margin),F(today.receipts))}</span>
+       ${delta(today.rev,pt.rev)?`<span class="sub">${delta(today.rev,pt.rev)}</span>`:''}
+       <span class="partial">${T('wk_partial')}</span>
+     </div>
+     <div>
+       <div class="wk-days">${days.map(d=>`
+         <div class="wk-col ${d.today?'is-today':''} ${d.future?'future':''}"
+              title="${T('dow_'+d.dow)} ${fmtDay(d.ds)} — ${GEL(d.rev)}">
+           <span class="wk-amt num">${d.future?'—':F(d.rev,0)}</span>
+           <div class="wk-bar" style="height:${d.future?3:Math.max(3,Math.round(96*d.rev/peak))}px"></div>
+           <span class="wk-dow">${T('dw_'+d.dow)}</span>
+         </div>`).join('')}</div>
+     </div>
+     <div class="wk-foot">
+       <span>${T('wk_total')} <b class="num">${GEL(wtd)}</b></span>
+       <span>${T('wk_margin_total')} <b class="num">${GEL(wtdMargin)}</b></span>
+       ${prevWtd?`<span>${delta(wtd,prevWtd)}</span>`:''}
+     </div>`;
+}
+
+function fmtDay(ds){const d=new Date(ds+'T12:00:00');
+  return `${d.getDate()} ${T('mon_'+(d.getMonth()+1))}`;}
+
 function render(){
   ['gran','chan'].forEach((key,i)=>{const id=['f-gran','f-chan'][i];
     [...el(id).children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===state[key]));});
@@ -1502,6 +1641,8 @@ function render(){
   ].map(k=>`<div class="kpi"><span class="lab">${k.lab}</span>
     <span class="val num">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</span>
     <span class="ctx">${k.ctx}</span></div>`).join('');
+
+  renderWeek();
 
   const wr=winRange(), opt=OPTIMO.filter(o=>o.d>=wr[0]&&o.d<=wr[1]).reduce((a,o)=>a+o.rev,0);
   el('recon').innerHTML=(!state.chan&&!state.cat&&!state.q)

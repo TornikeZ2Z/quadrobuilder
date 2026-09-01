@@ -5,6 +5,7 @@ const DICT = {
   /* chrome */
   tagline:            ['Together we build',              'ერთად ვაშენებთ'],
   nav_overview:       ['Overview',                       'მიმოხილვა'],
+  nav_week:           ['This week',                      'ეს კვირა'],
   nav_rhythm:         ['Trading rhythm',                 'ვაჭრობის რიტმი'],
   nav_products:       ['Products',                       'პროდუქტები'],
   nav_margin:         ['Margin & mix',                   'ფასნამატი და სტრუქტურა'],
@@ -219,6 +220,22 @@ const DICT = {
   ch_title:           ['Channel split',                  'არხების განაწილება'],
   ch_retail_full:     ['Retail counter',                 'საცალო დახლი'],
   ch_entity_full:     ['B2B (ი/პ)',                      'ი/პ გაყიდვები'],
+  wk_eyebrow:         ['THIS WEEK',                      'ეს კვირა'],
+  wk_title:           ['Today and the days before it',   'დღეს და წინა დღეები'],
+  wk_lede:            ['Today’s takings first, then the rest of the week beside them. '
+                     + 'This block always shows the current week, so the period picker '
+                     + 'above does not change it — the channel, category and search '
+                     + 'filters still apply.',
+                       'ჯერ დღევანდელი შემოსავალი, შემდეგ კვირის დანარჩენი დღეები. '
+                     + 'ეს ბლოკი ყოველთვის მიმდინარე კვირას აჩვენებს, ამიტომ ზემოთ '
+                     + 'პერიოდის ფილტრი მას არ ცვლის — არხის, კატეგორიისა და ძიების '
+                     + 'ფილტრები კი მოქმედებს.'],
+  wk_margin_receipts: ['{0} margin · {1} receipts',       '{0} მარჟა · {1} ჩეკი'],
+  wk_partial:         ['Today is still in progress — the data refreshes three times a day.',
+                       'დღე ჯერ არ დასრულებულა — მონაცემები დღეში სამჯერ განახლდება.'],
+  wk_total:           ['Week to date',                    'კვირის ჯამი'],
+  wk_margin_total:    ['Margin this week',                'კვირის მარჟა'],
+  wk_vs_lastweek:     ['vs last week',                    'გასულ კვირასთან'],
   dow_1:              ['Mon',                            'ორშ'],
   dow_2:              ['Tue',                            'სამ'],
   dow_3:              ['Wed',                            'ოთხ'],
