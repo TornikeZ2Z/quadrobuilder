@@ -196,6 +196,19 @@ async function attemptExport(page, job) {
     throw pageFail(`export button never appeared on ${job.label}`);
   }
 
+  // Optimo intermittently serves the report with zero rows (seen 2026-09-02:
+  // logged in, grid empty, pager reading "/ 0"). Clicking export then produces
+  // no file at all, and the run used to sit through a 90s download timeout on
+  // each of three tries. The pager is language-independent, so check it first
+  // and fail in a second with a message that says what actually happened.
+  const pager = await page.locator('.table-footer-page-quantity').first()
+    .textContent({ timeout: 2500 }).catch(() => null);
+  const total = pager ? parseInt(pager.replace(/[^0-9]/g, ''), 10) : NaN;
+  const emptyMsg = await page.getByText('მონაცემები ცარიელია').count().catch(() => 0);
+  if (total === 0 || emptyMsg > 0) {
+    throw pageFail(`Optimo returned no rows for ${job.label} — its report came back empty`);
+  }
+
   // Download to a .part sibling and only swap it in once it validates, so a
   // failed download can never destroy the last good copy of the report.
   const to = join(RAW, job.name);

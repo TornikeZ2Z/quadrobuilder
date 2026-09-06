@@ -110,4 +110,25 @@ print(con.execute("""
 SELECT channel, ROUND(SUM(rev_value),2) AS revenue, SUM(CASE WHEN counts THEN 1 ELSE 0 END) AS live_lines,
        SUM(CASE WHEN NOT counts THEN 1 ELSE 0 END) AS excluded_lines
 FROM sales GROUP BY 1 ORDER BY revenue DESC""").df().to_string(index=False))
+
+# The reconciliation used to be printed and nothing more, so a set of figures
+# that disagreed with Optimo would still be published and the discrepancy would
+# sit in a log nobody reads. Stale-and-loud beats wrong-and-quiet for numbers
+# someone buys stock from. Set QB_ALLOW_RECON_DRIFT=1 to override for one run.
+diff = con.execute(
+    "SELECT ROUND(SUM(rev_value) - (SELECT SUM(revenue) FROM daily_stats),2) FROM sales"
+).fetchone()[0]
 con.close()
+
+TOL = 1.0
+if diff is None or abs(diff) > TOL:
+    if os.environ.get('QB_ALLOW_RECON_DRIFT') == '1':
+        print("")
+        print(f"!! revenue differs from Optimo by {diff} - continuing, override set")
+    else:
+        print("")
+        print(f"x revenue differs from Optimo by {diff} (tolerance {TOL}).")
+        print("    Refusing to build: the dashboard would show figures Optimo disagrees with.")
+        print("    Check data/raw for a stale or partial export, then re-run.")
+        print("    To publish anyway: set QB_ALLOW_RECON_DRIFT=1")
+        raise SystemExit(1)

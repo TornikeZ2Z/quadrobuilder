@@ -62,7 +62,10 @@ function Write-Log($msg) {
 function Fold-Into-Log([string]$file) {
   try {
     if (-not (Test-Path $file)) { return }
-    $text = Get-Content $file -Raw
+    # node writes UTF-8. Without -Encoding, Get-Content decodes with the ANSI
+    # codepage and Write-Raw then re-encodes as UTF-8, so every non-ASCII
+    # character lands in the log twice-mangled ("â€”" for "—").
+    $text = Get-Content $file -Raw -Encoding UTF8
     if ($text -and $text.Trim()) { Write-Raw ($text + "`r`n") }
     Remove-Item $file -Force -EA SilentlyContinue
   } catch { }
