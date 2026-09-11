@@ -100,6 +100,66 @@ con.execute("DROP TABLE IF EXISTS daily_stats")
 con.register("t", d); con.execute("CREATE TABLE daily_stats AS SELECT * FROM t"); con.unregister("t")
 print(f"  {'daily_stats':<10} {len(d):>6,} rows")
 
+# ---- purchases -----------------------------------------------------------
+# Two exports from Optimo's Purchases page: one row per document, which carries
+# the status, and one row per product line, which carries price and quantity but
+# no status. Spend counts RECEIVED documents only. Optimo's own Purchases total
+# includes cancelled documents, which is why it reads higher than ours.
+# A cancelled purchase that was re-entered keeps its waybill number, so lines are
+# joined to documents on number AND posting time. Joining on the number alone
+# duplicates every line of those documents.
+PD, PL = f"{RAW}/purchases_docs.xlsx", f"{RAW}/purchases_lines.xlsx"
+if os.path.exists(PD) and os.path.exists(PL):
+    pdoc = pd.read_excel(PD)
+    pdoc.columns = ["doc","supplier","status","n_lines","total","waybill_total","posted","received"]
+    pln = pd.read_excel(PL)
+    pln.columns = ["product","barcode","supplier","category","doc","unit_price","qty","value",
+                   "paymethod","posted","received"]
+    for df in (pdoc, pln):
+        df["doc"] = df["doc"].astype(str).str.strip()
+        df["posted"] = df["posted"].astype(str).str.strip()
+    pln["barcode"] = nb(pln["barcode"])
+    key = ["doc", "posted"]
+    if pdoc.duplicated(key).any():
+        print("\n  x purchase documents are not unique on number + posting time.")
+        print("    Refusing to build: spend would be double-counted.")
+        raise SystemExit(1)
+    j = pln.merge(pdoc[key + ["status","n_lines","total"]], on=key, how="left", indicator=True)
+    unmatched = int((j["_merge"] != "both").sum())
+    per_doc = j.groupby(key).agg(n=("value","size"), v=("value","sum"),
+                                 n_hdr=("n_lines","first"), t_hdr=("total","first"))
+    torn = per_doc[(per_doc["n"] != per_doc["n_hdr"]) | ((per_doc["v"] - per_doc["t_hdr"]).abs() > 0.5)]
+    if unmatched or len(torn):
+        print(f"\n  x purchase exports do not line up: {unmatched} lines match no document, "
+              f"{len(torn)} documents disagree with their own lines.")
+        print("    Refusing to build: spend would be wrong. Re-run the export.")
+        raise SystemExit(1)
+    j["received"] = pd.to_datetime(j["received"], format="%m/%d/%Y %H:%M:%S %z",
+                                   utc=True).dt.tz_convert("Asia/Tbilisi")
+    j["consignment"] = j["paymethod"].eq("კონსიგნაცია")
+    kept = j[j["status"].eq("მიღებული")]
+    dropped = j[~j["status"].eq("მიღებული")]
+    purchases = kept[["barcode","doc","supplier","received","qty","unit_price","value",
+                      "consignment"]].reset_index(drop=True)
+    print(f"  {'purchases':<10} {len(purchases):>6,} lines from "
+          f"{int(pdoc['status'].eq('მიღებული').sum())} received documents")
+    print(f"    spend {purchases['value'].sum():,.2f}, of which consignment "
+          f"{purchases.loc[purchases['consignment'], 'value'].sum():,.2f}")
+    # Cross-check against the movement ledger, which records the same cancellations
+    # independently as reversal movements.
+    rev = -lg.loc[lg["status"].eq("გაუქმებული შესყიდვა"), "delta"].sum()
+    print(f"    excluded {len(dropped)} lines / {dropped['value'].sum():,.2f} from cancelled documents; "
+          f"qty {dropped['qty'].sum():,.1f} vs ledger reversals {rev:,.1f}")
+else:
+    print("  purchases  missing - run the export; spend will show as zero")
+    purchases = pd.DataFrame({
+        "barcode": pd.Series(dtype=str), "doc": pd.Series(dtype=str), "supplier": pd.Series(dtype=str),
+        "received": pd.Series(dtype="datetime64[ns, Asia/Tbilisi]"),
+        "qty": pd.Series(dtype=float), "unit_price": pd.Series(dtype=float),
+        "value": pd.Series(dtype=float), "consignment": pd.Series(dtype=bool)})
+con.execute("DROP TABLE IF EXISTS purchases")
+con.register("t", purchases); con.execute("CREATE TABLE purchases AS SELECT * FROM t"); con.unregister("t")
+
 print("\n=== RECONCILIATION vs Optimo ===")
 print(con.execute("""
 SELECT ROUND(SUM(rev_value),2) AS mine,

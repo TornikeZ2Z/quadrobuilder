@@ -68,12 +68,23 @@ optimo = con.execute("""
 SELECT strftime(date,'%Y-%m-%d') AS d, revenue AS rev, markup AS mk, txns AS t
 FROM daily_stats WHERE revenue>0 OR txns>0 ORDER BY date""").df()
 
+# Received purchase lines only (cancelled documents are dropped at load). k marks
+# consignment stock, which is owed to the supplier on sale rather than prepaid.
+# Name and category are looked up from the stock list in the browser, so they
+# are not repeated here.
+purch = con.execute("""
+SELECT strftime(received,'%Y-%m-%d') AS d, barcode AS b,
+       ROUND(qty,3) AS q, ROUND(value,2) AS v,
+       CASE WHEN consignment THEN 1 ELSE 0 END AS k
+FROM purchases ORDER BY received""").df()
+
 con.close()
 out = {"as_of": ASOF,
        "lines": lines.to_dict('records'),
        "stock": stock.to_dict('records'),
-       "optimo_daily": optimo.to_dict('records')}
+       "optimo_daily": optimo.to_dict('records'),
+       "purchases": purch.to_dict('records')}
 json.dump(out, open('data/processed/dashboard.json','w',encoding='utf-8'),
           ensure_ascii=False, separators=(',',':'), default=str)
-print(f"\nlines={len(lines)} stock={len(stock)} optimo_days={len(optimo)} "
+print(f"\nlines={len(lines)} stock={len(stock)} optimo_days={len(optimo)} purchases={len(purch)} "
       f"-> {os.path.getsize('data/processed/dashboard.json')/1024:.0f} KB")

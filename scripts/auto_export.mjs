@@ -1,7 +1,7 @@
 /* QuadroBuilder — automatic Optimo export.
  *
  * Drives the real Optimo UI in a persistent Chromium profile and downloads the
- * six reports, then runs the Python pipeline and publishes docs/index.html.
+ * eight reports, then runs the Python pipeline and publishes docs/index.html.
  *
  *   node scripts/auto_export.mjs            # scheduled run (headless)
  *   node scripts/auto_export.mjs --login    # visible window, sign in by hand
@@ -58,7 +58,7 @@ const TODAY = new Date().toLocaleDateString('en-CA');
 const FROM = '2024-01-01';
 const range = (path) => `${path}${path.includes('?') ? '&' : '?'}dateFrom=${FROM}&dateTo=${TODAY}`;
 
-/* The six exports, in order. `menu` picks the line-item option from the caret
+/* The exports, in order. `menu` picks the line-item option from the caret
    dropdown; a plain green button otherwise. `min` is a floor well under the
    smallest genuine file, to catch a truncated download. */
 const JOBS = [
@@ -74,6 +74,15 @@ const JOBS = [
     url: range('/reports/supplies?pageIndex=1&pageSize=20'), menu: null },
   { name: 'daily_statistics.xlsx', label: 'daily statistics', min: 7000,
     url: '/statistics/general', menu: null, stats: true },
+  // Purchases come in two parts. The line items carry price and quantity but no
+  // status; the per-document export carries the status, which is the only way to
+  // tell a cancelled purchase apart. build_warehouse.py joins the two.
+  { name: 'purchases_docs.xlsx', label: 'purchase documents', min: 3000,
+    url: '/orders?pageIndex=1&sortField=orderDate&sortOrder=DESC&pageSize=20',
+    menu: 'შესყიდვები', capture: /purchaseorders\/excel/ },
+  { name: 'purchases_lines.xlsx', label: 'purchase lines', min: 30000,
+    url: '/orders?pageIndex=1&sortField=orderDate&sortOrder=DESC&pageSize=20',
+    menu: 'პროდუქტები', capture: /purchaseorders\/product-excel/ },
 ];
 
 const isLoginUrl = (u) => /\/login|\/auth|identity|signin/i.test(u);
@@ -226,7 +235,37 @@ async function attemptExport(page, job) {
   };
 
   let size;
-  if (job.menu === 'products') {
+  if (job.capture) {
+    // The Purchases page builds its export as a blob and revokes the URL at once,
+    // which cancels the browser download in headless Chromium - saveAs fails with
+    // "canceled" every time. The file itself arrives as an ordinary XHR response,
+    // so read it off the wire instead of waiting on a download.
+    const box = await btn.boundingBox();
+    if (!box) throw pageFail(`could not locate the export control on ${job.label}`);
+    await page.mouse.click(box.x + box.width - 12, box.y + box.height / 2);
+    await page.waitForTimeout(900);
+    // Pick the option by its position under the button: the sidebar has links
+    // with exactly the same text ("შესყიდვები" twice, "პროდუქტები" once).
+    const pt = await page.evaluate(({ label, box }) => {
+      for (const n of document.querySelectorAll('body *')) {
+        if (n.children.length || n.textContent.trim() !== label) continue;
+        const r = n.getBoundingClientRect();
+        if (r.width && r.top > box.y + box.height - 4 && r.top < box.y + 260
+            && r.left > box.x - 60 && r.left < box.x + 420) return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      }
+      return null;
+    }, { label: job.menu, box });
+    if (!pt) throw pageFail(`the export menu did not open on ${job.label}`);
+    const pending = page.waitForResponse((r) => job.capture.test(r.url()), { timeout: 90000 });
+    await page.mouse.click(pt.x, pt.y);
+    const resp = await pending;
+    if (resp.status() !== 200) throw pageFail(`${job.label} export returned HTTP ${resp.status()}`);
+    const body = await resp.body();
+    if (existsSync(part)) rmSync(part);
+    writeFileSync(part, body);
+    size = body.length;
+    await page.keyboard.press('Escape').catch(() => {});
+  } else if (job.menu === 'products') {
     const box = await btn.boundingBox();
     if (!box) throw pageFail(`could not locate the export control on ${job.label}`);
     // click the caret half of the split button, then the "პროდუქტები" item

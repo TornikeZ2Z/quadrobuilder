@@ -63,6 +63,9 @@ const DICT = {
   k_receipts:         ['Receipts',                       'ქვითრები'],
   k_basket:           ['Avg basket',                     'საშუალო ქვითარი'],
   k_returned:         ['Returned',                       'დაბრუნებული'],
+  k_spent:            ['Spent on stock',                 'შესყიდვის თანხა'],
+  k_spent_consig:     ['{0} of it on consignment',       'მათ შორის კონსიგნაცია {0}'],
+  k_spent_allch:      ['all channels',                   'ყველა არხი'],
   vs_prev:            ['vs prev',                        'წინა პერიოდთან'],
   on_goods:           ['on {0} of goods',                '{0} საქონელზე'],
   cost_of_goods:      ['{0} cost of goods',              '{0} თვითღირებულება'],
@@ -107,6 +110,7 @@ const DICT = {
   export_csv:         ['Export CSV',                     'CSV ექსპორტი'],
   c_product:          ['Product',                        'პროდუქტი'],
   c_revenue:          ['Revenue',                        'შემოსავალი'],
+  c_spent:            ['Spent ₾',                        'შესყიდვა ₾'],
   c_units:            ['Units',                          'ერთეული'],
   c_sales:            ['Sales',                          'გაყიდვები'],
   c_margin_gel:       ['Margin ₾',                       'ფასნამატი ₾'],
@@ -297,6 +301,7 @@ const DICT = {
   x_capital:          ['Capital tied (GEL)',             'გაყინული კაპიტალი (₾)'],
   x_stockvalue:       ['Stock value (GEL)',              'მარაგის ღირებულება (₾)'],
   x_revenue:          ['Revenue (GEL)',                  'შემოსავალი (₾)'],
+  x_spent:            ['Spent on stock (GEL)',           'შესყიდვის თანხა (₾)'],
   x_units:            ['Units',                          'ერთეული'],
   x_sales:            ['Sales',                          'გაყიდვები'],
   x_margin:           ['Margin (GEL)',                   'ფასნამატი (₾)'],
@@ -354,8 +359,8 @@ const DICT = {
 
   /* method */
   m_title:            ['How this was built, and what to distrust', 'როგორ არის აგებული და რას არ ენდოთ'],
-  m_1:                ['Five Optimo Excel exports loaded into DuckDB, then embedded row-level so every filter recalculates in the browser.',
-                       'Optimo-დან ხუთი Excel ექსპორტი ჩაიტვირთა DuckDB-ში, შემდეგ ჩაშენდა ჩანაწერების დონეზე, ასე რომ ყველა ფილტრი ბრაუზერში ითვლება.'],
+  m_1:                ['Eight Optimo Excel exports loaded into DuckDB, then embedded row-level so every filter recalculates in the browser.',
+                       'Optimo-დან რვა Excel ექსპორტი ჩაიტვირთა DuckDB-ში, შემდეგ ჩაშენდა ჩანაწერების დონეზე, ასე რომ ყველა ფილტრი ბრაუზერში ითვლება.'],
   m_2:                ['<b>Revenue matches Optimo exactly</b> — 29,944.80 ₾ over the full period, difference 0.00. Revenue counts retail lines excluding those flagged returned, plus B2B lines excluding those flagged cancelled. Cancelled B2B lines are dropped at load and appear nowhere on this page.',
                        '<b>შემოსავალი ზუსტად ემთხვევა Optimo-ს</b> — 29,944.80 ₾ მთელ პერიოდზე, სხვაობა 0.00. შემოსავალში შედის საცალო ჩანაწერები დაბრუნებულების გარეშე, პლუს ი/პ ჩანაწერები გაუქმებულების გარეშე. გაუქმებული ი/პ ჩანაწერები ჩატვირთვისას ამოღებულია და გვერდზე არსად ჩანს.'],
   m_3:                ['<b>Margin is approximate.</b> Optimo’s exports carry no cost-at-time-of-sale, so margin uses each product’s <em>current</em> purchase price, and will differ from Optimo’s own markup figure. 7 B2B lines (269 ₾) have no cost record at all and count as pure margin, slightly flattering the total.',
@@ -364,4 +369,6 @@ const DICT = {
                        '<b>მაქს. ნაშთი</b> არის უმაღლესი მიმდინარე ნაშთი Optimo-ს მოძრაობის ჟურნალში, და არა საწყისი პლუს შემოსვლები. შემოსვლებში ასევე ჯამდება ყოველი გაუქმებული გაყიდვის დაბრუნება, რამაც 915 პროდუქტიდან 177-ს გაზრდილი მაჩვენებელი მისცა — KUMTEL-ის საყინულეს ეწერა 36, მაშინ როცა 6-ზე მეტი არასდროს ჰქონია. ჟურნალის დამხურავი ნაშთი ზუსტად ემთხვევა ნაშთს 915-დან 910 პროდუქტზე.'],
   m_4:                ['Demand for ordering uses a fixed trailing 30 days regardless of the period filter — what to buy is a decision about now. Cover, turns and overstock follow the same 30-day demand.',
                        'შეკვეთისთვის მოთხოვნა ითვლება ბოლო 30 დღეზე, პერიოდის ფილტრის მიუხედავად — რა შევიძინოთ ეს დღევანდელი გადაწყვეტილებაა. მარაგის ვადა, ბრუნვა და ჭარბი მარაგი იმავე 30 დღეს ეყრდნობა.'],
+  m_6:                ['<b>Spent on stock</b> is what received purchase documents cost, at their purchase price, dated by when the goods arrived. Cancelled purchases are left out — Optimo’s own Purchases total includes them, so it reads higher than this page. Consignment stock is included even though it is paid for only once it sells; the tile shows how much of the spend that is. Purchases carry no sales channel, so the channel filter does not split them. Products and categories bought in the period but not yet sold are listed with no revenue.',
+                       '<b>შესყიდვის თანხა</b> არის მიღებული შესყიდვის დოკუმენტების ღირებულება შესყიდვის ფასით, საქონლის მიღების თარიღით. გაუქმებული შესყიდვები არ ითვლება — Optimo-ს შესყიდვების ჯამში ისინიც შედის, ამიტომ იქ თანხა მეტია. კონსიგნაციით მიღებული საქონელი ითვლება, თუმცა მომწოდებელს მისი ღირებულება მხოლოდ გაყიდვის შემდეგ ეხდება; ბარათზე ჩანს, რამდენია ამ თანხიდან კონსიგნაცია. შესყიდვა გაყიდვის არხზე არ ნაწილდება, ამიტომ არხის ფილტრი მას არ ყოფს. პერიოდში შესყიდული, მაგრამ ჯერ გაუყიდავი პროდუქტები და კატეგორიები სიაში შემოსავლის გარეშე ჩანს.'],
 };
